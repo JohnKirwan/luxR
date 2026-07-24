@@ -8,7 +8,7 @@
 A named list of five data frames, each with columns:
 \describe{
   \item{wavelength}{Wavelength in nm (300 to 800, step 10).}
-  \item{irradiance}{Spectral irradiance in W/m^2/nm.}
+  \item{irradiance}{Spectral irradiance in \eqn{W\,m^{-2}\,nm^{-1}}.}
 }
 Names: \code{clear_noon}, \code{clear_dawn}, \code{overcast},
 \code{underwater_1m}, \code{underwater_10m}.

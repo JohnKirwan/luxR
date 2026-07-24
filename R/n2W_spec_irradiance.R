@@ -1,6 +1,6 @@
 # n2W_spec_irradiance
 
-#' Convert photon-count spectral irradiance to Watts/m^2/nm.
+#' Convert photon-count spectral irradiance to \eqn{W\,m^{-2}\,nm^{-1}}.
 #'
 #' Converts per-bin photon flux (photons m\eqn{^{-2}} s\eqn{^{-1}}
 #' nm\eqn{^{-1}}, or molar equivalents) to energy-based spectral irradiance
@@ -18,17 +18,19 @@
 #' \eqn{hc} in nm-compatible units is \eqn{1.98645 \times 10^{-16}} J nm, the
 #' value used internally.
 #'
-#' @param value Spectral irradiance in photons/m^2/s/nm (or molar units), or a
+#' @param value Spectral irradiance in \eqn{photons\,m^{-2}\,s^{-1}\,nm^{-1}}
+#'   (or molar units), or a
 #'   \code{lux_spectrum} with a photonic irradiance or radiance unit.
 #' @param lambda Wavelength in nm for each bin.
 #' @param photonic Logical; if \code{TRUE}, \code{value} is in molar units
-#'   (µmol, mmol, or mol/m²/s/nm) — specify which via \code{molar_unit}.
+#'   (\eqn{\mu mol}, mmol, or \eqn{mol\,m^{-2}\,s^{-1}\,nm^{-1}}) — specify
+#'   which via \code{molar_unit}.
 #'   Defaults to \code{FALSE}. Note: \code{photonic = TRUE} means raw photon
 #'   counts in \code{\link{par_irradiance}}, and photon-or-molar units in
 #'   \code{\link{irradiance2lux}}.
 #' @param molar_unit Molar unit string (e.g. \code{"umol"}). Defaults to
 #'   \code{"photons"}.
-#' @return Numeric vector of spectral irradiance in W/m^2/nm, or a
+#' @return Numeric vector of spectral irradiance in \eqn{W\,m^{-2}\,nm^{-1}}, or a
 #'   \code{lux_spectrum} with \code{unit = "W/m2/nm"} or
 #'   \code{"W/m2/sr/nm"} according to the input dimensionality.
 #' @examples
@@ -71,7 +73,7 @@ n2W_spec_irradiance.lux_spectrum <- function(value, ...) {
 #' Convert energy spectral irradiance to molar photon flux.
 #'
 #' Converts W m\eqn{^{-2}} nm\eqn{^{-1}} spectral irradiance to a
-#' photon-count flux expressed in molar units (mol, mmol, or µmol photons
+#' photon-count flux expressed in molar units (mol, mmol, or \eqn{\mu mol} photons
 #' m\eqn{^{-2}} s\eqn{^{-1}} nm\eqn{^{-1}}). The inverse operation is
 #' \code{\link{n2W_spec_irradiance}}. The same per-bin conversion factor
 #' applies to spectral radiance (W m\eqn{^{-2}} sr\eqn{^{-1}}
@@ -85,7 +87,7 @@ n2W_spec_irradiance.lux_spectrum <- function(value, ...) {
 #' where \eqn{N_A = 6.022 \times 10^{23}} mol\eqn{^{-1}} and \eqn{s = 10^6}
 #' for \code{"umol"}, \eqn{10^3} for \code{"mmol"}, or \eqn{1} for \code{"mol"}.
 #'
-#' @param W          Spectral irradiance in W/m^2/nm, or a \code{lux_spectrum}
+#' @param W          Spectral irradiance in \eqn{W\,m^{-2}\,nm^{-1}}, or a \code{lux_spectrum}
 #'   with an energy irradiance or radiance unit.
 #' @param lambda     Wavelength in nm for each bin.
 #' @param molar_unit Target molar unit: \code{"umol"}, \code{"mmol"}, or

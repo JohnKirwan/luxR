@@ -11,7 +11,7 @@ irradiance2radiance(
 )
 }
 \arguments{
-\item{E}{Irradiance value(s) in W/m^2 (or any energy unit).
+\item{E}{Irradiance value(s) in \eqn{W\,m^{-2}} (or any energy unit).
 Vectorised.}
 
 \item{geometry}{One of:
@@ -37,7 +37,7 @@ Vectorised.}
 \code{geometry = "custom"} and rejected for other geometries.}
 }
 \value{
-Radiance in W/m^2/sr (same numeric unit as \code{E}).
+Radiance in \eqn{W\,m^{-2}\,sr^{-1}} (same numeric unit as \code{E}).
 }
 \description{
 The relationship between irradiance E and radiance L depends on the

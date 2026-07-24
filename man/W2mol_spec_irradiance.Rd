@@ -13,7 +13,7 @@ W2mol_spec_irradiance(W, ...)
 \method{W2mol_spec_irradiance}{lux_spectrum}(W, molar_unit = "umol", ...)
 }
 \arguments{
-\item{W}{Spectral irradiance in W/m^2/nm, or a \code{lux_spectrum}
+\item{W}{Spectral irradiance in \eqn{W\,m^{-2}\,nm^{-1}}, or a \code{lux_spectrum}
 with an energy irradiance or radiance unit.}
 
 \item{...}{Ignored.}
@@ -30,7 +30,7 @@ Numeric vector of photon flux in the requested molar unit per nm,
 }
 \description{
 Converts W m\eqn{^{-2}} nm\eqn{^{-1}} spectral irradiance to a
-photon-count flux expressed in molar units (mol, mmol, or µmol photons
+photon-count flux expressed in molar units (mol, mmol, or \eqn{\mu mol} photons
 m\eqn{^{-2}} s\eqn{^{-1}} nm\eqn{^{-1}}). The inverse operation is
 \code{\link{n2W_spec_irradiance}}. The same per-bin conversion factor
 applies to spectral radiance (W m\eqn{^{-2}} sr\eqn{^{-1}}

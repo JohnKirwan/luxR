@@ -29,7 +29,7 @@ depths at Mare Chiaro in the Gulf of Naples, Italy. This is \strong{example
 field data} — a single site on particular days — provided to illustrate
 working with measured spectra; it is not a general reference spectrum (cf.
 the ASTM \code{\link{solar_spectra}}). Values are in micromol photons per
-square metre per second per nm (umol/m^2/s/nm); wavelength bins are
+square metre per second per nm (\eqn{\mu mol\,m^{-2}\,s^{-1}\,nm^{-1}}); wavelength bins are
 approximately 5 nm wide.
 }
 \examples{

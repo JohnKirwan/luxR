@@ -6,7 +6,7 @@
 #' angular distribution of the light field. The caller must supply the
 #' geometry; the function refuses to silently apply the wrong identity.
 #'
-#' @param E          Irradiance value(s) in W/m^2 (or any energy unit).
+#' @param E          Irradiance value(s) in \eqn{W\,m^{-2}} (or any energy unit).
 #'   Vectorised.
 #' @param geometry   One of:
 #'   \describe{
@@ -28,7 +28,7 @@
 #'   }
 #' @param solid_angle Finite solid angle in (0, 4 pi] steradians. Required when
 #'   \code{geometry = "custom"} and rejected for other geometries.
-#' @return Radiance in W/m^2/sr (same numeric unit as \code{E}).
+#' @return Radiance in \eqn{W\,m^{-2}\,sr^{-1}} (same numeric unit as \code{E}).
 #' @references
 #'   Johnsen S (2012) The Optics of Life: A Biologist's Guide to Light in
 #'   Nature. Princeton University Press. (Ch. 2: vector vs scalar irradiance.)
@@ -82,13 +82,13 @@ irradiance2radiance <- function(E,
 #' Inverse of \code{\link{irradiance2radiance}}. The geometry argument must
 #' match the one used during collection.
 #'
-#' @param L          Radiance value(s) in W/m^2/sr. Vectorised.
+#' @param L          Radiance value(s) in \eqn{W\,m^{-2}\,sr^{-1}}. Vectorised.
 #' @param geometry   One of \code{"lambertian"} (default), \code{"scalar"},
 #'   \code{"collimated"}, or \code{"custom"}. See
 #'   \code{\link{irradiance2radiance}} for details.
 #' @param solid_angle Finite solid angle in (0, 4 pi] steradians. Required for
 #'   \code{geometry = "custom"} and rejected for other geometries.
-#' @return Irradiance in W/m^2.
+#' @return Irradiance in \eqn{W\,m^{-2}}.
 #' @examples
 #' radiance2irradiance(1)                              # lambertian: E = pi
 #' radiance2irradiance(1, "scalar")                    # scalar: E = 2*pi

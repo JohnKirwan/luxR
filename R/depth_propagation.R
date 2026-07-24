@@ -660,7 +660,7 @@ fit_Kd.lux_spectrum <- function(E1, z1, E2, z2, ...) {
 #' In-water downwelling spectral irradiance at a single depth.
 #'
 #' Convenience wrapper that takes one of the bundled reference solar spectra,
-#' converts it to W/m^2/nm, and propagates it from its recorded reference depth
+#' converts it to \eqn{W\,m^{-2}\,nm^{-1}}, and propagates it from its recorded reference depth
 #' to a single absolute depth in a Jerlov water type via
 #' \code{\link{jerlov_Kd}} and \code{\link{propagate_spectrum}}.
 #' This is the "solar condition + water type + depth -> spectrum at depth"
@@ -684,7 +684,7 @@ fit_Kd.lux_spectrum <- function(E1, z1, E2, z2, ...) {
 #'   \code{"trim"} explicitly restricts the calculation to the supported
 #'   intersection, and \code{"constant"} explicitly extends endpoint Kd values.
 #' @return A data frame with columns \code{lambda} (nm) and \code{irradiance}
-#'   (downwelling spectral irradiance at \code{depth}, in W/m^2/nm). The
+#'   (downwelling spectral irradiance at \code{depth}, in \eqn{W\,m^{-2}\,nm^{-1}}). The
 #'   \code{"luxR.jerlov"} attribute records the wavelength policy and data
 #'   provenance.
 #' @details An above-surface source is multiplied by

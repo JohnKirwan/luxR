@@ -26,7 +26,7 @@ band_irradiance(E_lambda, ...)
 \method{band_irradiance}{lux_spectrum}(E_lambda, Kd_lambda, depths, lambda = NULL, ...)
 }
 \arguments{
-\item{E_lambda}{Spectral irradiance (W/m^2/nm) at depth \code{from}.
+\item{E_lambda}{Spectral irradiance (\eqn{W\,m^{-2}\,nm^{-1}}) at depth \code{from}.
 Length-N vector, or a \code{lux_spectrum} object.}
 
 \item{...}{Ignored.}
@@ -50,7 +50,7 @@ measurement.}
 \code{max(lambda)}.}
 
 \item{photonic}{Logical; if \code{TRUE} the result is returned in
-\eqn{\mu}mol photons m\eqn{^{-2}} s\eqn{^{-1}} rather than W/m^2.
+\eqn{\mu}mol photons m\eqn{^{-2}} s\eqn{^{-1}} rather than \eqn{W\,m^{-2}}.
 Default \code{FALSE}.}
 
 \item{molar_unit}{Molar unit for photonic output. Default \code{"umol"}.}
@@ -65,7 +65,7 @@ if not supplied.}
 A \code{data.frame} with columns:
   \describe{
     \item{depth}{Target depth in metres.}
-    \item{E}{Band-integrated irradiance in W/m^2 (or \eqn{\mu}mol/m^2/s
+    \item{E}{Band-integrated irradiance in \eqn{W\,m^{-2}} (or \eqn{\mu}mol m\eqn{^{-2}} s\eqn{^{-1}}
       when \code{photonic = TRUE}).}
   }
 }
