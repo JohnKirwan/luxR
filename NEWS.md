@@ -100,6 +100,11 @@
   (`photobiology` is a `Suggests` dependency).
 
 ## New features
+- Units now render with SI superscripts (`m⁻²`) in plot axis labels, the
+  Shiny app, and the documentation. New exported helpers `unit_label()` and
+  `unit_expression()` format a canonical unit string for display. The
+  canonical unit strings themselves (`"W/m2/nm"` and siblings) and the
+  `print()` output for `lux_spectrum` are unchanged.
 - Polarization of the underwater light field (a lightweight analytic
   single-scattering model): `underwater_polarization()` returns the degree and
   angle of polarization as a function of viewing direction, solar elevation, and
