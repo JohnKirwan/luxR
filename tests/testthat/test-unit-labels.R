@@ -41,3 +41,33 @@ test_that("an out-of-vocabulary unit fails fast", {
                "single non-NA character")
   expect_error(unit_label(NA_character_), "single non-NA character")
 })
+
+test_that("plot methods label the y axis with a rendered unit", {
+  x <- lux_spectrum(rep(1, 3), c(400, 500, 600),
+                    "irradiance", "umol/m2/s/nm", binwidth = 100)
+
+  seen <- NULL
+  testthat::local_mocked_bindings(
+    plot = function(...) {
+      seen <<- list(...)$ylab
+      graphics::plot.new()
+      graphics::plot.window(xlim = c(0, 1), ylim = c(0, 1))
+      invisible(NULL)
+    },
+    .package = "base"
+  )
+
+  grDevices::pdf(NULL)
+  on.exit(grDevices::dev.off(), add = TRUE)
+
+  plot(x)
+  expect_true(is.language(seen))
+  expect_identical(deparse(seen),
+                   deparse(unit_expression("umol/m2/s/nm")))
+
+  seen <- NULL
+  plot_spectra(list(a = x, b = x))
+  expect_true(is.language(seen))
+  expect_identical(deparse(seen),
+                   deparse(unit_expression("umol/m2/s/nm")))
+})
