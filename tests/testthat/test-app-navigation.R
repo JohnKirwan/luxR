@@ -93,7 +93,7 @@ test_that("app results expose scientific context and model assumptions", {
     )
     perception <- flat(output$sp_qcatch)
     expect_match(perception, "reference 1.0 m in water")
-    expect_match(perception, "Not an absolute photons / s / receptor")
+    expect_match(perception, "Not an absolute photons per receptor per second rate")
 
     session$setInputs(
       jnd_solar = "clear_noon", jnd_wtype = "IA",

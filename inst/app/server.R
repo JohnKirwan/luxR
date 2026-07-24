@@ -74,11 +74,16 @@ function(input, output, session) {
     }
   }
 
-  .unit_label <- function(unit) {
+  # Named for the app's own y-axis unit choices, which are not all members of
+  # the package's controlled vocabulary. Only W_nm has a canonical unit to
+  # delegate to; the photon and log-photon axes have no vocabulary entry.
+  .axis_label <- function(unit) {
     switch(unit,
-      W_nm       = expression(Spectral~irradiance~(W~m^{-2}~nm^{-1})),
-      photon_nm  = expression(Photon~irradiance~(photons~s^{-1}~m^{-2}~nm^{-1})),
-      log_photon = expression(log[10]~photons~s^{-1}~m^{-2}~nm^{-1})
+      W_nm       = bquote(Spectral~irradiance~
+                          (.(unit_expression("W/m2/nm")))),
+      photon_nm  = expression(Photon~irradiance~
+                              (photons~m^{-2}~s^{-1}~nm^{-1})),
+      log_photon = expression(log[10]~photons~m^{-2}~s^{-1}~nm^{-1})
     )
   }
 
@@ -92,7 +97,8 @@ function(input, output, session) {
 
   .source_reference_label <- function(source) {
     paste0(
-      "Source: ", source$source_condition, " [", source$unit, "], reference ",
+      "Source: ", source$source_condition, " [", unit_label(source$unit),
+      "], reference ",
       format(source$reference_depth_m), " m in ", source$reference_medium
     )
   }
@@ -262,7 +268,7 @@ function(input, output, session) {
 
     plot(lambda, ys[[1]], type = "n",
          xlim = range(lambda), ylim = yrange,
-         xlab = "Wavelength (nm)", ylab = .unit_label(unit),
+         xlab = "Wavelength (nm)", ylab = .axis_label(unit),
          main = paste("Depth propagation —", input$wtype, "water"),
          sub = luxR:::.format_depth_output_metadata(dp_metadata()),
          cex.sub = 0.78)
@@ -281,7 +287,13 @@ function(input, output, session) {
 
   output$dp_summary <- renderTable({
     df <- dp_summary_df()
-    df[["Photons/s/m2"]] <- formatC(df[["Photons/s/m2"]], format = "e", digits = 3)
+    df[["Photons/s/m2"]] <- formatC(df[["Photons/s/m2"]],
+                                    format = "e", digits = 3)
+    # Rename for display only. The underlying column keeps its ASCII name so
+    # the CSV download header and the .depth_download_df round-trip are
+    # unchanged.
+    names(df)[names(df) == "Photons/s/m2"] <-
+      "photons m⁻² s⁻¹"
     df
   }, digits = 2)
 
@@ -472,10 +484,10 @@ function(input, output, session) {
       cat("Press 'Calculate quantum catch' to compute.\n")
     } else {
       cat("Sensitivity-weighted photon irradiance\n")
-      cat(sprintf("Qw = %.4e  photons / m^2 / s\n", result$value))
-      cat("Not an absolute photons / s / receptor rate.\n")
+      cat(sprintf("Qw = %.4e  photons m⁻² s⁻¹\n", result$value))
+      cat("Not an absolute photons per receptor per second rate.\n")
       cat(sprintf("Source: %s [%s], reference %.1f m in %s\n",
-                  result$source_condition, result$source_unit,
+                  result$source_condition, unit_label(result$source_unit),
                   result$reference_depth_m, result$reference_medium))
       cat(sprintf("Integration: %.1f--%.1f nm, %.3g nm bins\n",
                   result$wavelength_min_nm, result$wavelength_max_nm,

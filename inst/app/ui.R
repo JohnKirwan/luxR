@@ -28,10 +28,10 @@ navbarPage(
           fileInput("upload_file", "Ocean Optics spectrum file"),
           selectInput(
             "upload_unit", "Declared spectral irradiance unit",
-            choices = c("W / m² / nm" = "W/m2/nm",
-                        "µmol / m² / s / nm" = "umol/m2/s/nm",
-                        "mmol / m² / s / nm" = "mmol/m2/s/nm",
-                        "mol / m² / s / nm" = "mol/m2/s/nm"),
+            choices = c("W m⁻² nm⁻¹"           = "W/m2/nm",
+                        "µmol m⁻² s⁻¹ nm⁻¹"    = "umol/m2/s/nm",
+                        "mmol m⁻² s⁻¹ nm⁻¹"    = "mmol/m2/s/nm",
+                        "mol m⁻² s⁻¹ nm⁻¹"     = "mol/m2/s/nm"),
             selected = "W/m2/nm"
           ),
           textInput(
@@ -69,9 +69,9 @@ navbarPage(
         hr(),
         h4("Display"),
         selectInput("dp_unit", "Y-axis unit",
-                    choices = c("W / m² / nm"           = "W_nm",
-                                "Photons / s / m² / nm" = "photon_nm",
-                                "log10 photons"               = "log_photon"),
+                    choices = c("W m⁻² nm⁻¹"            = "W_nm",
+                                "photons m⁻² s⁻¹ nm⁻¹"  = "photon_nm",
+                                "log₁₀ photons"         = "log_photon"),
                     selected = "W_nm")
       ),
       mainPanel(
