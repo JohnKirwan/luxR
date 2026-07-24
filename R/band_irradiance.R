@@ -20,7 +20,7 @@
 #' the window. See \code{\link{propagate_spectrum}} for the full Beer-Lambert
 #' documentation.
 #'
-#' @param E_lambda   Spectral irradiance (\eqn{W\,m^{-2}\,nm^{-1}}) at depth \code{from}.
+#' @param E_lambda   Spectral irradiance (\eqn{W\,m^{-2}\,nm^{-1}}{W m^-2 nm^-1}) at depth \code{from}.
 #'   Length-N vector, or a \code{lux_spectrum} object.
 #' @param Kd_lambda  Diffuse attenuation coefficients (1/m) at the same
 #'   wavelengths. Length-N vector.
@@ -35,7 +35,7 @@
 #' @param lambda_max Upper wavelength bound in nm (inclusive). Defaults to
 #'   \code{max(lambda)}.
 #' @param photonic   Logical; if \code{TRUE} the result is returned in
-#'   \eqn{\mu}mol photons m\eqn{^{-2}} s\eqn{^{-1}} rather than \eqn{W\,m^{-2}}.
+#'   \eqn{\mu}mol photons m\eqn{^{-2}} s\eqn{^{-1}} rather than \eqn{W\,m^{-2}}{W m^-2}.
 #'   Default \code{FALSE}.
 #' @param molar_unit Molar unit for photonic output. Default \code{"umol"}.
 #' @param binwidth   Wavelength bin width in nm. Inferred from \code{lambda}
@@ -45,7 +45,7 @@
 #' @return A \code{data.frame} with columns:
 #'   \describe{
 #'     \item{depth}{Target depth in metres.}
-#'     \item{E}{Band-integrated irradiance in \eqn{W\,m^{-2}} (or \eqn{\mu}mol m\eqn{^{-2}} s\eqn{^{-1}}
+#'     \item{E}{Band-integrated irradiance in \eqn{W\,m^{-2}}{W m^-2} (or \eqn{\mu}mol m\eqn{^{-2}} s\eqn{^{-1}}
 #'       when \code{photonic = TRUE}).}
 #'   }
 #' @seealso \code{\link{propagate_spectrum}}, \code{\link{par_irradiance}}

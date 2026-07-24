@@ -47,7 +47,7 @@
 #' field data} — a single site on particular days — provided to illustrate
 #' working with measured spectra; it is not a general reference spectrum (cf.
 #' the ASTM \code{\link{solar_spectra}}). Values are in micromol photons per
-#' square metre per second per nm (\eqn{\mu mol\,m^{-2}\,s^{-1}\,nm^{-1}}); wavelength bins are
+#' square metre per second per nm (\eqn{\mu mol\,m^{-2}\,s^{-1}\,nm^{-1}}{mu mol m^-2 s^-1 nm^-1}); wavelength bins are
 #' approximately 5 nm wide.
 #'
 #' @format A data frame with 103 rows and 4 columns:
@@ -221,7 +221,7 @@
 #' @format A named list of five data frames, each with columns:
 #' \describe{
 #'   \item{wavelength}{Wavelength in nm (300 to 800, step 10).}
-#'   \item{irradiance}{Spectral irradiance in \eqn{W\,m^{-2}\,nm^{-1}}.}
+#'   \item{irradiance}{Spectral irradiance in \eqn{W\,m^{-2}\,nm^{-1}}{W m^-2 nm^-1}.}
 #' }
 #' Names: \code{clear_noon}, \code{clear_dawn}, \code{overcast},
 #' \code{underwater_1m}, \code{underwater_10m}.

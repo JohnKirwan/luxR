@@ -50,7 +50,7 @@ Supported units and their forward operators:
   \item{\code{"lx"}}{photopic integral via \code{irradiance2lux()}}
   \item{\code{"W"}}{broadband integral \eqn{\sum E \cdot \Delta\lambda}}
   \item{\code{"kW"}}{same as \code{"W"} divided by 1000}
-  \item{\code{"umol"}}{PAR-band photon flux (400–700 nm) in \eqn{\mu mol\,s^{-1}\,m^{-2}}}
+  \item{\code{"umol"}}{PAR-band photon flux (400–700 nm) in \eqn{\mu mol\,m^{-2}\,s^{-1}}{mu mol m^-2 s^-1}}
   \item{\code{"radiance_W"}}{Lambertian radiance: \eqn{E = \pi L}, then integrate}
   \item{\code{"cd"}}{photometric radiance: \eqn{L = \text{lux} / \pi}}
 }

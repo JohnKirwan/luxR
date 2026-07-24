@@ -12,7 +12,7 @@ unit_label(unit)
 }
 \value{
 A length-1 character vector holding the rendered label, e.g.
-  \eqn{\mu mol\,m^{-2}\,s^{-1}\,nm^{-1}} for
+  \eqn{\mu mol\,m^{-2}\,s^{-1}\,nm^{-1}}{mu mol m^-2 s^-1 nm^-1} for
   \code{"umol/m2/s/nm"}.
 }
 \description{

@@ -34,8 +34,8 @@ irradiance2lux(irradiance, ...)
 )
 }
 \arguments{
-\item{irradiance}{Spectral irradiance (\eqn{W\,m^{-2}\,nm^{-1}} or
-\eqn{photons\,m^{-2}\,s^{-1}\,nm^{-1}}) at each
+\item{irradiance}{Spectral irradiance (\eqn{W\,m^{-2}\,nm^{-1}}{W m^-2 nm^-1} or
+\eqn{photons\,m^{-2}\,s^{-1}\,nm^{-1}}{photons m^-2 s^-1 nm^-1}) at each
 wavelength bin, or a \code{lux_spectrum} object whose quantity is
 \code{"irradiance"}. Photonic \code{lux_spectrum} inputs are converted to
 energy units before photometric integration; radiance and reflectance

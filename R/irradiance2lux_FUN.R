@@ -4,7 +4,7 @@
 #'
 #' @keywords internal
 #' @param W_spec_irradiance Spectral irradiance
-#'   (\eqn{W\,m^{-2}\,nm^{-1}}) at each wavelength bin.
+#'   (\eqn{W\,m^{-2}\,nm^{-1}}{W m^-2 nm^-1}) at each wavelength bin.
 #' @param lambda_measured Bin-centre wavelengths in nm.
 #' @param integration_weights Validated finite, positive quadrature weights in
 #'   nm, one per measured wavelength.
