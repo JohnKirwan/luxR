@@ -1,9 +1,0 @@
-bibentry(
-  bibtype  = "Manual",
-  title    = "luxR: Underwater Light Analysis and Visual Ecology",
-  author   = person("John", "Kirwan"),
-  year     = format(Sys.Date(), "%Y"),
-  note     = paste0("R package version ",
-                    utils::packageVersion("luxR")),
-  url      = "https://github.com/JohnKirwan/luxR"
-)

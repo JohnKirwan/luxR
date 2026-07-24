@@ -1,5 +1,0 @@
-# Auto detect text files and perform LF normalization
-* text=auto
-
-# pkgdown output is generated and can contain trailing spaces in captured output.
-docs/** -whitespace
