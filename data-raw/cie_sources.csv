@@ -1,0 +1,3 @@
+dataset,url,md5,metadata_url,metadata_md5,doi,first_wavelength,last_wavelength,retrieval_date,license,standard
+CIE1931,https://files.cie.co.at/CIE_sle_photopic.csv,f389958555461a7d9a7562145e8ca9c0,https://files.cie.co.at/CIE_sle_photopic.csv_metadata.json,b56e625687f5ef8d7403e8867b16e973,10.25039/CIE.DS.dktna2s3,360,830,2026-07-21,CC BY-SA 4.0,CIE 018:2019
+CIE_scotopic,https://files.cie.co.at/CIE_sle_scotopic.csv,3e45714a429d02e5d1f2a752226d7698,https://files.cie.co.at/CIE_sle_scotopic.csv_metadata.json,fdcc3cc42a695bb2c0edacc6da9b084e,10.25039/CIE.DS.gr6w4b5g,380,780,2026-07-21,CC BY-SA 4.0,CIE 018:2019

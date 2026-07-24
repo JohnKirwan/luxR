@@ -1,0 +1,6 @@
+condition,reference_depth_m,reference_medium
+clear_noon,0,air
+clear_dawn,0,air
+overcast,0,air
+underwater_1m,1,water
+underwater_10m,10,water

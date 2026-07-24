@@ -1,0 +1,13 @@
+^Rplots\.pdf$
+^\.github$
+^README\.md$
+^docs$
+^figure$
+^_pkgdown\.yml$
+^LICENSE\.md$
+^vignettes/.*\.html$
+^vignettes/.*\.R$
+^bibs$
+^SCOPE\.md$
+^TODO\.md$
+^dev$
