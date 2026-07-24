@@ -13,7 +13,7 @@ W2mol_spec_irradiance(W, ...)
 \method{W2mol_spec_irradiance}{lux_spectrum}(W, molar_unit = "umol", ...)
 }
 \arguments{
-\item{W}{Spectral irradiance in \eqn{W\,m^{-2}\,nm^{-1}}, or a \code{lux_spectrum}
+\item{W}{Spectral irradiance in \eqn{W\,m^{-2}\,nm^{-1}}{W m^-2 nm^-1}, or a \code{lux_spectrum}
 with an energy irradiance or radiance unit.}
 
 \item{...}{Ignored.}

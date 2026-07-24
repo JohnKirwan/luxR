@@ -7,6 +7,11 @@ test_that("every unit in the controlled vocabulary has both rendered forms", {
   }
 })
 
+test_that("the rendered-label tables stay exactly in sync with the vocabulary", {
+  expect_setequal(names(luxR:::.UNIT_LABELS_UTF8), luxR:::.VALID_UNITS)
+  expect_setequal(names(luxR:::.UNIT_LABELS_PLOTMATH), luxR:::.VALID_UNITS)
+})
+
 test_that("unit_label renders negative exponents, not a solidus", {
   expect_identical(unit_label("W/m2/nm"),
                    "W m\u207b\u00b2 nm\u207b\u00b9")

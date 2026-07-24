@@ -7,12 +7,12 @@
 W2photon(W, lambda)
 }
 \arguments{
-\item{W}{Spectral irradiance in \eqn{W\,m^{-2}\,nm^{-1}}.}
+\item{W}{Spectral irradiance in \eqn{W\,m^{-2}\,nm^{-1}}{W m^-2 nm^-1}.}
 
 \item{lambda}{Wavelength(s) in nm.}
 }
 \value{
-Numeric vector of photon counts per second per \eqn{m^{-2}} per nm.
+Numeric vector of photon counts in \eqn{photons\,m^{-2}\,s^{-1}\,nm^{-1}}{photons m^-2 s^-1 nm^-1}.
 }
 \description{
 Inverse of \code{\link{photon2W}}.

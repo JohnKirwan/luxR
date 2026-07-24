@@ -5,9 +5,9 @@
 #' Uses E_photon = hc / lambda, with hc = 1.98644585714893e-16 J·nm.
 #' Vectorised over both \code{n} and \code{lambda}.
 #'
-#' @param n      Photon count(s) per second per \eqn{m^{-2}} per nm.
+#' @param n      Photon count(s) in \eqn{photons\,m^{-2}\,s^{-1}\,nm^{-1}}{photons m^-2 s^-1 nm^-1}.
 #' @param lambda Wavelength(s) in nm.
-#' @return Numeric vector of spectral irradiance in \eqn{W\,m^{-2}\,nm^{-1}}.
+#' @return Numeric vector of spectral irradiance in \eqn{W\,m^{-2}\,nm^{-1}}{W m^-2 nm^-1}.
 #' @seealso \code{\link{W2photon}}
 #' @examples
 #' photon2W(1e15, 555)
@@ -19,9 +19,9 @@ photon2W <- function(n, lambda) n * 1.98644585714893e-16 / lambda
 #'
 #' Inverse of \code{\link{photon2W}}.
 #'
-#' @param W      Spectral irradiance in \eqn{W\,m^{-2}\,nm^{-1}}.
+#' @param W      Spectral irradiance in \eqn{W\,m^{-2}\,nm^{-1}}{W m^-2 nm^-1}.
 #' @param lambda Wavelength(s) in nm.
-#' @return Numeric vector of photon counts per second per \eqn{m^{-2}} per nm.
+#' @return Numeric vector of photon counts in \eqn{photons\,m^{-2}\,s^{-1}\,nm^{-1}}{photons m^-2 s^-1 nm^-1}.
 #' @examples
 #' W2photon(1, 555)
 #' @export
@@ -87,8 +87,8 @@ m2ft <- function(z) z / 0.3048
 #' Computed internally by calling \code{\link{irradiance2lux}} with
 #' \code{LEF = CIE_scotopic} and applying the efficacy ratio \eqn{1700/683}.
 #'
-#' @param irradiance Spectral irradiance (\eqn{W\,m^{-2}\,nm^{-1}} or
-#'   \eqn{photons\,m^{-2}\,s^{-1}\,nm^{-1}}) at each
+#' @param irradiance Spectral irradiance (\eqn{W\,m^{-2}\,nm^{-1}}{W m^-2 nm^-1} or
+#'   \eqn{photons\,m^{-2}\,s^{-1}\,nm^{-1}}{photons m^-2 s^-1 nm^-1}) at each
 #'   wavelength bin, or a \code{lux_spectrum} object whose quantity is
 #'   \code{"irradiance"}. Photonic \code{lux_spectrum} inputs are converted to
 #'   energy units before photometric integration; radiance and reflectance
@@ -223,7 +223,7 @@ lux2irradiance <- function(lx, spectrum, lambda = NULL,
 #'   \item{\code{"lx"}}{photopic integral via \code{irradiance2lux()}}
 #'   \item{\code{"W"}}{broadband integral \eqn{\sum E \cdot \Delta\lambda}}
 #'   \item{\code{"kW"}}{same as \code{"W"} divided by 1000}
-#'   \item{\code{"umol"}}{PAR-band photon flux (400–700 nm) in \eqn{\mu mol\,s^{-1}\,m^{-2}}}
+#'   \item{\code{"umol"}}{PAR-band photon flux (400–700 nm) in \eqn{\mu mol\,m^{-2}\,s^{-1}}{mu mol m^-2 s^-1}}
 #'   \item{\code{"radiance_W"}}{Lambertian radiance: \eqn{E = \pi L}, then integrate}
 #'   \item{\code{"cd"}}{photometric radiance: \eqn{L = \text{lux} / \pi}}
 #' }

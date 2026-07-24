@@ -7,12 +7,12 @@
 photon2W(n, lambda)
 }
 \arguments{
-\item{n}{Photon count(s) per second per \eqn{m^{-2}} per nm.}
+\item{n}{Photon count(s) in \eqn{photons\,m^{-2}\,s^{-1}\,nm^{-1}}{photons m^-2 s^-1 nm^-1}.}
 
 \item{lambda}{Wavelength(s) in nm.}
 }
 \value{
-Numeric vector of spectral irradiance in \eqn{W\,m^{-2}\,nm^{-1}}.
+Numeric vector of spectral irradiance in \eqn{W\,m^{-2}\,nm^{-1}}{W m^-2 nm^-1}.
 }
 \description{
 Uses E_photon = hc / lambda, with hc = 1.98644585714893e-16 J·nm.
