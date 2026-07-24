@@ -29,7 +29,7 @@ a scotopic illuminance.
 ```{r load}
 library(luxR)
 
-x0m   <- from_naples("0m")          # umol/m2/s/nm
+x0m   <- from_naples("0m")          # µmol m⁻² s⁻¹ nm⁻¹
 x0m_W <- convert_unit(x0m, "W/m2/nm")
 x0m_W
 ```
@@ -111,7 +111,7 @@ legend("topright",
 ```
 
 `quantum_catch()` integrates photon irradiance weighted by dimensionless
-sensitivity over wavelength. Its result is in photons m^-2 s^-1 at the
+sensitivity over wavelength. Its result is in photons m⁻² s⁻¹ at the
 measurement plane; it is not an absolute photons-per-second rate for one
 receptor. It takes a numeric irradiance vector with an explicit unit, so we
 extract `$E` from each depth spectrum and declare its energy unit.
