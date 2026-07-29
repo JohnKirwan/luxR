@@ -1,4 +1,8 @@
-# luxR (development version)
+# luxR 0.1.1
+
+## Package identity
+- Added the hexagonal luxR logo with a transparent background. The logo is
+  displayed in the GitHub and r-universe README and in the bundled Shiny app.
 
 ## Validation
 - `read_instrument_spectrum()` now delegates single-file parsing to `lightr`

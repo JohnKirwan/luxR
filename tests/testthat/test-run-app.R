@@ -12,10 +12,11 @@ test_that("run_app errors informatively when shiny is absent (or finds app dir)"
   }
 })
 
-test_that("app directory contains ui.R, server.R, global.R", {
+test_that("app directory contains its code and logo asset", {
   app_dir <- system.file("app", package = "luxR")
   skip_if(!nzchar(app_dir), "app directory not installed")
   expect_true(file.exists(file.path(app_dir, "ui.R")))
   expect_true(file.exists(file.path(app_dir, "server.R")))
   expect_true(file.exists(file.path(app_dir, "global.R")))
+  expect_true(file.exists(file.path(app_dir, "www", "logo.png")))
 })

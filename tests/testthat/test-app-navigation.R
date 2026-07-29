@@ -45,6 +45,8 @@ test_that("rendered app navigation follows the canonical registry", {
   source(file.path(app_dir, "global.R"), local = app_env)
   ui <- source(file.path(app_dir, "ui.R"), local = app_env)$value
   html <- as.character(ui)
+  expect_match(html, 'src="logo.png"', fixed = TRUE)
+  expect_match(html, 'alt="luxR package logo"', fixed = TRUE)
   values <- regmatches(
     html,
     gregexpr('data-value="[^"]+', html, perl = TRUE)

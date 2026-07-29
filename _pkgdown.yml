@@ -57,6 +57,8 @@ reference:
       - broadband2spectrum
       - par_irradiance
       - par_fraction
+      - unit_label
+      - unit_expression
 
   - title: "Spectral data sources"
     desc: "Accessors for bundled reference spectra and field data import.

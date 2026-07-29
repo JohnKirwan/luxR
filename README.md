@@ -1,4 +1,4 @@
-# luxR
+# luxR <img src="man/figures/logo.png" align="right" height="180" alt="luxR package logo" />
 
 **Underwater Light Analysis and Visual Ecology**
 

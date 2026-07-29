@@ -1,4 +1,8 @@
 ^Rplots\.pdf$
+^logo\.jpg$
+^\.agents$
+^\.codex$
+^\.superpowers$
 ^\.github$
 ^README\.md$
 ^docs$

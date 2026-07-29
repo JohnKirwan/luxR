@@ -1,5 +1,18 @@
 navbarPage(
-  title = "luxR — Underwater Light Explorer",
+  title = tagList(
+    tags$img(
+      src = "logo.png",
+      alt = "luxR package logo",
+      style = paste(
+        "height: 34px;",
+        "width: auto;",
+        "margin-right: 8px;",
+        "vertical-align: middle;"
+      )
+    ),
+    tags$span("luxR — Underwater Light Explorer")
+  ),
+  windowTitle = "luxR — Underwater Light Explorer",
   theme = NULL,
 
   # ---- Tab 1: Depth Propagation -------------------------------------------
