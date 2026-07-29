@@ -9,7 +9,7 @@ navbar:
   components:
     app:
       text: "Live app"
-      href: app/index.html
+      href: https://connect.posit.cloud/johnkirwan/content/019f94b5-66c5-51d6-136c-d3f2c2cf2ef6
 
 home:
   title: "luxR — Underwater Light Analysis"
