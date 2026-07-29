@@ -9,12 +9,25 @@ units, and estimates photoreceptor excitation and visual contrast.
 
 [![R CMD
 check](https://github.com/JohnKirwan/luxR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JohnKirwan/luxR/actions)
+[![r-universe
+version](https://johnkirwan.r-universe.dev/luxR/badges/version)](https://johnkirwan.r-universe.dev/luxR)
+[![r-universe
+checks](https://johnkirwan.r-universe.dev/luxR/badges/checks)](https://johnkirwan.r-universe.dev/luxR)
 
 ## Installation
 
 ``` r
 
-# Development version from GitHub:
+# Release build from r-universe:
+install.packages(
+  "luxR",
+  repos = c(
+    luxR = "https://johnkirwan.r-universe.dev",
+    CRAN = "https://cloud.r-project.org"
+  )
+)
+
+# Alternatively, install the development version from GitHub:
 # install.packages("remotes")
 remotes::install_github("JohnKirwan/luxR")
 ```

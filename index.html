@@ -58,12 +58,21 @@
 </div>
 <p><strong>Underwater Light Analysis and Visual Ecology</strong></p>
 <p>luxR provides tools for quantifying and modelling underwater light environments. It propagates spectral irradiance through the water column via Beer-Lambert attenuation, converts between energy and photon-flux units, and estimates photoreceptor excitation and visual contrast.</p>
-<p><a href="https://github.com/JohnKirwan/luxR/actions" class="external-link"><img src="https://github.com/JohnKirwan/luxR/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R CMD check"></a></p>
+<p><a href="https://github.com/JohnKirwan/luxR/actions" class="external-link"><img src="https://github.com/JohnKirwan/luxR/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R CMD check"></a> <a href="https://johnkirwan.r-universe.dev/luxR" class="external-link"><img src="https://johnkirwan.r-universe.dev/luxR/badges/version" alt="r-universe version"></a> <a href="https://johnkirwan.r-universe.dev/luxR" class="external-link"><img src="https://johnkirwan.r-universe.dev/luxR/badges/checks" alt="r-universe checks"></a></p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Development version from GitHub:</span></span>
+<code class="sourceCode R"><span><span class="co"># Release build from r-universe:</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span></span>
+<span>  <span class="st">"luxR"</span>,</span>
+<span>  repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    luxR <span class="op">=</span> <span class="st">"https://johnkirwan.r-universe.dev"</span>,</span>
+<span>    CRAN <span class="op">=</span> <span class="st">"https://cloud.r-project.org"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Alternatively, install the development version from GitHub:</span></span>
 <span><span class="co"># install.packages("remotes")</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"JohnKirwan/luxR"</span><span class="op">)</span></span></code></pre></div>
 </div>
