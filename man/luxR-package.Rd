@@ -28,11 +28,11 @@ Useful links:
 }
 }
 \author{
-\strong{Maintainer}: John Kirwan \email{jkirwan+luxR@pm.me}
+\strong{Maintainer}: John D Kirwan \email{jkirwan+luxR@pm.me}
 
 Authors:
 \itemize{
-  \item John Kirwan \email{jkirwan+luxR@pm.me}
+  \item John D Kirwan \email{jkirwan+luxR@pm.me}
 }
 
 }

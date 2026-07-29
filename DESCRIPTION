@@ -3,7 +3,8 @@ Type: Package
 Title: Underwater Light Analysis and Visual Ecology
 Version: 0.1.1
 Date: 2026-07-29
-Authors@R: person("John", "Kirwan",
+Authors@R: person(given = c("John", "D"),
+                   family = "Kirwan",
                    role  = c("aut", "cre"),
                    email = "jkirwan+luxR@pm.me")
 Description: Tools for quantifying and modelling underwater light environments.
