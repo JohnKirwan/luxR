@@ -12,7 +12,7 @@ One of the five conditions listed in Details.}
 }
 \value{
 A data frame with columns \code{wavelength} (nm) and
-  \code{irradiance} (W/m^2/nm). Attributes record \code{condition},
+  \code{irradiance} (\eqn{W\,m^{-2}\,nm^{-1}}{W m^-2 nm^-1}). Attributes record \code{condition},
   \code{reference_depth_m} (metres relative to the water surface), and
   \code{reference_medium} (\code{"air"} or \code{"water"}).
 }

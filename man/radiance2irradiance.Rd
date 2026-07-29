@@ -11,7 +11,7 @@ radiance2irradiance(
 )
 }
 \arguments{
-\item{L}{Radiance value(s) in W/m^2/sr. Vectorised.}
+\item{L}{Radiance value(s) in \eqn{W\,m^{-2}\,sr^{-1}}{W m^-2 sr^-1}. Vectorised.}
 
 \item{geometry}{One of \code{"lambertian"} (default), \code{"scalar"},
 \code{"collimated"}, or \code{"custom"}. See
@@ -21,7 +21,7 @@ radiance2irradiance(
 \code{geometry = "custom"} and rejected for other geometries.}
 }
 \value{
-Irradiance in W/m^2.
+Irradiance in \eqn{W\,m^{-2}}{W m^-2}.
 }
 \description{
 Inverse of \code{\link{irradiance2radiance}}. The geometry argument must

@@ -4,7 +4,7 @@
 \alias{n2W_spec_irradiance}
 \alias{n2W_spec_irradiance.numeric}
 \alias{n2W_spec_irradiance.lux_spectrum}
-\title{Convert photon-count spectral irradiance to Watts/m^2/nm.}
+\title{Convert photon-count spectral irradiance to W m^-2 nm^-1.}
 \usage{
 n2W_spec_irradiance(value, ...)
 
@@ -19,7 +19,8 @@ n2W_spec_irradiance(value, ...)
 \method{n2W_spec_irradiance}{lux_spectrum}(value, ...)
 }
 \arguments{
-\item{value}{Spectral irradiance in photons/m^2/s/nm (or molar units), or a
+\item{value}{Spectral irradiance in \eqn{photons\,m^{-2}\,s^{-1}\,nm^{-1}}{photons m^-2 s^-1 nm^-1}
+(or molar units), or a
 \code{lux_spectrum} with a photonic irradiance or radiance unit.}
 
 \item{...}{Ignored.}
@@ -27,7 +28,8 @@ n2W_spec_irradiance(value, ...)
 \item{lambda}{Wavelength in nm for each bin.}
 
 \item{photonic}{Logical; if \code{TRUE}, \code{value} is in molar units
-(µmol, mmol, or mol/m²/s/nm) — specify which via \code{molar_unit}.
+(\eqn{\mu mol}, mmol, or \eqn{mol\,m^{-2}\,s^{-1}\,nm^{-1}}{mol m^-2 s^-1 nm^-1}) — specify
+which via \code{molar_unit}.
 Defaults to \code{FALSE}. Note: \code{photonic = TRUE} means raw photon
 counts in \code{\link{par_irradiance}}, and photon-or-molar units in
 \code{\link{irradiance2lux}}.}
@@ -36,7 +38,7 @@ counts in \code{\link{par_irradiance}}, and photon-or-molar units in
 \code{"photons"}.}
 }
 \value{
-Numeric vector of spectral irradiance in W/m^2/nm, or a
+Numeric vector of spectral irradiance in \eqn{W\,m^{-2}\,nm^{-1}}{W m^-2 nm^-1}, or a
   \code{lux_spectrum} with \code{unit = "W/m2/nm"} or
   \code{"W/m2/sr/nm"} according to the input dimensionality.
 }

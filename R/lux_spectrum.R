@@ -483,7 +483,7 @@ convert_unit.lux_spectrum <- function(x, to, ...) {
 plot.lux_spectrum <- function(x, main = x$quantity, ...) {
   graphics::plot(x$lambda, x$E, type = "l",
                  xlab = "Wavelength (nm)",
-                 ylab = x$unit,
+                 ylab = unit_expression(x$unit),
                  main = main,
                  ...)
   invisible(x)
@@ -511,7 +511,7 @@ plot_spectra <- function(x, ...) {
   for (s in x[-1]) { all_lam <- c(all_lam, s$lambda); all_E <- c(all_E, s$E) }
 
   graphics::plot(range(all_lam), range(all_E), type = "n",
-                 xlab = "Wavelength (nm)", ylab = x[[1]]$unit, ...)
+                 xlab = "Wavelength (nm)", ylab = unit_expression(x[[1]]$unit), ...)
   for (i in seq_along(x))
     graphics::lines(x[[i]]$lambda, x[[i]]$E, col = i)
   graphics::legend("topright", legend = labels,

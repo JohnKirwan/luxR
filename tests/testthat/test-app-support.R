@@ -460,8 +460,8 @@ test_that("Species Perception applies optical-density self-screening", {
     expect_identical(result$sensitivity_model_version, "species-v1")
     expect_match(result$sensitivity_citation_keys, "bowmakerDartnall1980")
     rendered <- paste(unlist(output$sp_qcatch), collapse = " ")
-    expect_match(rendered, "photons / m\\^2 / s")
-    expect_match(rendered, "Not an absolute photons / s / receptor")
+    expect_match(rendered, "photons m\u207b\u00b2 s\u207b\u00b9")
+    expect_match(rendered, "Not an absolute photons per receptor per second rate")
     expect_match(paste(unlist(output$sp_refs), collapse = " "), "Self-screening")
   })
 })
@@ -582,4 +582,24 @@ test_that("Visibility and Detection tabs use a measured beam attenuation when en
     r_meas <- det_result()$range$achromatic
     expect_false(isTRUE(all.equal(r_proxy, r_meas)))
   })
+})
+
+test_that("the app sources carry no un-superscripted squared metres", {
+  app_dir <- system.file("app", package = "luxR")
+  if (identical(app_dir, "")) app_dir <- "../../inst/app"
+  skip_if_not(dir.exists(app_dir), "bundled app sources not available")
+
+  src <- unlist(lapply(
+    list.files(app_dir, pattern = "\\.R$", full.names = TRUE),
+    readLines, warn = FALSE, encoding = "UTF-8"
+  ))
+
+  # Lines that assign or convert to a canonical unit are data, not display,
+  # and are expected to contain the ASCII form. Comments are excluded too.
+  display <- src[!grepl("unit\\s*=|convert_unit|^\\s*#", src)]
+
+  expect_false(any(grepl("m\\^2", display)),
+               info = "literal 'm^2' left in an app display string")
+  expect_false(any(grepl("/ m\u00b2 /", display, fixed = TRUE)),
+               info = "solidus unit style left in the app; use exponents")
 })

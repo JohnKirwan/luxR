@@ -14,7 +14,8 @@ irradiance2lux_FUN(
 )
 }
 \arguments{
-\item{W_spec_irradiance}{Spectral irradiance (W/m^2/nm) at each wavelength bin.}
+\item{W_spec_irradiance}{Spectral irradiance
+(\eqn{W\,m^{-2}\,nm^{-1}}{W m^-2 nm^-1}) at each wavelength bin.}
 
 \item{lambda_measured}{Bin-centre wavelengths in nm.}
 

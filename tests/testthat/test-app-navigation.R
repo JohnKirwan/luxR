@@ -45,6 +45,8 @@ test_that("rendered app navigation follows the canonical registry", {
   source(file.path(app_dir, "global.R"), local = app_env)
   ui <- source(file.path(app_dir, "ui.R"), local = app_env)$value
   html <- as.character(ui)
+  expect_match(html, 'src="logo.png"', fixed = TRUE)
+  expect_match(html, 'alt="luxR package logo"', fixed = TRUE)
   values <- regmatches(
     html,
     gregexpr('data-value="[^"]+', html, perl = TRUE)
@@ -93,7 +95,7 @@ test_that("app results expose scientific context and model assumptions", {
     )
     perception <- flat(output$sp_qcatch)
     expect_match(perception, "reference 1.0 m in water")
-    expect_match(perception, "Not an absolute photons / s / receptor")
+    expect_match(perception, "Not an absolute photons per receptor per second rate")
 
     session$setInputs(
       jnd_solar = "clear_noon", jnd_wtype = "IA",
