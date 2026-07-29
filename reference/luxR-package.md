@@ -26,8 +26,8 @@ Useful links:
 
 ## Author
 
-**Maintainer**: John Kirwan <jkirwan+luxR@pm.me>
+**Maintainer**: John D Kirwan <jkirwan+luxR@pm.me>
 
 Authors:
 
-- John Kirwan <jkirwan+luxR@pm.me>
+- John D Kirwan <jkirwan+luxR@pm.me>

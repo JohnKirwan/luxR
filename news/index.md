@@ -7,6 +7,8 @@
 - Added the hexagonal luxR logo with a transparent background. The logo
   is displayed in the GitHub and r-universe README and in the bundled
   Shiny app.
+- Package metadata and the recommended citation identify the maintainer
+  as John D Kirwan.
 
 ### Validation
 
