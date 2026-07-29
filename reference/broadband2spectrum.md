@@ -75,7 +75,7 @@ Supported units and their forward operators:
 
 - `"umol"`:
 
-  PAR-band photon flux (400–700 nm) in \\\mu\\mol/s/m^2
+  PAR-band photon flux (400–700 nm) in \\\mu mol\\m^{-2}\\s^{-1}\\
 
 - `"radiance_W"`:
 

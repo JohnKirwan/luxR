@@ -14,8 +14,9 @@ n2W_spec_irradiance_FUN(photons, lambda)
 
 - photons:
 
-  The spectral irradiance (in W/m^2/nm or photons/m^2/s/nm; see photon)
-  at each wavelength bin.
+  The spectral irradiance (in \\W\\m^{-2}\\nm^{-1}\\ or
+  \\photons\\m^{-2}\\s^{-1}\\nm^{-1}\\; see photon) at each wavelength
+  bin.
 
 - lambda:
 
@@ -25,4 +26,4 @@ n2W_spec_irradiance_FUN(photons, lambda)
 ## Value
 
 A scalar representing the spectral irradiance values transformed from
-photons/m^2/s/nm into Watts/m^2/nm.
+\\photons\\m^{-2}\\s^{-1}\\nm^{-1}\\ into \\W\\m^{-2}\\nm^{-1}\\.

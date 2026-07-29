@@ -3,7 +3,7 @@
 angular distribution of the light field. The caller must supply the
 geometry; the function refuses to silently apply the wrong identity."><meta property="og:description" content="The relationship between irradiance E and radiance L depends on the
 angular distribution of the light field. The caller must supply the
-geometry; the function refuses to silently apply the wrong identity."></head><body>
+geometry; the function refuses to silently apply the wrong identity."><meta property="og:image" content="https://johnkirwan.github.io/luxR/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -11,7 +11,7 @@ geometry; the function refuses to silently apply the wrong identity."></head><bo
 
     <a class="navbar-brand me-2" href="../index.html">luxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,9 +33,8 @@ geometry; the function refuses to silently apply the wrong identity."></head><bo
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Convert irradiance to radiance under a geometry assumption.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/JohnKirwan/luxR/blob/v0.1.0/R/geometry.R" class="external-link"><code>R/geometry.R</code></a></small>
+      <img src="../logo.png" class="logo" alt=""><h1>Convert irradiance to radiance under a geometry assumption.</h1>
+      <small class="dont-index">Source: <a href="https://github.com/JohnKirwan/luxR/blob/master/R/geometry.R" class="external-link"><code>R/geometry.R</code></a></small>
       <div class="d-none name"><code>irradiance2radiance.Rd</code></div>
     </div>
 
@@ -59,7 +58,7 @@ geometry; the function refuses to silently apply the wrong identity.</p>
 
 
 <dl><dt id="arg-e">E<a class="anchor" aria-label="anchor" href="#arg-e"></a></dt>
-<dd><p>Irradiance value(s) in W/m^2 (or any energy unit).
+<dd><p>Irradiance value(s) in \(W\,m^{-2}\) (or any energy unit).
 Vectorised.</p></dd>
 
 
@@ -98,7 +97,7 @@ Vectorised.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Radiance in W/m^2/sr (same numeric unit as <code>E</code>).</p>
+    <p>Radiance in \(W\,m^{-2}\,sr^{-1}\) (same numeric unit as <code>E</code>).</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>

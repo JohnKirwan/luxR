@@ -16,7 +16,7 @@ nm⁻¹), an illuminance (lux), or a scotopic illuminance.
 
 library(luxR)
 
-x0m   <- from_naples("0m")          # umol/m2/s/nm
+x0m   <- from_naples("0m")          # µmol m⁻² s⁻¹ nm⁻¹
 x0m_W <- convert_unit(x0m, "W/m2/nm")
 x0m_W
 ```
@@ -47,8 +47,8 @@ x0m_W
     ##    import: data-raw/naples_legacy_snapshot.csv
     ##    import: 5952acfab4a04ea1b02eb085e6a768d5
     ##    import: naples-legacy-v1
-    ##    import: 0.1.0
-    ##    import: 8f2c2ab8a603cc42bafcc3c706d93e19673a574c
+    ##    import: 0.1.1
+    ##    import: 3bd871ca23f845c97359de9d7571cc98acfca7ae
     ##    import: parse canonical processed snapshot; validate schema grid and non-negative irradiance
 
 ``` r
@@ -158,7 +158,7 @@ legend("topright",
 
 [`quantum_catch()`](https://johnkirwan.github.io/luxR/reference/quantum_catch.md)
 integrates photon irradiance weighted by dimensionless sensitivity over
-wavelength. Its result is in photons m^-2 s^-1 at the measurement plane;
+wavelength. Its result is in photons m⁻² s⁻¹ at the measurement plane;
 it is not an absolute photons-per-second rate for one receptor. It takes
 a numeric irradiance vector with an explicit unit, so we extract `$E`
 from each depth spectrum and declare its energy unit.

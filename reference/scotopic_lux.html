@@ -3,7 +3,7 @@
 scotopic luminous efficiency function V'(lambda). The scotopic luminous
 efficacy K_m' = 1700 lm/W replaces the photopic K_m = 683 lm/W."><meta property="og:description" content="Drop-in replacement for irradiance2lux using the CIE 1951
 scotopic luminous efficiency function V'(lambda). The scotopic luminous
-efficacy K_m' = 1700 lm/W replaces the photopic K_m = 683 lm/W."></head><body>
+efficacy K_m' = 1700 lm/W replaces the photopic K_m = 683 lm/W."><meta property="og:image" content="https://johnkirwan.github.io/luxR/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -11,7 +11,7 @@ efficacy K_m' = 1700 lm/W replaces the photopic K_m = 683 lm/W."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">luxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,9 +33,8 @@ efficacy K_m' = 1700 lm/W replaces the photopic K_m = 683 lm/W."></head><body>
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Compute scotopic illuminance (V'(lambda) weighting).</h1>
-      <small class="dont-index">Source: <a href="https://github.com/JohnKirwan/luxR/blob/v0.1.0/R/converters.R" class="external-link"><code>R/converters.R</code></a></small>
+      <img src="../logo.png" class="logo" alt=""><h1>Compute scotopic illuminance (V'(lambda) weighting).</h1>
+      <small class="dont-index">Source: <a href="https://github.com/JohnKirwan/luxR/blob/master/R/converters.R" class="external-link"><code>R/converters.R</code></a></small>
       <div class="d-none name"><code>scotopic_lux.Rd</code></div>
     </div>
 
@@ -80,7 +79,8 @@ efficacy K_m' = 1700 lm/W replaces the photopic K_m = 683 lm/W.</p>
 
 
 <dl><dt id="arg-irradiance">irradiance<a class="anchor" aria-label="anchor" href="#arg-irradiance"></a></dt>
-<dd><p>Spectral irradiance (W/m^2/nm or photons/m^2/s/nm) at each
+<dd><p>Spectral irradiance (\(W\,m^{-2}\,nm^{-1}\) or
+\(photons\,m^{-2}\,s^{-1}\,nm^{-1}\)) at each
 wavelength bin, or a <code>lux_spectrum</code> object whose quantity is
 <code>"irradiance"</code>. Photonic <code>lux_spectrum</code> inputs are converted to
 energy units before photometric integration; radiance and reflectance

@@ -7,15 +7,15 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/JohnKirwan/luxR/blob/v0.1.0/inst/CITATION)
+[`inst/CITATION`](https://github.com/JohnKirwan/luxR/blob/master/inst/CITATION)
 
 Kirwan J (2026). *luxR: Underwater Light Analysis and Visual Ecology*. R
-package version 0.1.0, <https://github.com/JohnKirwan/luxR>.
+package version 0.1.1, <https://github.com/JohnKirwan/luxR>.
 
     @Manual{,
       title = {luxR: Underwater Light Analysis and Visual Ecology},
       author = {John Kirwan},
       year = {2026},
-      note = {R package version 0.1.0},
+      note = {R package version 0.1.1},
       url = {https://github.com/JohnKirwan/luxR},
     }

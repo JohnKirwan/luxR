@@ -18,7 +18,7 @@ irradiance2radiance(
 
 - E:
 
-  Irradiance value(s) in W/m^2 (or any energy unit). Vectorised.
+  Irradiance value(s) in \\W\\m^{-2}\\ (or any energy unit). Vectorised.
 
 - geometry:
 
@@ -57,7 +57,7 @@ irradiance2radiance(
 
 ## Value
 
-Radiance in W/m^2/sr (same numeric unit as `E`).
+Radiance in \\W\\m^{-2}\\sr^{-1}\\ (same numeric unit as `E`).
 
 ## References
 

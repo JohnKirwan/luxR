@@ -5,7 +5,7 @@ assumption must be provided by the caller (e.g. from
 solar_irradiance())."><meta property="og:description" content="Given a single measured value and a reference spectral shape, returns a
 rescaled spectrum whose forward operator reproduces the input. The shape
 assumption must be provided by the caller (e.g. from
-solar_irradiance())."></head><body>
+solar_irradiance())."><meta property="og:image" content="https://johnkirwan.github.io/luxR/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -13,7 +13,7 @@ solar_irradiance())."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">luxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,9 +35,8 @@ solar_irradiance())."></head><body>
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Convert a broadband scalar reading into a plausible spectrum.</h1>
-      <small class="dont-index">Source: <a href="https://github.com/JohnKirwan/luxR/blob/v0.1.0/R/converters.R" class="external-link"><code>R/converters.R</code></a></small>
+      <img src="../logo.png" class="logo" alt=""><h1>Convert a broadband scalar reading into a plausible spectrum.</h1>
+      <small class="dont-index">Source: <a href="https://github.com/JohnKirwan/luxR/blob/master/R/converters.R" class="external-link"><code>R/converters.R</code></a></small>
       <div class="d-none name"><code>broadband2spectrum.Rd</code></div>
     </div>
 
@@ -113,7 +112,7 @@ constant endpoint extension with <code>"constant"</code>.</p></dd>
 <dd><p>same as <code>"W"</code> divided by 1000</p></dd>
 
   <dt><code>"umol"</code></dt>
-<dd><p>PAR-band photon flux (400–700 nm) in \(\mu\)mol/s/m^2</p></dd>
+<dd><p>PAR-band photon flux (400–700 nm) in \(\mu mol\,m^{-2}\,s^{-1}\)</p></dd>
 
   <dt><code>"radiance_W"</code></dt>
 <dd><p>Lambertian radiance: \(E = \pi L\), then integrate</p></dd>

@@ -1,8 +1,9 @@
 # In-water downwelling spectral irradiance at a single depth.
 
 Convenience wrapper that takes one of the bundled reference solar
-spectra, converts it to W/m^2/nm, and propagates it from its recorded
-reference depth to a single absolute depth in a Jerlov water type via
+spectra, converts it to \\W\\m^{-2}\\nm^{-1}\\, and propagates it from
+its recorded reference depth to a single absolute depth in a Jerlov
+water type via
 [`jerlov_Kd`](https://johnkirwan.github.io/luxR/reference/jerlov_Kd.md)
 and
 [`propagate_spectrum`](https://johnkirwan.github.io/luxR/reference/propagate_spectrum.md).
@@ -69,8 +70,9 @@ light_at_depth(
 ## Value
 
 A data frame with columns `lambda` (nm) and `irradiance` (downwelling
-spectral irradiance at `depth`, in W/m^2/nm). The `"luxR.jerlov"`
-attribute records the wavelength policy and data provenance.
+spectral irradiance at `depth`, in \\W\\m^{-2}\\nm^{-1}\\). The
+`"luxR.jerlov"` attribute records the wavelength policy and data
+provenance.
 
 ## Details
 

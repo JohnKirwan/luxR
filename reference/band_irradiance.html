@@ -5,7 +5,7 @@ Works in both directions: set from &amp;gt; depths to recover
 shallower values (including the surface) from a deeper measurement."><meta property="og:description" content="Propagates a spectrum from a known depth to one or more target depths via
 Beer-Lambert attenuation and integrates the result over a wavelength band.
 Works in both directions: set from &amp;gt; depths to recover
-shallower values (including the surface) from a deeper measurement."></head><body>
+shallower values (including the surface) from a deeper measurement."><meta property="og:image" content="https://johnkirwan.github.io/luxR/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -13,7 +13,7 @@ shallower values (including the surface) from a deeper measurement."></head><bod
 
     <a class="navbar-brand me-2" href="../index.html">luxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,9 +35,8 @@ shallower values (including the surface) from a deeper measurement."></head><bod
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Band-integrated irradiance at one or more depths</h1>
-      <small class="dont-index">Source: <a href="https://github.com/JohnKirwan/luxR/blob/v0.1.0/R/band_irradiance.R" class="external-link"><code>R/band_irradiance.R</code></a></small>
+      <img src="../logo.png" class="logo" alt=""><h1>Band-integrated irradiance at one or more depths</h1>
+      <small class="dont-index">Source: <a href="https://github.com/JohnKirwan/luxR/blob/master/R/band_irradiance.R" class="external-link"><code>R/band_irradiance.R</code></a></small>
       <div class="d-none name"><code>band_irradiance.Rd</code></div>
     </div>
 
@@ -77,7 +76,7 @@ shallower values (including the surface) from a deeper measurement.</p>
 
 
 <dl><dt id="arg-e-lambda">E_lambda<a class="anchor" aria-label="anchor" href="#arg-e-lambda"></a></dt>
-<dd><p>Spectral irradiance (W/m^2/nm) at depth <code>from</code>.
+<dd><p>Spectral irradiance (\(W\,m^{-2}\,nm^{-1}\)) at depth <code>from</code>.
 Length-N vector, or a <code>lux_spectrum</code> object.</p></dd>
 
 
@@ -117,7 +116,7 @@ measurement.</p></dd>
 
 <dt id="arg-photonic">photonic<a class="anchor" aria-label="anchor" href="#arg-photonic"></a></dt>
 <dd><p>Logical; if <code>TRUE</code> the result is returned in
-\(\mu\)mol photons m\(^{-2}\) s\(^{-1}\) rather than W/m^2.
+\(\mu\)mol photons m\(^{-2}\) s\(^{-1}\) rather than \(W\,m^{-2}\).
 Default <code>FALSE</code>.</p></dd>
 
 
@@ -141,7 +140,7 @@ if not supplied.</p></dd>
 <dd><p>Target depth in metres.</p></dd>
 
     <dt>E</dt>
-<dd><p>Band-integrated irradiance in W/m^2 (or \(\mu\)mol/m^2/s
+<dd><p>Band-integrated irradiance in \(W\,m^{-2}\) (or \(\mu\)mol m\(^{-2}\) s\(^{-1}\)
       when <code>photonic = TRUE</code>).</p></dd>
 
 

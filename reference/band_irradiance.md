@@ -34,8 +34,8 @@ band_irradiance(E_lambda, Kd_lambda, depths, lambda = NULL, ...)
 
 - E_lambda:
 
-  Spectral irradiance (W/m^2/nm) at depth `from`. Length-N vector, or a
-  `lux_spectrum` object.
+  Spectral irradiance (\\W\\m^{-2}\\nm^{-1}\\) at depth `from`. Length-N
+  vector, or a `lux_spectrum` object.
 
 - ...:
 
@@ -71,7 +71,7 @@ band_irradiance(E_lambda, Kd_lambda, depths, lambda = NULL, ...)
 - photonic:
 
   Logical; if `TRUE` the result is returned in \\\mu\\mol photons
-  m\\^{-2}\\ s\\^{-1}\\ rather than W/m^2. Default `FALSE`.
+  m\\^{-2}\\ s\\^{-1}\\ rather than \\W\\m^{-2}\\. Default `FALSE`.
 
 - molar_unit:
 
@@ -96,8 +96,8 @@ A `data.frame` with columns:
 
 - E:
 
-  Band-integrated irradiance in W/m^2 (or \\\mu\\mol/m^2/s when
-  `photonic = TRUE`).
+  Band-integrated irradiance in \\W\\m^{-2}\\ (or \\\mu\\mol m\\^{-2}\\
+  s\\^{-1}\\ when `photonic = TRUE`).
 
 ## Details
 

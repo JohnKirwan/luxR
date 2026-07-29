@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">luxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,11 +51,10 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Seeing through water: from sunlight to detection</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Seeing through water: from sunlight to detection</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/JohnKirwan/luxR/blob/v0.1.0/vignettes/seeing-through-water.Rmd" class="external-link"><code>vignettes/seeing-through-water.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/JohnKirwan/luxR/blob/master/vignettes/seeing-through-water.Rmd" class="external-link"><code>vignettes/seeing-through-water.Rmd</code></a></small>
       <div class="d-none name"><code>seeing-through-water.Rmd</code></div>
     </div>
 
@@ -87,7 +86,7 @@ flat air–water interface reflects a few percent of it away (Fresnel);
 <code><a href="../reference/surface_transmittance.html">surface_transmittance()</a></code> gives the fraction that actually
 enters the water.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sp</span>    <span class="op">&lt;-</span> <span class="fu"><a href="../reference/solar_irradiance.html">solar_irradiance</a></span><span class="op">(</span><span class="st">"clear_noon"</span><span class="op">)</span>   <span class="co"># W/m2/nm, above surface</span></span>
+<code class="sourceCode R"><span><span class="va">sp</span>    <span class="op">&lt;-</span> <span class="fu"><a href="../reference/solar_irradiance.html">solar_irradiance</a></span><span class="op">(</span><span class="st">"clear_noon"</span><span class="op">)</span>   <span class="co"># W m⁻² nm⁻¹, above surface</span></span>
 <span><span class="va">lam</span>   <span class="op">&lt;-</span> <span class="va">sp</span><span class="op">$</span><span class="va">wavelength</span></span>
 <span></span>
 <span><span class="va">tau</span>   <span class="op">&lt;-</span> <span class="fu"><a href="../reference/surface_transmittance.html">surface_transmittance</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">30</span><span class="op">)</span>            <span class="co"># sun 30 deg from vertical</span></span>
@@ -110,7 +109,7 @@ field at depth.</p>
 <span><span class="va">lam</span> <span class="op">&lt;-</span> <span class="va">lam_depth</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">lam</span>, <span class="va">E_sub</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"goldenrod"</span>, lwd <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>     xlab <span class="op">=</span> <span class="st">"Wavelength (nm)"</span>, ylab <span class="op">=</span> <span class="st">"Irradiance (W/m2/nm)"</span>,</span>
+<span>     xlab <span class="op">=</span> <span class="st">"Wavelength (nm)"</span>, ylab <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/bquote.html" class="external-link">bquote</a></span><span class="op">(</span><span class="va">Irradiance</span><span class="op">~</span><span class="op">(</span><span class="fu">.</span><span class="op">(</span><span class="fu"><a href="../reference/unit_expression.html">unit_expression</a></span><span class="op">(</span><span class="st">"W/m2/nm"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>     main <span class="op">=</span> <span class="st">"Surface vs 10 m (Jerlov II)"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">lam</span>, <span class="va">E_10m</span>, col <span class="op">=</span> <span class="st">"steelblue4"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Just below surface"</span>, <span class="st">"10 m"</span><span class="op">)</span>,</span>

@@ -162,7 +162,7 @@ Convert between radiometric and photometric quantities.
 - [`W2photon()`](https://johnkirwan.github.io/luxR/reference/W2photon.md)
   : Convert watts to photon counts at a given wavelength.
 - [`n2W_spec_irradiance()`](https://johnkirwan.github.io/luxR/reference/n2W_spec_irradiance.md)
-  : Convert photon-count spectral irradiance to Watts/m^2/nm.
+  : Convert photon-count spectral irradiance to W m^-2 nm^-1.
 - [`W2mol_spec_irradiance()`](https://johnkirwan.github.io/luxR/reference/W2mol_spec_irradiance.md)
   : Convert energy spectral irradiance to molar photon flux.
 - [`reflectance_to_radiance()`](https://johnkirwan.github.io/luxR/reference/reflectance_to_radiance.md)
@@ -190,6 +190,10 @@ Compute illuminance and PAR from spectral irradiance.
   : PAR irradiance from a spectral irradiance measurement.
 - [`par_fraction()`](https://johnkirwan.github.io/luxR/reference/par_fraction.md)
   : Fraction of spectral irradiance in the PAR window.
+- [`unit_label()`](https://johnkirwan.github.io/luxR/reference/unit_label.md)
+  : Render a unit string for display
+- [`unit_expression()`](https://johnkirwan.github.io/luxR/reference/unit_expression.md)
+  : Render a unit string as a plotmath expression
 
 ## Spectral data sources
 

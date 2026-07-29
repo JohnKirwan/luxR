@@ -6,8 +6,9 @@ three depths at Mare Chiaro in the Gulf of Naples, Italy. This is
 illustrate working with measured spectra; it is not a general reference
 spectrum (cf. the ASTM
 [`solar_spectra`](https://johnkirwan.github.io/luxR/reference/solar_spectra.md)).
-Values are in micromol photons per square metre per second per nm
-(umol/m^2/s/nm); wavelength bins are approximately 5 nm wide.
+Values are in micromol photons per square metre per second per nm (\\\mu
+mol\\m^{-2}\\s^{-1}\\nm^{-1}\\); wavelength bins are approximately 5 nm
+wide.
 
 ## Usage
 

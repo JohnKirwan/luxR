@@ -25,7 +25,7 @@ gives the fraction that actually enters the water.
 
 ``` r
 
-sp    <- solar_irradiance("clear_noon")   # W/m2/nm, above surface
+sp    <- solar_irradiance("clear_noon")   # W m⁻² nm⁻¹, above surface
 lam   <- sp$wavelength
 
 tau   <- surface_transmittance(angle = 30)            # sun 30 deg from vertical
@@ -53,7 +53,7 @@ E_sub <- E_sub[supported]
 lam <- lam_depth
 
 plot(lam, E_sub, type = "l", col = "goldenrod", lwd = 2,
-     xlab = "Wavelength (nm)", ylab = "Irradiance (W/m2/nm)",
+     xlab = "Wavelength (nm)", ylab = bquote(Irradiance~(.(unit_expression("W/m2/nm")))),
      main = "Surface vs 10 m (Jerlov II)")
 lines(lam, E_10m, col = "steelblue4", lwd = 2)
 legend("topright", c("Just below surface", "10 m"),

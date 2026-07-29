@@ -19,7 +19,7 @@ irradiance2lux_FUN(
 
 - W_spec_irradiance:
 
-  Spectral irradiance (W/m^2/nm) at each wavelength bin.
+  Spectral irradiance (\\W\\m^{-2}\\nm^{-1}\\) at each wavelength bin.
 
 - lambda_measured:
 

@@ -13,7 +13,7 @@ photon2W(n, lambda)
 
 - n:
 
-  Photon count(s) per second per m^2 per nm.
+  Photon count(s) in \\photons\\m^{-2}\\s^{-1}\\nm^{-1}\\.
 
 - lambda:
 
@@ -21,7 +21,7 @@ photon2W(n, lambda)
 
 ## Value
 
-Numeric vector of spectral irradiance in W/m^2/nm.
+Numeric vector of spectral irradiance in \\W\\m^{-2}\\nm^{-1}\\.
 
 ## See also
 

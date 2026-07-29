@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">luxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,11 +51,10 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>From photons to perception</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>From photons to perception</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/JohnKirwan/luxR/blob/v0.1.0/vignettes/visual-ecology.Rmd" class="external-link"><code>vignettes/visual-ecology.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/JohnKirwan/luxR/blob/master/vignettes/visual-ecology.Rmd" class="external-link"><code>vignettes/visual-ecology.Rmd</code></a></small>
       <div class="d-none name"><code>visual-ecology.Rmd</code></div>
     </div>
 
@@ -75,7 +74,7 @@ nm⁻¹), an illuminance (lux), or a scotopic illuminance.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://johnkirwan.github.io/luxR/">luxR</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">x0m</span>   <span class="op">&lt;-</span> <span class="fu"><a href="../reference/from_naples.html">from_naples</a></span><span class="op">(</span><span class="st">"0m"</span><span class="op">)</span>          <span class="co"># umol/m2/s/nm</span></span>
+<span><span class="va">x0m</span>   <span class="op">&lt;-</span> <span class="fu"><a href="../reference/from_naples.html">from_naples</a></span><span class="op">(</span><span class="st">"0m"</span><span class="op">)</span>          <span class="co"># µmol m⁻² s⁻¹ nm⁻¹</span></span>
 <span><span class="va">x0m_W</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/convert_unit.html">convert_unit</a></span><span class="op">(</span><span class="va">x0m</span>, <span class="st">"W/m2/nm"</span><span class="op">)</span></span>
 <span><span class="va">x0m_W</span></span></code></pre></div>
 <pre><code><span><span class="co">## &lt;lux_spectrum&gt; irradiance [W/m2/nm] | 352.5-862.5 nm, 5 nm bins (103 pts)</span></span>
@@ -104,8 +103,8 @@ nm⁻¹), an illuminance (lux), or a scotopic illuminance.</p>
 <span><span class="co">##    import: data-raw/naples_legacy_snapshot.csv</span></span>
 <span><span class="co">##    import: 5952acfab4a04ea1b02eb085e6a768d5</span></span>
 <span><span class="co">##    import: naples-legacy-v1</span></span>
-<span><span class="co">##    import: 0.1.0</span></span>
-<span><span class="co">##    import: 8f2c2ab8a603cc42bafcc3c706d93e19673a574c</span></span>
+<span><span class="co">##    import: 0.1.1</span></span>
+<span><span class="co">##    import: 3bd871ca23f845c97359de9d7571cc98acfca7ae</span></span>
 <span><span class="co">##    import: parse canonical processed snapshot; validate schema grid and non-negative irradiance</span></span></code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">unit_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -251,8 +250,8 @@ range.</p>
 <span>       col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"green3"</span>, <span class="st">"red3"</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visual-ecology_files/figure-html/pigments-1.png" class="r-plt" alt="" width="672"></p>
 <p><code><a href="../reference/quantum_catch.html">quantum_catch()</a></code> integrates photon irradiance weighted by
-dimensionless sensitivity over wavelength. Its result is in photons m^-2
-s^-1 at the measurement plane; it is not an absolute photons-per-second
+dimensionless sensitivity over wavelength. Its result is in photons m⁻²
+s⁻¹ at the measurement plane; it is not an absolute photons-per-second
 rate for one receptor. It takes a numeric irradiance vector with an
 explicit unit, so we extract <code>$E</code> from each depth spectrum
 and declare its energy unit.</p>

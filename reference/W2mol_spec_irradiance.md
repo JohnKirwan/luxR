@@ -1,8 +1,8 @@
 # Convert energy spectral irradiance to molar photon flux.
 
 Converts W m\\^{-2}\\ nm\\^{-1}\\ spectral irradiance to a photon-count
-flux expressed in molar units (mol, mmol, or µmol photons m\\^{-2}\\
-s\\^{-1}\\ nm\\^{-1}\\). The inverse operation is
+flux expressed in molar units (mol, mmol, or \\\mu mol\\ photons
+m\\^{-2}\\ s\\^{-1}\\ nm\\^{-1}\\). The inverse operation is
 [`n2W_spec_irradiance`](https://johnkirwan.github.io/luxR/reference/n2W_spec_irradiance.md).
 The same per-bin conversion factor applies to spectral radiance (W
 m\\^{-2}\\ sr\\^{-1}\\ nm\\^{-1}\\).
@@ -23,8 +23,8 @@ W2mol_spec_irradiance(W, molar_unit = "umol", ...)
 
 - W:
 
-  Spectral irradiance in W/m^2/nm, or a `lux_spectrum` with an energy
-  irradiance or radiance unit.
+  Spectral irradiance in \\W\\m^{-2}\\nm^{-1}\\, or a `lux_spectrum`
+  with an energy irradiance or radiance unit.
 
 - ...:
 

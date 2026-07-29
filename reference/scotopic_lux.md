@@ -41,11 +41,11 @@ scotopic_lux(
 
 - irradiance:
 
-  Spectral irradiance (W/m^2/nm or photons/m^2/s/nm) at each wavelength
-  bin, or a `lux_spectrum` object whose quantity is `"irradiance"`.
-  Photonic `lux_spectrum` inputs are converted to energy units before
-  photometric integration; radiance and reflectance spectra are
-  rejected.
+  Spectral irradiance (\\W\\m^{-2}\\nm^{-1}\\ or
+  \\photons\\m^{-2}\\s^{-1}\\nm^{-1}\\) at each wavelength bin, or a
+  `lux_spectrum` object whose quantity is `"irradiance"`. Photonic
+  `lux_spectrum` inputs are converted to energy units before photometric
+  integration; radiance and reflectance spectra are rejected.
 
 - ...:
 

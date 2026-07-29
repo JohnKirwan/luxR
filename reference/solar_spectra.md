@@ -21,7 +21,7 @@ A named list of five data frames, each with columns:
 
 - irradiance:
 
-  Spectral irradiance in W/m^2/nm.
+  Spectral irradiance in \\W\\m^{-2}\\nm^{-1}\\.
 
 Names: `clear_noon`, `clear_dawn`, `overcast`, `underwater_1m`,
 `underwater_10m`. Each data frame has attributes `condition`,

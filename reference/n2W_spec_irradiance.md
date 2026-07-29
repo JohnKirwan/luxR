@@ -1,4 +1,4 @@
-# Convert photon-count spectral irradiance to Watts/m^2/nm.
+# Convert photon-count spectral irradiance to W m^-2 nm^-1.
 
 Converts per-bin photon flux (photons m\\^{-2}\\ s\\^{-1}\\ nm\\^{-1}\\,
 or molar equivalents) to energy-based spectral irradiance in W
@@ -27,8 +27,9 @@ n2W_spec_irradiance(value, ...)
 
 - value:
 
-  Spectral irradiance in photons/m^2/s/nm (or molar units), or a
-  `lux_spectrum` with a photonic irradiance or radiance unit.
+  Spectral irradiance in \\photons\\m^{-2}\\s^{-1}\\nm^{-1}\\ (or molar
+  units), or a `lux_spectrum` with a photonic irradiance or radiance
+  unit.
 
 - ...:
 
@@ -40,9 +41,10 @@ n2W_spec_irradiance(value, ...)
 
 - photonic:
 
-  Logical; if `TRUE`, `value` is in molar units (µmol, mmol, or
-  mol/m²/s/nm) — specify which via `molar_unit`. Defaults to `FALSE`.
-  Note: `photonic = TRUE` means raw photon counts in
+  Logical; if `TRUE`, `value` is in molar units (\\\mu mol\\, mmol, or
+  \\mol\\m^{-2}\\s^{-1}\\nm^{-1}\\) — specify which via `molar_unit`.
+  Defaults to `FALSE`. Note: `photonic = TRUE` means raw photon counts
+  in
   [`par_irradiance`](https://johnkirwan.github.io/luxR/reference/par_irradiance.md),
   and photon-or-molar units in
   [`irradiance2lux`](https://johnkirwan.github.io/luxR/reference/irradiance2lux.md).
@@ -53,9 +55,9 @@ n2W_spec_irradiance(value, ...)
 
 ## Value
 
-Numeric vector of spectral irradiance in W/m^2/nm, or a `lux_spectrum`
-with `unit = "W/m2/nm"` or `"W/m2/sr/nm"` according to the input
-dimensionality.
+Numeric vector of spectral irradiance in \\W\\m^{-2}\\nm^{-1}\\, or a
+`lux_spectrum` with `unit = "W/m2/nm"` or `"W/m2/sr/nm"` according to
+the input dimensionality.
 
 ## Details
 

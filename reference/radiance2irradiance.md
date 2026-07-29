@@ -18,7 +18,7 @@ radiance2irradiance(
 
 - L:
 
-  Radiance value(s) in W/m^2/sr. Vectorised.
+  Radiance value(s) in \\W\\m^{-2}\\sr^{-1}\\. Vectorised.
 
 - geometry:
 
@@ -34,7 +34,7 @@ radiance2irradiance(
 
 ## Value
 
-Irradiance in W/m^2.
+Irradiance in \\W\\m^{-2}\\.
 
 ## Examples
 

@@ -23,9 +23,10 @@ solar_irradiance(condition = "clear_noon")
 
 ## Value
 
-A data frame with columns `wavelength` (nm) and `irradiance` (W/m^2/nm).
-Attributes record `condition`, `reference_depth_m` (metres relative to
-the water surface), and `reference_medium` (`"air"` or `"water"`).
+A data frame with columns `wavelength` (nm) and `irradiance`
+(\\W\\m^{-2}\\nm^{-1}\\). Attributes record `condition`,
+`reference_depth_m` (metres relative to the water surface), and
+`reference_medium` (`"air"` or `"water"`).
 
 ## Details
 

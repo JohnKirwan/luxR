@@ -55,7 +55,7 @@ print(x)
 #>    import: data-raw/solar_spectra_legacy_snapshot.csv
 #>    import: d85c574eff45c07906b6d806cc792c94
 #>    import: solar-legacy-v1
-#>    import: 0.1.0
-#>    import: 8f2c2ab8a603cc42bafcc3c706d93e19673a574c
+#>    import: 0.1.1
+#>    import: 3bd871ca23f845c97359de9d7571cc98acfca7ae
 #>    import: parse five-condition snapshot; validate grids; retain documented scaling and Jerlov legacy assumptions
 ```
