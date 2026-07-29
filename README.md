@@ -102,7 +102,7 @@ can strongly amplify measurement noise.
 
 ## Interactive explorer
 
-> **[Launch the live luxR Shiny app](https://johnkirwan.github.io/luxR/app/)**
+> **[Launch the live luxR Shiny app](https://connect.posit.cloud/johnkirwan/content/019f94b5-66c5-51d6-136c-d3f2c2cf2ef6)**
 
 ```r
 run_app()   # requires the 'shiny' package
