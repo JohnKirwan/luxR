@@ -110,6 +110,9 @@ noise.
 
 ## Interactive explorer
 
+> **[Launch the live luxR Shiny
+> app](https://johnkirwan.github.io/luxR/app/)**
+
 ``` r
 
 run_app()   # requires the 'shiny' package
