@@ -55,6 +55,6 @@ print(x)
 #>    import: 5952acfab4a04ea1b02eb085e6a768d5
 #>    import: naples-legacy-v1
 #>    import: 0.1.1
-#>    import: 5722b6ca6b7981b412112374e05be17c572a54aa
+#>    import: 75ae5c201a47cf658f3ea43bb9ef75689be01158
 #>    import: parse canonical processed snapshot; validate schema grid and non-negative irradiance
 ```
