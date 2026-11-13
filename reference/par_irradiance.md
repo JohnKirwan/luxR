@@ -49,7 +49,8 @@ par_irradiance(irradiance, ...)
 
 - binwidth:
 
-  Bin width in nm. Inferred from `lambda` if `NULL`.
+  Bin width in nm. Inferred from `lambda` if `NULL`; if supplied it must
+  equal the wavelength spacing.
 
 ## Value
 
@@ -67,6 +68,12 @@ divided by Avogadro's constant scaled to µmol: \$\$Q\_{\mathrm{PAR}} =
 10^{23}\\ mol\\^{-1}\\ and \\hc = 1.98645 \times 10^{-16}\\ J nm. The
 result is in µmol photons m\\^{-2}\\ s\\^{-1}\\.
 
+Each sample is treated as a bin of width `binwidth` centred on its
+wavelength. A bin that straddles 400 or 700 nm contributes only the part
+inside the PAR window, so the result does not depend on where the grid
+points fall. The wavelength grid must be regularly spaced and its bins
+must span 400–700 nm; otherwise an error is raised.
+
 ## References
 
 Thimijan RW, Heins RD (1983) HortScience 18:818-822.
@@ -82,5 +89,5 @@ Thimijan RW, Heins RD (1983) HortScience 18:818-822.
 ``` r
 sp  <- solar_irradiance("clear_noon")
 par_irradiance(sp$irradiance, sp$wavelength)
-#> [1] 2197.756
+#> [1] 2149.439
 ```

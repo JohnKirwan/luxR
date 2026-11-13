@@ -48,7 +48,7 @@ x0m_W
     ##    import: 5952acfab4a04ea1b02eb085e6a768d5
     ##    import: naples-legacy-v1
     ##    import: 0.1.1
-    ##    import: 22fa38d0cf87b4e3aa0935e07d9ecb8910044124
+    ##    import: 7a195f7be04af13d6b8195893f5a6fe872c769b7
     ##    import: parse canonical processed snapshot; validate schema grid and non-negative irradiance
 
 ``` r
@@ -187,11 +187,11 @@ knitr::kable(qc_df[, c("depth_m", "S", "M", "L", "M_L")],
 
 |     | Depth (m) | S-cone catch | M-cone catch | L-cone catch | M/L ratio |
 |:----|----------:|-------------:|-------------:|-------------:|----------:|
-| 0   |         0 | 6.484939e+19 | 1.014862e+20 | 1.178168e+20 |      0.86 |
-| 5   |         5 | 4.290674e+19 | 7.411390e+19 | 7.656188e+19 |      0.97 |
-| 10  |        10 | 2.868235e+19 | 5.443117e+19 | 5.162111e+19 |      1.05 |
-| 20  |        20 | 1.317081e+19 | 2.973694e+19 | 2.509909e+19 |      1.19 |
-| 50  |        50 | 1.503718e+18 | 5.152246e+18 | 3.687906e+18 |      1.40 |
+| 0   |         0 | 6.478647e+19 | 1.014199e+20 | 1.176856e+20 |      0.86 |
+| 5   |         5 | 4.286511e+19 | 7.406550e+19 | 7.647664e+19 |      0.97 |
+| 10  |        10 | 2.865452e+19 | 5.439561e+19 | 5.156364e+19 |      1.05 |
+| 20  |        20 | 1.315803e+19 | 2.971752e+19 | 2.507115e+19 |      1.19 |
+| 50  |        50 | 1.502259e+18 | 5.148881e+18 | 3.683800e+18 |      1.40 |
 
 As depth increases the M/L ratio rises: the blue-shifted deep illuminant
 peaks near 500 nm, which aligns with the M-cone (480 nm) better than the
@@ -405,9 +405,9 @@ knitr::kable(cmp, digits = c(0, 6, 6, 14),
 
 |                | Species        |  luxR ΔS |  pavo ΔS | \|difference\| |
 |:---------------|:---------------|---------:|---------:|---------------:|
-| Homo sapiens   | Homo sapiens   | 1.865302 | 1.865302 |        6.0e-14 |
-| Apis mellifera | Apis mellifera | 0.943538 | 0.943538 |        9.0e-14 |
-| Danio rerio    | Danio rerio    | 1.768219 | 1.768219 |        1.2e-13 |
+| Homo sapiens   | Homo sapiens   | 1.865302 | 1.865302 |        1.8e-13 |
+| Apis mellifera | Apis mellifera | 0.943538 | 0.943538 |        4.0e-14 |
+| Danio rerio    | Danio rerio    | 1.768219 | 1.768219 |        8.0e-14 |
 
 The agreement is a useful regression guard as well as a check on
 correctness: `tests/testthat/test-pavo-validation.R` asserts it

@@ -60,9 +60,8 @@ resample_spectrum(
 
 - rule:
 
-  Integer passed to [`approx`](https://rdrr.io/r/stats/approxfun.html)
-  controlling out-of-range behaviour. Default `1` (return `NA`); use `2`
-  to extend with boundary values.
+  Out-of-range behaviour for both methods: `1` (default) returns `NA`;
+  `2` extends with boundary values. Any other value is an error.
 
 ## Value
 
@@ -78,7 +77,8 @@ default (`rule = 1`) wavelengths outside that range receive `NA`; set
 validation error when `rule = 1` produces `NA`. The target grid for a
 `lux_spectrum` must also be strictly increasing and regular. The numeric
 method can be used to resample raw values from an irregular source grid
-before constructing a `lux_spectrum`.
+before constructing a `lux_spectrum`. Non-finite values in the spectrum
+or in either wavelength grid are an error rather than being dropped.
 
 ## See also
 

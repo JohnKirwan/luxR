@@ -94,5 +94,5 @@ lam <- Naples$wv
 S   <- species_LEF("Danio rerio", receptor = "L-cone", lambda = lam)
 quantum_catch(Naples$depth_0m, lam, S,
               input_unit = "umol/m2/s/nm")
-#> [1] 1.178429e+20
+#> [1] 1.177117e+20
 ```

@@ -91,7 +91,8 @@ units in <code><a href="irradiance2lux.html">irradiance2lux</a></code>.</p></dd>
 
 
 <dt id="arg-binwidth">binwidth<a class="anchor" aria-label="anchor" href="#arg-binwidth"></a></dt>
-<dd><p>Bin width in nm. Inferred from <code>lambda</code> if <code>NULL</code>.</p></dd>
+<dd><p>Bin width in nm. Inferred from <code>lambda</code> if
+<code>NULL</code>; if supplied it must equal the wavelength spacing.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -110,6 +111,11 @@ $$Q_{\mathrm{PAR}} = \frac{1}{N_A \times 10^{-6}}
 where \(N_A = 6.022 \times 10^{23}\) mol\(^{-1}\) and
 \(hc = 1.98645 \times 10^{-16}\) J nm. The result is in
 µmol photons m\(^{-2}\) s\(^{-1}\).</p>
+<p>Each sample is treated as a bin of width <code>binwidth</code> centred on its
+wavelength. A bin that straddles 400 or 700 nm contributes only the part
+inside the PAR window, so the result does not depend on where the grid
+points fall. The wavelength grid must be regularly spaced and its bins
+must span 400–700 nm; otherwise an error is raised.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
@@ -125,7 +131,7 @@ where \(N_A = 6.022 \times 10^{23}\) mol\(^{-1}\) and
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">sp</span>  <span class="op">&lt;-</span> <span class="fu"><a href="solar_irradiance.html">solar_irradiance</a></span><span class="op">(</span><span class="st">"clear_noon"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">par_irradiance</span><span class="op">(</span><span class="va">sp</span><span class="op">$</span><span class="va">irradiance</span>, <span class="va">sp</span><span class="op">$</span><span class="va">wavelength</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2197.756</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2149.439</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

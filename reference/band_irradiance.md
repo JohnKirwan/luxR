@@ -63,11 +63,13 @@ band_irradiance(E_lambda, Kd_lambda, depths, lambda = NULL, ...)
 
 - lambda_min:
 
-  Lower wavelength bound in nm (inclusive). Defaults to `min(lambda)`.
+  Lower wavelength bound in nm. Defaults to the outer edge of the first
+  bin, `min(lambda) - binwidth / 2`.
 
 - lambda_max:
 
-  Upper wavelength bound in nm (inclusive). Defaults to `max(lambda)`.
+  Upper wavelength bound in nm. Defaults to the outer edge of the last
+  bin, `max(lambda) + binwidth / 2`.
 
 - photonic:
 
@@ -80,7 +82,8 @@ band_irradiance(E_lambda, Kd_lambda, depths, lambda = NULL, ...)
 
 - binwidth:
 
-  Wavelength bin width in nm. Inferred from `lambda` if not supplied.
+  Wavelength bin width in nm. Inferred from `lambda` if not supplied; if
+  supplied it must equal the wavelength spacing.
 
 - allow_above_surface:
 
@@ -110,8 +113,11 @@ attenuation coefficient. Second, the propagated spectrum is integrated
 over the specified wavelength window \[\\\lambda\_{\min}\\,
 \\\lambda\_{\max}\\\]: \$\$E\_{\mathrm{band}}(z) =
 \int\_{\lambda\_{\min}}^{\lambda\_{\max}} E(z,\\\lambda)\\d\lambda\$\$
-approximated as \\\sum_i E(z,\lambda_i)\\\Delta\lambda\\ over bins
-within the window. See
+approximated as \\\sum_i E(z,\lambda_i)\\w_i\\. Each sample is a bin of
+width `binwidth` centred on its wavelength, and \\w_i\\ is the part of
+that bin inside the window, so a bin straddling a band edge counts only
+its overlap. The wavelength grid must be regularly spaced and its bins
+must span the window. See
 [`propagate_spectrum`](https://johnkirwan.github.io/luxR/reference/propagate_spectrum.md)
 for the full Beer-Lambert documentation.
 
@@ -133,11 +139,11 @@ Kd  <- jerlov_Kd("II", lam)
 band_irradiance(E0, Kd, lam, depths = c(0, 5, 10, 20, 50),
                 lambda_min = 500, lambda_max = 600)
 #>   depth          E
-#> 1     0 198.300000
-#> 2     5 134.985969
-#> 3    10  93.620606
-#> 4    20  47.073651
-#> 5    50   7.323195
+#> 1     0 181.000000
+#> 2     5 123.874420
+#> 3    10  86.138163
+#> 4    20  43.282929
+#> 5    50   6.598161
 
 # recover surface from a 10 m measurement
 E_10m <- E0 * exp(-Kd * 10)

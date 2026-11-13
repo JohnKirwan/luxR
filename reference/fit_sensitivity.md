@@ -51,9 +51,18 @@ A list with components:
 
   Chromophore used.
 
+- `amplitude`:
+
+  Best-fit scale applied to the template to match the input, which is
+  first rescaled to a maximum of 1. About 1 when the measured
+  wavelengths include the template's peak, and above 1 (the inverse of
+  the template's largest measured value) when the peak lies outside
+  them.
+
 - `SS`:
 
-  Residual sum of squares at the optimum.
+  Residual sum of squares at the optimum, between the peak-normalised
+  input and `amplitude * fitted$S`.
 
 - `fitted`:
 
@@ -77,5 +86,5 @@ true  <- govardovskii_template(lam, lambda_max = 530)$S
 noisy <- pmax(0, true + rnorm(length(true), 0, 0.02))
 fit   <- fit_sensitivity(lam, noisy)
 fit$lambda_max  # should be close to 530
-#> [1] 529.7793
+#> [1] 529.8687
 ```

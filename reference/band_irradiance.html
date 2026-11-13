@@ -106,13 +106,13 @@ measurement.</p></dd>
 
 
 <dt id="arg-lambda-min">lambda_min<a class="anchor" aria-label="anchor" href="#arg-lambda-min"></a></dt>
-<dd><p>Lower wavelength bound in nm (inclusive). Defaults to
-<code>min(lambda)</code>.</p></dd>
+<dd><p>Lower wavelength bound in nm. Defaults to the outer edge
+of the first bin, <code>min(lambda) - binwidth / 2</code>.</p></dd>
 
 
 <dt id="arg-lambda-max">lambda_max<a class="anchor" aria-label="anchor" href="#arg-lambda-max"></a></dt>
-<dd><p>Upper wavelength bound in nm (inclusive). Defaults to
-<code>max(lambda)</code>.</p></dd>
+<dd><p>Upper wavelength bound in nm. Defaults to the outer edge
+of the last bin, <code>max(lambda) + binwidth / 2</code>.</p></dd>
 
 
 <dt id="arg-photonic">photonic<a class="anchor" aria-label="anchor" href="#arg-photonic"></a></dt>
@@ -127,7 +127,7 @@ Default <code>FALSE</code>.</p></dd>
 
 <dt id="arg-binwidth">binwidth<a class="anchor" aria-label="anchor" href="#arg-binwidth"></a></dt>
 <dd><p>Wavelength bin width in nm. Inferred from <code>lambda</code>
-if not supplied.</p></dd>
+if not supplied; if supplied it must equal the wavelength spacing.</p></dd>
 
 
 <dt id="arg-allow-above-surface">allow_above_surface<a class="anchor" aria-label="anchor" href="#arg-allow-above-surface"></a></dt>
@@ -158,8 +158,11 @@ propagated spectrum is integrated over the specified wavelength window
 [\(\lambda_{\min}\), \(\lambda_{\max}\)]:
 $$E_{\mathrm{band}}(z) =
       \int_{\lambda_{\min}}^{\lambda_{\max}} E(z,\,\lambda)\,d\lambda$$
-approximated as \(\sum_i E(z,\lambda_i)\,\Delta\lambda\) over bins within
-the window. See <code><a href="propagate_spectrum.html">propagate_spectrum</a></code> for the full Beer-Lambert
+approximated as \(\sum_i E(z,\lambda_i)\,w_i\). Each sample is a bin of
+width <code>binwidth</code> centred on its wavelength, and \(w_i\) is the part
+of that bin inside the window, so a bin straddling a band edge counts only
+its overlap. The wavelength grid must be regularly spaced and its bins must
+span the window. See <code><a href="propagate_spectrum.html">propagate_spectrum</a></code> for the full Beer-Lambert
 documentation.</p>
     </div>
     <div class="section level2">
@@ -179,11 +182,11 @@ documentation.</p>
 <span class="r-in"><span><span class="fu">band_irradiance</span><span class="op">(</span><span class="va">E0</span>, <span class="va">Kd</span>, <span class="va">lam</span>, depths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5</span>, <span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">50</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                lambda_min <span class="op">=</span> <span class="fl">500</span>, lambda_max <span class="op">=</span> <span class="fl">600</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   depth          E</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1     0 198.300000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2     5 134.985969</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3    10  93.620606</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4    20  47.073651</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5    50   7.323195</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     0 181.000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     5 123.874420</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3    10  86.138163</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4    20  43.282929</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5    50   6.598161</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># recover surface from a 10 m measurement</span></span></span>
 <span class="r-in"><span><span class="va">E_10m</span> <span class="op">&lt;-</span> <span class="va">E0</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">Kd</span> <span class="op">*</span> <span class="fl">10</span><span class="op">)</span></span></span>

@@ -22,7 +22,9 @@ fit_Kd(E1, z1, E2, z2, ...)
   Irradiance at the shallower depth `z1`. Numeric vector or
   `lux_spectrum`. When `E1` is a `lux_spectrum`, S3 dispatch handles
   both arguments; passing a numeric `E1` with a `lux_spectrum` `E2` is
-  not supported.
+  not supported. Two `lux_spectrum` inputs must both be spectral
+  irradiance on the same wavelength grid; they are converted to a common
+  unit before the ratio is taken.
 
 - ...:
 
@@ -34,8 +36,9 @@ fit_Kd(E1, z1, E2, z2, ...)
 
 - E2:
 
-  Irradiance at the deeper depth `z2`. Numeric vector or `lux_spectrum`
-  (only when `E1` is also a `lux_spectrum`).
+  Irradiance at the deeper depth `z2`. Numeric vector or `lux_spectrum`.
+  It must be a `lux_spectrum` exactly when `E1` is one; mixing the two
+  is an error.
 
 - z2:
 

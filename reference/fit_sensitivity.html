@@ -92,8 +92,16 @@ for \(\lambda_{\max}\) in nm. Default <code>c(300, 700)</code>.</p></dd>
     <dt><code>chromophore</code></dt>
 <dd><p>Chromophore used.</p></dd>
 
+    <dt><code>amplitude</code></dt>
+<dd><p>Best-fit scale applied to the template to
+      match the input, which is first rescaled to a maximum of 1. About 1
+      when the measured wavelengths include the template's peak, and above
+      1 (the inverse of the template's largest measured value) when the
+      peak lies outside them.</p></dd>
+
     <dt><code>SS</code></dt>
-<dd><p>Residual sum of squares at the optimum.</p></dd>
+<dd><p>Residual sum of squares at the optimum, between the
+      peak-normalised input and <code>amplitude * fitted$S</code>.</p></dd>
 
     <dt><code>fitted</code></dt>
 <dd><p>Data frame with columns <code>lambda</code> and <code>S</code>
@@ -118,7 +126,7 @@ for \(\lambda_{\max}\) in nm. Default <code>c(300, 700)</code>.</p></dd>
 <span class="r-in"><span><span class="va">noisy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">true</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">true</span><span class="op">)</span>, <span class="fl">0</span>, <span class="fl">0.02</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit</span>   <span class="op">&lt;-</span> <span class="fu">fit_sensitivity</span><span class="op">(</span><span class="va">lam</span>, <span class="va">noisy</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit</span><span class="op">$</span><span class="va">lambda_max</span>  <span class="co"># should be close to 530</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 529.7793</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 529.8687</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

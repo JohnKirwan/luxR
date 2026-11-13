@@ -108,9 +108,9 @@ a numeric vector; ignored when <code>x</code> is a <code>lux_spectrum</code>
 
 
 <dt id="arg-rule">rule<a class="anchor" aria-label="anchor" href="#arg-rule"></a></dt>
-<dd><p>Integer passed to <code><a href="https://rdrr.io/r/stats/approxfun.html" class="external-link">approx</a></code> controlling
-out-of-range behaviour. Default <code>1</code> (return <code>NA</code>); use
-<code>2</code> to extend with boundary values.</p></dd>
+<dd><p>Out-of-range behaviour for both methods: <code>1</code>
+(default) returns <code>NA</code>; <code>2</code> extends with boundary values.
+Any other value is an error.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -128,7 +128,8 @@ values, its method raises a validation error when <code>rule = 1</code> produces
 <code>NA</code>. The target grid for a <code>lux_spectrum</code> must also be strictly
 increasing and regular. The numeric method can be used to resample raw
 values from an irregular source grid before constructing a
-<code>lux_spectrum</code>.</p>
+<code>lux_spectrum</code>. Non-finite values in the spectrum or in either
+wavelength grid are an error rather than being dropped.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

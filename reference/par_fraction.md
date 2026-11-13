@@ -41,10 +41,16 @@ par_fraction(irradiance, ...)
 
 Numeric scalar in (0, 1\].
 
+## Details
+
+Samples are bins of width `binwidth` centred on their wavelengths, on a
+regularly spaced grid. A bin straddling 400 or 700 nm contributes only
+its part inside the PAR window. The grid need not span the whole window.
+
 ## Examples
 
 ``` r
 sp <- solar_irradiance("clear_noon")
 par_fraction(sp$irradiance, sp$wavelength)
-#> [1] 0.7742921
+#> [1] 0.7575611
 ```
