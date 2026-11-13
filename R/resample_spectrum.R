@@ -82,10 +82,29 @@ resample_spectrum.numeric <- function(x, lambda, from = NULL,
 }
 
 .interp <- function(y, x_from, x_to, method, rule) {
-  if (length(rule) != 1L || !rule %in% c(1, 2)) {
+  if (!is.numeric(rule) || length(rule) != 1L || !rule %in% c(1, 2)) {
     .stop_lux_spectrum_validation(
       "`rule` must be 1 (NA outside the source range) or 2 (boundary value).",
       field = "rule", value = rule, subclass = "lux_spectrum_value_error"
+    )
+  }
+  # approx() and spline() drop non-finite points silently, which would narrow
+  # the source range, so every input must be finite.
+  fail <- .lux_spectrum_fail()
+  .check_numeric(y, "x", fail)
+  .check_numeric(x_from, "from", fail)
+  .check_numeric(x_to, "lambda", fail)
+  if (length(y) != length(x_from)) {
+    .stop_lux_spectrum_validation(
+      paste0("`x` has length ", length(y), " but its source wavelength grid ",
+             "has length ", length(x_from), "."),
+      field = "x", value = length(y), subclass = "lux_spectrum_dimension_error"
+    )
+  }
+  if (length(x_from) < 2L) {
+    .stop_lux_spectrum_validation(
+      "Interpolation needs at least two source wavelengths.",
+      field = "from", value = x_from, subclass = "lux_spectrum_value_error"
     )
   }
   if (method == "linear") {

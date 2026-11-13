@@ -81,8 +81,8 @@ band_irradiance.numeric <- function(E_lambda, Kd_lambda, lambda, depths,
                                      binwidth   = NULL,
                                      allow_above_surface = FALSE, ...) {
   op <- "band_irradiance()"
-  .check_same_length(E_lambda, lambda, "E_lambda", op)
-  .check_same_length(Kd_lambda, lambda, "Kd_lambda", op)
+  .check_spectral_values(E_lambda, lambda, "E_lambda", op)
+  .check_spectral_values(Kd_lambda, lambda, "Kd_lambda", op)
   w    <- .band_widths(lambda, binwidth, lambda_min, lambda_max, op)
   keep <- w > 0
 
@@ -132,13 +132,18 @@ band_irradiance.lux_spectrum <- function(E_lambda, Kd_lambda, depths,
   }
   check(lambda, "lambda", lower = 0, lower_open = TRUE)
   steps <- diff(lambda)
-  bad <- which(steps <= 0 |
-                 abs(steps - steps[1L]) > .grid_tolerance(steps))[1L]
+  bad <- which(steps <= 0)[1L]
   if (!is.na(bad)) {
-    fail(paste0("`lambda` must be strictly increasing and regularly spaced; ",
-                "the step before index ", bad + 1L, " is ",
-                format(steps[bad]), " nm, expected ", format(steps[1L]),
-                " nm."),
+    fail(paste0("`lambda` must be strictly increasing; index ", bad + 1L,
+                " has value ", format(lambda[bad + 1L]), " after ",
+                format(lambda[bad]), "."),
+         "lambda", lambda[bad + 1L], "grid", bad + 1L)
+  }
+  bad <- which(abs(steps - steps[1L]) > .grid_tolerance(steps))[1L]
+  if (!is.na(bad)) {
+    fail(paste0("`lambda` must be regularly spaced; the step before index ",
+                bad + 1L, " is ", format(steps[bad]), " nm, expected ",
+                format(steps[1L]), " nm."),
          "lambda", lambda[bad + 1L], "grid", bad + 1L)
   }
   if (is.null(binwidth)) {
@@ -177,7 +182,15 @@ band_irradiance.lux_spectrum <- function(E_lambda, Kd_lambda, depths,
   pmax(0, pmin(hi, right) - pmax(lo, left))
 }
 
-.check_same_length <- function(x, lambda, field, operation) {
+# Spectral values must be finite (a non-finite value outside the band would
+# otherwise reach the result as NA * 0) and match the wavelength grid.
+.check_spectral_values <- function(x, lambda, field, operation) {
+  .check_numeric(x, field, function(message, field, value, index, kind) {
+    .stop_lux_spectrum_validation(
+      paste0(operation, ": ", message), field = field, value = value,
+      index = index, subclass = paste0("lux_spectrum_", kind, "_error")
+    )
+  })
   if (length(x) != length(lambda)) {
     .stop_lux_spectrum_validation(
       paste0(operation, ": `", field, "` has length ", length(x),

@@ -56,7 +56,7 @@ par_irradiance <- function(irradiance, ...) UseMethod("par_irradiance")
 #' @export
 par_irradiance.numeric <- function(irradiance, lambda, photonic = FALSE,
                                     binwidth = NULL, ...) {
-  .check_same_length(irradiance, lambda, "irradiance", "par_irradiance()")
+  .check_spectral_values(irradiance, lambda, "irradiance", "par_irradiance()")
   w <- .band_widths(lambda, binwidth, 400, 700, "par_irradiance()")
   if (!photonic) irradiance <- W2photon(irradiance, lambda)
   sum(irradiance * w) / (.AVOGADRO * 1e-6)
@@ -97,7 +97,7 @@ par_fraction <- function(irradiance, ...) UseMethod("par_fraction")
 #' @export
 par_fraction.numeric <- function(irradiance, lambda, binwidth = NULL, ...) {
   op <- "par_fraction()"
-  .check_same_length(irradiance, lambda, "irradiance", op)
+  .check_spectral_values(irradiance, lambda, "irradiance", op)
   total <- sum(irradiance * .band_widths(lambda, binwidth, operation = op))
   if (total == 0) return(NA_real_)
   sum(irradiance * .band_widths(lambda, binwidth, 400, 700, op,

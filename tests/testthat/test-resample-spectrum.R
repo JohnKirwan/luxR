@@ -134,3 +134,22 @@ test_that("resample_spectrum: rejects a rule other than 1 or 2", {
                                       method = m, rule = 1L))
   }
 })
+
+test_that("resample_spectrum: rejects non-finite or malformed inputs with typed errors", {
+  from <- seq(400, 700, by = 50)
+  y    <- (from - 400)^2
+  for (m in c("linear", "cubic")) {
+    # NA at the end of the source would narrow the real range silently
+    expect_error(resample_spectrum(c(NA, y[-1]), c(400, 425), from = from,
+                                   method = m, rule = 2),
+                 class = "lux_spectrum_value_error")
+    expect_error(resample_spectrum(y, c(350, NA, 450), from = from, method = m),
+                 class = "lux_spectrum_value_error")
+    expect_error(resample_spectrum(y, 450, from = from[-1], method = m),
+                 class = "lux_spectrum_dimension_error")
+    expect_error(resample_spectrum(5, 400, from = 400, method = m),
+                 class = "lux_spectrum_value_error")
+    expect_error(resample_spectrum(y, 450, from = from, method = m, rule = "1"),
+                 class = "lux_spectrum_value_error")
+  }
+})

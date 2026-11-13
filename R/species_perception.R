@@ -46,16 +46,7 @@
 #' @export
 govardovskii_template <- function(lambda, lambda_max,
                                    chromophore = c("A1", "A2")) {
-  if (!is.numeric(lambda) || is.complex(lambda) || is.object(lambda) ||
-      !is.null(dim(lambda)) || length(lambda) == 0L ||
-      any(!is.finite(lambda)) || any(lambda <= 0) ||
-      any(diff(lambda) <= 0)) {
-    .stop_species_model(
-      "'lambda' must be a non-empty, finite, strictly increasing vector of positive wavelengths.",
-      "lux_invalid_sensitivity_grid_error",
-      field = "lambda", value = lambda
-    )
-  }
+  .check_template_grid(lambda)
   if (!is.numeric(lambda_max) || is.complex(lambda_max) ||
       is.object(lambda_max) || !is.null(dim(lambda_max)) ||
       length(lambda_max) != 1L || !is.finite(lambda_max) ||
@@ -76,6 +67,19 @@ govardovskii_template <- function(lambda, lambda_max,
                           lambda_max = lambda_max, chromophore = chromophore,
                           maximum = TRUE, tol = 1e-6)$objective
   data.frame(lambda = lambda, S = S / max(peak, S))
+}
+
+.check_template_grid <- function(lambda) {
+  if (!is.numeric(lambda) || is.complex(lambda) || is.object(lambda) ||
+      !is.null(dim(lambda)) || length(lambda) == 0L ||
+      any(!is.finite(lambda)) || any(lambda <= 0) ||
+      any(diff(lambda) <= 0)) {
+    .stop_species_model(
+      "'lambda' must be a non-empty, finite, strictly increasing vector of positive wavelengths.",
+      "lux_invalid_sensitivity_grid_error",
+      field = "lambda", value = lambda
+    )
+  }
 }
 
 # Un-normalised Govardovskii template (alpha band plus beta band).
@@ -212,9 +216,11 @@ receptor_absorptance <- function(S, optical_density = NULL,
 #'   \describe{
 #'     \item{\code{lambda_max}}{Best-fit peak wavelength (nm).}
 #'     \item{\code{chromophore}}{Chromophore used.}
-#'     \item{\code{amplitude}}{Best-fit scale of the template relative to
-#'       the peak-normalised input. Below 1 when the template's peak lies
-#'       outside the measured wavelengths.}
+#'     \item{\code{amplitude}}{Best-fit scale applied to the template to
+#'       match the input, which is first rescaled to a maximum of 1. About 1
+#'       when the measured wavelengths include the template's peak, and above
+#'       1 (the inverse of the template's largest measured value) when the
+#'       peak lies outside them.}
 #'     \item{\code{SS}}{Residual sum of squares at the optimum, between the
 #'       peak-normalised input and \code{amplitude * fitted$S}.}
 #'     \item{\code{fitted}}{Data frame with columns \code{lambda} and \code{S}
@@ -238,9 +244,16 @@ fit_sensitivity <- function(lambda, sensitivity,
   stopifnot(
     length(lambda) == length(sensitivity),
     length(lambda_max_range) == 2,
-    lambda_max_range[1] < lambda_max_range[2],
-    lambda_max_range[1] >= 300, lambda_max_range[2] <= 700
+    lambda_max_range[1] < lambda_max_range[2]
   )
+  if (lambda_max_range[1] < 300 || lambda_max_range[2] > 700) {
+    .stop_species_model(
+      "'lambda_max_range' must lie within 300-700 nm, where the template is defined.",
+      "lux_invalid_sensitivity_peak_error",
+      field = "lambda_max_range", value = lambda_max_range
+    )
+  }
+  .check_template_grid(lambda)
 
   s_max <- max(sensitivity, na.rm = TRUE)
   if (!is.finite(s_max) || s_max == 0)

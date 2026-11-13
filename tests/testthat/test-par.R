@@ -122,3 +122,16 @@ test_that("par_fraction: a flat spectrum gives the PAR share of the bin extent",
   lam <- seq(300, 800, by = 10)
   expect_equal(par_fraction(rep(1, length(lam)), lam), 300 / 510)
 })
+
+test_that("PAR and band functions reject non-finite irradiance, even outside the band", {
+  lam <- seq(300, 800, by = 10)
+  E   <- rep(1, length(lam))
+  E[1:3] <- NA
+  expect_error(par_irradiance(E, lam), class = "lux_spectrum_value_error")
+  expect_error(par_fraction(E, lam), class = "lux_spectrum_value_error")
+  expect_error(band_irradiance(E, rep(0.05, length(lam)), lam, depths = 0,
+                               lambda_min = 400, lambda_max = 700),
+               class = "lux_spectrum_value_error")
+  E[1:3] <- Inf
+  expect_error(par_irradiance(E, lam), class = "lux_spectrum_value_error")
+})

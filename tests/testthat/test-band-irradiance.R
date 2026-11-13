@@ -152,3 +152,8 @@ test_that("band_irradiance: rejects a spectrum shorter than its wavelength grid"
   expect_error(band_irradiance(1, Kd, lam, depths = 0),
                class = "lux_spectrum_dimension_error")
 })
+
+test_that(".band_widths: a descending grid is reported as not increasing", {
+  expect_error(luxR:::.band_widths(rev(lam), operation = "t()"),
+               "strictly increasing", class = "lux_spectrum_grid_error")
+})

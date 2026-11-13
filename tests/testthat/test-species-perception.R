@@ -27,7 +27,7 @@ test_that("govardovskii_template S is non-negative", {
   expect_true(all(out2$S >= 0))
 })
 
-test_that("govardovskii_template is normalised to a peak of one", {
+test_that("govardovskii_template never exceeds one", {
   lam <- seq(300, 750, by = 1)
   for (chromophore in c("A1", "A2")) {
     out <- govardovskii_template(lam, 500, chromophore = chromophore)
@@ -359,4 +359,25 @@ test_that("fit_sensitivity recovers a peak that lies off the measured grid", {
   expect_equal(fit$lambda_max, 380, tolerance = 0.5 / 380)
   expect_lt(fit$SS, 1e-8)
   expect_equal(fit$amplitude * fit$fitted$S, true / max(true), tolerance = 1e-4)
+})
+
+test_that("fit_sensitivity amplitude is the inverse of the template's on-grid maximum", {
+  lam  <- seq(400, 700, by = 5)
+  true <- govardovskii_template(lam, 380)$S
+  expect_equal(fit_sensitivity(lam, true)$amplitude, 1 / max(true),
+               tolerance = 1e-3)
+  on_grid <- govardovskii_template(lam, 530)$S
+  expect_equal(fit_sensitivity(lam, on_grid)$amplitude, 1 / max(on_grid),
+               tolerance = 1e-3)
+})
+
+test_that("fit_sensitivity raises typed errors before fitting", {
+  lam <- seq(400, 700, by = 5)
+  S   <- govardovskii_template(lam, 530)$S
+  expect_error(fit_sensitivity(lam, S, lambda_max_range = c(250, 700)),
+               class = "lux_invalid_sensitivity_peak_error")
+  bad <- lam
+  bad[3] <- NA
+  expect_error(expect_no_warning(fit_sensitivity(bad, S)),
+               class = "lux_invalid_sensitivity_grid_error")
 })

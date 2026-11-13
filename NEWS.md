@@ -23,15 +23,17 @@ These fixes change returned numbers or turn silent results into errors.
 - The same functions now raise a `lux_spectrum_grid_error` for an irregular
   or descending wavelength grid, for a `binwidth` that differs from the grid
   spacing, and (except `par_fraction()`) for a grid whose bins do not span
-  the band. A single wavelength needs an explicit `binwidth`, and a spectrum
-  whose length differs from `lambda` is a `lux_spectrum_dimension_error`.
+  the band. A single wavelength needs an explicit `binwidth`, a spectrum
+  whose length differs from `lambda` is a `lux_spectrum_dimension_error`,
+  and non-finite spectral values are a `lux_spectrum_value_error`.
 - `govardovskii_template()` is normalised to the template's own peak rather
   than to the largest value on the supplied grid. A pigment whose peak lies
   outside the grid (a 360 nm cone on 400-700 nm) is no longer rescaled to 1;
-  this also affects `species_sensitivity()`, `species_LEF()` and
-  `species_brightness()` on such grids. When the grid contains the peak,
-  values change by up to about 2e-5. `lambda_max` outside 300-700 nm is now
-  rejected.
+  this also affects `species_sensitivity_matrix()`, `species_LEF()` and
+  `species_brightness()` on such grids. When the grid spans the peak, values
+  fall slightly because no grid point sits exactly on it: by up to about
+  4e-5 on a 1 nm grid and up to about 0.5% on a 10 nm grid whose points
+  straddle the peak. `lambda_max` outside 300-700 nm is now rejected.
 - `fit_sensitivity()` fits the template's amplitude as well as its peak and
   returns it as `amplitude`, so a spectrum truncated before its peak is
   fitted correctly. `lambda_max_range` must lie within 300-700 nm.
@@ -42,7 +44,8 @@ These fixes change returned numbers or turn silent results into errors.
 - `resample_spectrum(method = "cubic")` no longer extrapolates outside the
   source range: it returns `NA` under `rule = 1` and the boundary value
   under `rule = 2`, as documented. A `rule` other than 1 or 2 is rejected
-  for both methods.
+  for both methods, as are non-finite values in the spectrum or either
+  wavelength grid, which were previously dropped.
 
 ## Bug fixes
 - Functions that use bundled datasets (`jerlov_Kd()`, `irradiance2lux()`,
