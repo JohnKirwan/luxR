@@ -1,5 +1,11 @@
 # luxR 0.1.1
 
+## Bug fixes
+- Functions that use bundled datasets (`jerlov_Kd()`, `irradiance2lux()`,
+  `colour_jnd()`, `solar_irradiance()` and others) now work when called as
+  `luxR::fn()` without attaching the package. Previously they failed with
+  "object not found".
+
 ## Package identity
 - Added the hexagonal luxR logo with a transparent background. The logo is
   displayed in the GitHub and r-universe README and in the bundled Shiny app.
