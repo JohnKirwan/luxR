@@ -10,6 +10,11 @@
   of a photon-unit integral. Non-irradiance spectra are rejected.
 - Unit conversion is driven by one internal unit table and one pair of
   physical constants.
+## Bug fixes
+- Functions that use bundled datasets (`jerlov_Kd()`, `irradiance2lux()`,
+  `colour_jnd()`, `solar_irradiance()` and others) now work when called as
+  `luxR::fn()` without attaching the package. Previously they failed with
+  "object not found".
 
 ## Package identity
 - Added the hexagonal luxR logo with a transparent background. The logo is
