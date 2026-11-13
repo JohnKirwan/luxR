@@ -112,3 +112,10 @@ test_that("surface_transmittance direct decreases toward grazing incidence", {
   expect_length(v, 3)
   expect_true(all(v >= 0 & v <= 1))
 })
+
+test_that("beam_attenuation rejects missing, negative and mismatched input", {
+  expect_error(beam_attenuation(NA_real_, 0.1), class = "lux_spectrum_value_error")
+  expect_error(beam_attenuation(0.1, -0.1), class = "lux_spectrum_value_error")
+  expect_error(beam_attenuation(1:3 / 10, 1:2 / 10),
+               class = "lux_spectrum_dimension_error")
+})

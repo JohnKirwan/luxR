@@ -8,22 +8,37 @@
 \usage{
 par_fraction(irradiance, ...)
 
-\method{par_fraction}{numeric}(irradiance, lambda, binwidth = NULL, ...)
+\method{par_fraction}{numeric}(
+  irradiance,
+  lambda,
+  binwidth = NULL,
+  photonic = FALSE,
+  basis = c("photon", "energy"),
+  ...
+)
 
-\method{par_fraction}{lux_spectrum}(irradiance, ...)
+\method{par_fraction}{lux_spectrum}(irradiance, basis = c("photon", "energy"), ...)
 }
 \arguments{
-\item{irradiance}{Spectral irradiance (any consistent energy unit per nm),
-or a \code{lux_spectrum} object.}
+\item{irradiance}{Spectral irradiance, or a \code{lux_spectrum} irradiance
+object (radiance and reflectance are rejected).}
 
 \item{...}{Ignored.}
 
 \item{lambda}{Wavelength vector in nm.}
 
 \item{binwidth}{Bin width in nm. Inferred from \code{lambda} if \code{NULL}.}
+
+\item{photonic}{Logical. \code{FALSE} (default): numeric input is in
+energy units (e.g. W m\eqn{^{-2}} nm\eqn{^{-1}}). \code{TRUE}: input is a
+photon or molar flux per nm. A \code{lux_spectrum} records its own unit.}
+
+\item{basis}{\code{"photon"} (default) or \code{"energy"}: what the
+fraction counts.}
 }
 \value{
-Numeric scalar in (0, 1].
+Numeric scalar in [0, 1]. An error is raised if the total
+  irradiance is zero.
 }
 \description{
 Returns the ratio of band-integrated irradiance over 400–700 nm to the
@@ -32,6 +47,12 @@ Useful for characterising how spectrally narrowed a light field has become
 (e.g. at depth, where red wavelengths are preferentially removed).
 }
 \details{
+By default the fraction counts photons, because PAR is defined as a photon
+flux (photosynthesis responds to photons absorbed, not energy). Use
+\code{basis = "energy"} for the fraction of radiant energy. The two differ
+because a long-wavelength photon carries less energy: an energy spectrum
+is converted to photons by weighting each bin by its wavelength.
+
 Samples are bins of width \code{binwidth} centred on their wavelengths, on
 a regularly spaced grid. A bin straddling 400 or 700 nm contributes only
 its part inside the PAR window. The grid need not span the whole window.

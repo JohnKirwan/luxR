@@ -381,3 +381,43 @@ test_that("fit_sensitivity raises typed errors before fitting", {
   expect_error(expect_no_warning(fit_sensitivity(bad, S)),
                class = "lux_invalid_sensitivity_grid_error")
 })
+
+test_that("receptor_absorptance does not rescale an off-peak template", {
+  tmpl <- govardovskii_template(seq(300, 700, by = 10), 503)
+  expect_equal(receptor_absorptance(tmpl, optical_density = 1)$S,
+               1 - exp(-log(10) * tmpl$S))
+})
+
+test_that("receptor_absorptance rejects unnormalised or invalid S", {
+  tmpl <- govardovskii_template(300:700, 500)
+  expect_error(receptor_absorptance(transform(tmpl, S = S * 2),
+                                    optical_density = 0.5),
+               class = "lux_invalid_sensitivity_error")
+  expect_error(receptor_absorptance(c(0.5, -0.1), optical_density = 0.5),
+               class = "lux_species_input_error")
+  expect_error(receptor_absorptance(c(0.5, NA), optical_density = 0.5),
+               class = "lux_species_input_error")
+  expect_error(receptor_absorptance(c(0.5, 1), optical_density = -1),
+               class = "lux_species_input_error")
+  expect_error(receptor_absorptance(c(0.5, 1)), class = "lux_species_input_error")
+})
+
+test_that("fit_sensitivity rejects inverted spectra and bad arguments", {
+  tmpl <- govardovskii_template(300:700, 500)
+  expect_error(fit_sensitivity(tmpl$lambda, -tmpl$S),
+               class = "lux_invalid_sensitivity_error")
+  expect_error(fit_sensitivity(1:3, 1:2), class = "lux_species_input_error")
+  expect_error(fit_sensitivity(tmpl$lambda, tmpl$S,
+                               lambda_max_range = c(600, 400)),
+               class = "lux_species_input_error")
+})
+
+test_that("fit_sensitivity drops NA as unmeasured wavelengths (documented policy)", {
+  tmpl <- govardovskii_template(300:700, 520)
+  s <- tmpl$S
+  s[c(10, 200, 350)] <- NA
+  fit <- fit_sensitivity(tmpl$lambda, s)
+  expect_equal(fit$lambda_max, 520, tolerance = 1e-3)
+  expect_error(fit_sensitivity(tmpl$lambda, rep(NA_real_, nrow(tmpl))),
+               class = "lux_invalid_sensitivity_error")
+})

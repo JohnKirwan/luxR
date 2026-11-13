@@ -7,11 +7,12 @@
 secchi_depth(Kd, lambda = NULL, irradiance = NULL, spectrum = NULL)
 }
 \arguments{
-\item{Kd}{Diffuse attenuation coefficient(s) in 1/m.}
+\item{Kd}{Diffuse attenuation coefficient(s) in 1/m, all positive.}
 
 \item{lambda}{Optional wavelength vector (nm) matching \code{Kd}.}
 
-\item{irradiance}{Optional spectral irradiance for PAR-weighted mean Kd.}
+\item{irradiance}{Optional non-negative spectral irradiance matching
+\code{lambda}; supply with \code{lambda}.}
 
 \item{spectrum}{Optional \code{lux_spectrum}; when supplied its \code{E}
 and \code{lambda} slots replace the \code{irradiance} and \code{lambda}
@@ -24,7 +25,13 @@ Secchi depth in metres.
 Estimates the Secchi disk visibility depth using the Tyler (1968)
 approximation \eqn{z_S \approx 1.7 / K_d}. When a spectral irradiance
 is supplied the function first computes an irradiance-weighted mean Kd
-across the visible range before applying the approximation.
+across 400–700 nm before applying the approximation.
+}
+\details{
+Each sample is a bin centred on its wavelength on a regular grid; a bin
+straddling 400 or 700 nm is weighted by its part inside the window.
+Numeric irradiance is used as given; a \code{lux_spectrum} is converted to
+W m\eqn{^{-2}} nm\eqn{^{-1}} first.
 }
 \examples{
 secchi_depth(jerlov_Kd("IA", lambda = 490))

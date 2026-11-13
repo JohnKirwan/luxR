@@ -5,11 +5,17 @@
 #' Estimates the Secchi disk visibility depth using the Tyler (1968)
 #' approximation \eqn{z_S \approx 1.7 / K_d}. When a spectral irradiance
 #' is supplied the function first computes an irradiance-weighted mean Kd
-#' across the visible range before applying the approximation.
+#' across 400–700 nm before applying the approximation.
 #'
-#' @param Kd         Diffuse attenuation coefficient(s) in 1/m.
+#' Each sample is a bin centred on its wavelength on a regular grid; a bin
+#' straddling 400 or 700 nm is weighted by its part inside the window.
+#' Numeric irradiance is used as given; a \code{lux_spectrum} is converted to
+#' W m\eqn{^{-2}} nm\eqn{^{-1}} first.
+#'
+#' @param Kd         Diffuse attenuation coefficient(s) in 1/m, all positive.
 #' @param lambda     Optional wavelength vector (nm) matching \code{Kd}.
-#' @param irradiance Optional spectral irradiance for PAR-weighted mean Kd.
+#' @param irradiance Optional non-negative spectral irradiance matching
+#'   \code{lambda}; supply with \code{lambda}.
 #' @param spectrum   Optional \code{lux_spectrum}; when supplied its \code{E}
 #'   and \code{lambda} slots replace the \code{irradiance} and \code{lambda}
 #'   arguments.
@@ -24,20 +30,53 @@
 #' @export
 secchi_depth <- function(Kd, lambda = NULL, irradiance = NULL,
                           spectrum = NULL) {
-  Kd <- as.numeric(Kd)
-  if (!is.null(spectrum) && inherits(spectrum, "lux_spectrum")) {
-    lambda     <- spectrum$lambda
-    irradiance <- spectrum$E
+  op <- "secchi_depth()"
+  .check_input(Kd, "Kd", op, lower = 0, lower_open = TRUE)
+  Kd <- as.vector(Kd)
+  binwidth <- NULL
+  if (!is.null(spectrum)) {
+    if (!is.null(lambda) || !is.null(irradiance)) {
+      .stop_lux_spectrum_validation(
+        paste0(op, ": supply either `spectrum` or `lambda` and `irradiance`, ",
+               "not both."),
+        field = c("spectrum", "lambda", "irradiance"),
+        subclass = "lux_spectrum_value_error"
+      )
+    }
+    if (!inherits(spectrum, "lux_spectrum")) {
+      .stop_lux_spectrum_validation(
+        paste0(op, ": `spectrum` must be a lux_spectrum; got ",
+               paste(class(spectrum), collapse = "/"), "."),
+        field = "spectrum", value = class(spectrum),
+        subclass = "lux_spectrum_type_error"
+      )
+    }
+    x <- .as_energy_irradiance(spectrum, op)
+    lambda <- x$lambda
+    irradiance <- x$E
+    binwidth <- x$binwidth
   }
-  if (!is.null(lambda) && !is.null(irradiance)) {
-    idx    <- lambda >= 400 & lambda <= 700
-    E_par  <- irradiance[idx]
-    Kd_par <- Kd[idx]
-    Kd_use <- sum(Kd_par * E_par) / sum(E_par)
-  } else {
-    Kd_use <- Kd
+  if (is.null(lambda) != is.null(irradiance)) {
+    .stop_lux_spectrum_validation(
+      paste0(op, ": `lambda` and `irradiance` must be supplied together."),
+      field = c("lambda", "irradiance"), subclass = "lux_spectrum_value_error"
+    )
   }
-  1.7 / Kd_use
+  if (is.null(lambda)) return(1.7 / Kd)
+
+  .check_spectral_values(Kd, lambda, "Kd", op)
+  .check_spectral_values(irradiance, lambda, "irradiance", op)
+  .check_input(irradiance, "irradiance", op, lower = 0)
+  weight <- irradiance * .band_widths(lambda, binwidth, 400, 700, op,
+                                      cover = FALSE)
+  if (sum(weight) == 0) {
+    .stop_lux_spectrum_validation(
+      paste0(op, ": irradiance is zero over 400-700 nm, so the weighted Kd ",
+             "is undefined."),
+      field = "irradiance", value = 0, subclass = "lux_spectrum_value_error"
+    )
+  }
+  1.7 / (sum(Kd * weight) / sum(weight))
 }
 
 

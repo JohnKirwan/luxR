@@ -115,3 +115,39 @@ test_that("Jerlov provenance does not leak into scalar visibility results", {
     contrast_at_distance(1, 10, Kd), "luxR.jerlov", exact = TRUE
   ))
 })
+
+test_that("secchi_depth weights the half-width edge bins by their overlap", {
+  lam <- seq(400, 700, by = 10)
+  Kd  <- rep(0.1, length(lam))
+  Kd[c(1, length(lam))] <- 1
+  w <- rep(10, length(lam))
+  w[c(1, length(lam))] <- 5
+  expect_equal(secchi_depth(Kd, lam, rep(1, length(lam))),
+               1.7 / (sum(Kd * w) / sum(w)))
+})
+
+test_that("secchi_depth rejects invalid input", {
+  lam <- seq(400, 700, by = 10)
+  E   <- rep(1, 31)
+  expect_error(secchi_depth(0), class = "lux_spectrum_value_error")
+  expect_error(secchi_depth(NA_real_), class = "lux_spectrum_value_error")
+  expect_error(secchi_depth(rep(0.1, 3), lam, E),
+               class = "lux_spectrum_dimension_error")
+  expect_error(secchi_depth(rep(0.1, 31), lam), class = "lux_spectrum_value_error")
+  expect_error(secchi_depth(rep(0.1, 31), lam, rep(0, 31)),
+               class = "lux_spectrum_value_error")
+  expect_error(secchi_depth(rep(0.1, 31), lam, c(-1, E[-1])),
+               class = "lux_spectrum_value_error")
+  r <- lux_spectrum(E, lam, "radiance", "W/m2/sr/nm")
+  expect_error(secchi_depth(rep(0.1, 31), spectrum = r),
+               class = "lux_spectrum_dimension_error")
+  expect_error(secchi_depth(rep(0.1, 31), spectrum = E),
+               class = "lux_spectrum_type_error")
+})
+
+test_that("secchi_depth gives the same answer for any lux_spectrum unit", {
+  x  <- from_naples("0m")
+  Kd <- rep(0.1, length(x$lambda)) + x$lambda / 1e4
+  expect_equal(secchi_depth(Kd, spectrum = x),
+               secchi_depth(Kd, spectrum = convert_unit(x, "W/m2/nm")))
+})

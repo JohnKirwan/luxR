@@ -10,7 +10,7 @@ weber_contrast(I_target, I_background)
 \item{I_target}{Luminance or radiance of the target (scalar or vector).}
 
 \item{I_background}{Luminance or radiance of the background (scalar or
-vector). Must be non-zero.}
+vector). Must be positive; \code{I_target} must be non-negative.}
 }
 \value{
 Contrast value(s); unbounded but typically in \eqn{[-1, \infty)}.

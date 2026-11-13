@@ -237,7 +237,8 @@ lux2irradiance <- function(lx, spectrum, lambda = NULL,
 #'   If supplied, the reference shape is pre-attenuated to \code{depth} before
 #'   rescaling — use when the measurement was taken at depth.
 #' @param depth      Depth in metres at which the measurement was taken.
-#'   Only used when \code{water_type} is not \code{NULL}. Default 0.
+#'   Finite and non-negative. Only used when \code{water_type} is not
+#'   \code{NULL}. Default 0.
 #' @param wavelength_policy Policy for wavelengths outside the bundled Jerlov
 #'   domain when attenuation is requested: \code{"error"} (default), explicit
 #'   restriction to the supported intersection with \code{"trim"}, or explicit
@@ -257,8 +258,11 @@ broadband2spectrum <- function(value,
                                 depth      = 0,
                                 wavelength_policy = c("error", "trim",
                                                       "constant")) {
+  op <- "broadband2spectrum()"
   unit   <- match.arg(unit)
   wavelength_policy <- match.arg(wavelength_policy)
+  .check_input(value, "value", op, scalar = TRUE, lower = 0)
+  .check_input(depth, "depth", op, scalar = TRUE, lower = 0)
   shape  <- spectrum$irradiance
   lambda <- spectrum$wavelength
   jerlov_metadata <- NULL
@@ -273,19 +277,29 @@ broadband2spectrum <- function(value,
     jerlov_metadata <- domain$metadata
   }
 
-  binwidth <- median(diff(lambda))
+  .check_spectral_values(shape, lambda, "irradiance", op)
+  .check_input(shape, "irradiance", op, lower = 0)
+  binwidth <- .grid_binwidth(lambda, NULL, op)
+  total_W  <- sum(shape) * binwidth
 
   v_shape <- switch(unit,
     lx         = irradiance2lux(shape, lambda, total = TRUE,
                                 binwidth = binwidth),
-    W          = sum(shape) * binwidth,
-    kW         = sum(shape) * binwidth / 1e3,
+    W          = total_W,
+    kW         = total_W / 1e3,
     umol       = par_irradiance(shape, lambda, binwidth = binwidth),
-    radiance_W = sum(shape) * binwidth / pi,
+    radiance_W = total_W / pi,
     cd         = irradiance2lux(shape, lambda, total = TRUE,
                                 binwidth = binwidth) / pi
   )
 
+  if (v_shape == 0) {
+    .stop_lux_spectrum_validation(
+      paste0(op, ": the reference spectrum integrates to zero in unit '",
+             unit, "', so it cannot be scaled to ", format(value), "."),
+      field = "spectrum", value = 0, subclass = "lux_spectrum_value_error"
+    )
+  }
   k   <- value / v_shape
   out <- data.frame(wavelength = lambda, irradiance = shape * k)
 

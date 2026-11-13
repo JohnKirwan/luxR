@@ -27,9 +27,9 @@ test_that("lux_spectrum: explicit binwidth is preserved", {
   expect_equal(x$binwidth, 10)
 })
 
-test_that("lux_spectrum: single-bin defaults binwidth to 1", {
-  x <- lux_spectrum(1, 550)
-  expect_equal(x$binwidth, 1)
+test_that("lux_spectrum: a single bin needs an explicit binwidth", {
+  expect_error(lux_spectrum(1, 550), class = "lux_spectrum_value_error")
+  expect_equal(lux_spectrum(1, 550, binwidth = 5)$binwidth, 5)
 })
 
 test_that("lux_spectrum: meta is stored", {

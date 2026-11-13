@@ -283,3 +283,22 @@ test_that("wavelength_in_medium: vectorised over lambda", {
 test_that("wavelength_in_medium: errors when n < 1", {
   expect_error(wavelength_in_medium(500, n = 0.9), "n.*must be")
 })
+
+test_that("broadband2spectrum rejects irregular grids for every unit", {
+  irr <- data.frame(wavelength = c(400, 410, 430, 440), irradiance = 1)
+  for (u in c("W", "kW", "radiance_W", "lx", "cd", "umol")) {
+    expect_error(broadband2spectrum(100, u, irr),
+                 class = "lux_spectrum_grid_error")
+  }
+})
+
+test_that("broadband2spectrum validates value, depth and the reference shape", {
+  sp <- solar_irradiance("clear_noon")
+  expect_error(broadband2spectrum(-1, "W", sp), class = "lux_spectrum_value_error")
+  expect_error(broadband2spectrum(NA_real_, "W", sp),
+               class = "lux_spectrum_value_error")
+  expect_error(broadband2spectrum(1, "W", sp, water_type = "I", depth = -5),
+               class = "lux_spectrum_value_error")
+  zero <- transform(sp, irradiance = 0)
+  expect_error(broadband2spectrum(1, "W", zero), class = "lux_spectrum_value_error")
+})

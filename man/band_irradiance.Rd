@@ -23,7 +23,14 @@ band_irradiance(E_lambda, ...)
   ...
 )
 
-\method{band_irradiance}{lux_spectrum}(E_lambda, Kd_lambda, depths, lambda = NULL, ...)
+\method{band_irradiance}{lux_spectrum}(
+  E_lambda,
+  Kd_lambda,
+  depths,
+  lambda = NULL,
+  binwidth = NULL,
+  ...
+)
 }
 \arguments{
 \item{E_lambda}{Spectral irradiance (\eqn{W\,m^{-2}\,nm^{-1}}{W m^-2 nm^-1}) at depth \code{from}.

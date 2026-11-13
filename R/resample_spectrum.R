@@ -65,7 +65,15 @@ resample_spectrum.lux_spectrum <- function(x, lambda, from = NULL,
                                             rule   = 1) {
   method  <- match.arg(method)
   E_new   <- .interp(x$E, x$lambda, lambda, method, rule)
-  binwidth_new <- if (length(lambda) > 1) mean(diff(lambda)) else 1
+  if (length(lambda) < 2L) {
+    .stop_lux_spectrum_validation(
+      paste0("resample_spectrum(): a lux_spectrum needs at least two target ",
+             "wavelengths to define its bin width; got ", length(lambda), "."),
+      field = "lambda", value = lambda, subclass = "lux_spectrum_value_error",
+      context = x$meta
+    )
+  }
+  binwidth_new <- .grid_binwidth(lambda, NULL, "resample_spectrum()")
   lux_spectrum(E_new, lambda, x$quantity, x$unit, binwidth_new, x$meta)
 }
 

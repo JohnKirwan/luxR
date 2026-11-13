@@ -153,3 +153,10 @@ test_that("resample_spectrum: rejects non-finite or malformed inputs with typed 
                  class = "lux_spectrum_value_error")
   }
 })
+
+test_that("resample_spectrum needs a regular target grid of two or more points", {
+  x <- from_naples("0m")
+  expect_error(resample_spectrum(x, 550), class = "lux_spectrum_value_error")
+  expect_error(resample_spectrum(x, c(400, 410, 430)),
+               class = "lux_spectrum_grid_error")
+})

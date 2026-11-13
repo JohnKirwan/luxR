@@ -1,5 +1,48 @@
 # luxR 0.1.1
 
+## Breaking changes
+- `par_fraction()` now returns the photon fraction by default, since PAR is
+  defined as a photon flux. `basis = "energy"` gives the energy fraction (the
+  previous result for energy input). Numeric input states its unit with
+  `photonic`, as in `par_irradiance()`; a `lux_spectrum` is converted from its
+  own unit, so µmol and W spectra now give the same answer. Non-irradiance
+  spectra and negative values are rejected, and a zero total raises a
+  `lux_spectrum_value_error` instead of returning `NA`.
+- `secchi_depth()` weights the bins straddling 400 and 700 nm by their
+  overlap with the window instead of counting them whole, converts a
+  `lux_spectrum` to W m^-2 nm^-1 before weighting (µmol spectra previously
+  weighted by photon flux), and validates its input: `Kd` must be positive and
+  finite, `lambda` and `irradiance` come together and match `Kd` in length,
+  irradiance is non-negative with some in the window, and only irradiance
+  spectra are accepted.
+- `photic_depth()`, `weber_contrast()`, `beam_attenuation()` and the numeric
+  `fit_Kd()` validate their input and raise typed `lux_spectrum_*_error`s:
+  non-finite (including `NA`) or out-of-range values, `fraction >= 1`,
+  `z2 <= z1`, and vectors whose lengths neither match nor are 1.
+  `beam_attenuation()` no longer lets `NA` through, and `weber_contrast()`
+  rejects a negative target or background.
+- A wavelength grid's bin width is no longer guessed. `lux_spectrum()` with a
+  single wavelength now needs an explicit `binwidth` (it was 1 nm). File
+  readers and `as_lux_spectrum()` conversions, which take no `binwidth`,
+  therefore reject single-wavelength input. `resample_spectrum()` needs at least
+  two regularly spaced target wavelengths. `colour_jnd()`, the Shiny app and
+  every `broadband2spectrum()` unit raise a `lux_spectrum_grid_error` for an
+  irregular grid instead of averaging its spacing. `broadband2spectrum()`
+  also rejects a negative or non-finite `value` or `depth`, and a reference
+  spectrum that integrates to zero.
+- `receptor_absorptance()` no longer rescales `S` to its on-grid maximum,
+  which undid the true-peak normalisation of `govardovskii_template()` on a
+  grid that misses the peak. `S` must be a peak-normalised template (finite,
+  in [0, 1]); a value above 1 is a `lux_invalid_sensitivity_error`. Argument
+  errors are now `lux_species_input_error`s.
+- `fit_sensitivity()` rejects a spectrum whose largest value is not positive
+  (e.g. an inverted one, which was fitted upside down) and infinite values,
+  and replaces its `stopifnot()` checks with `lux_species_input_error`s. `NA`
+  values are still dropped as unmeasured wavelengths.
+- `band_irradiance()` on a `lux_spectrum` gives a clear error when `lambda`
+  or `binwidth` is supplied (both come from the object); `binwidth` used to
+  fail with "matched by multiple actual arguments".
+
 ## Unit handling
 - `par_irradiance()` now rejects radiance and reflectance `lux_spectrum`
   objects with a `lux_spectrum_dimension_error`. Photon-radiance spectra were

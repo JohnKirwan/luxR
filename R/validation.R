@@ -41,6 +41,59 @@
   invisible(x)
 }
 
+# `fail` callback raising a typed lux_spectrum error prefixed with the
+# operation, e.g. "photic_depth(): `Kd` must ...".
+.input_fail <- function(operation) {
+  function(message, field, value, index, kind) {
+    .stop_lux_spectrum_validation(
+      paste0(operation, ": ", message), field = field, value = value,
+      index = index, subclass = paste0("lux_spectrum_", kind, "_error")
+    )
+  }
+}
+
+.check_input <- function(x, field, operation, ...) {
+  .check_numeric(x, field, .input_fail(operation), ...)
+}
+
+# Bin width (nm) of a strictly increasing, regularly spaced wavelength grid.
+# A supplied `binwidth` must equal the spacing; a single wavelength needs one.
+.grid_binwidth <- function(lambda, binwidth = NULL, operation) {
+  fail <- .input_fail(operation)
+  .check_input(lambda, "lambda", operation, lower = 0, lower_open = TRUE)
+  steps <- diff(lambda)
+  bad <- which(steps <= 0)[1L]
+  if (!is.na(bad)) {
+    fail(paste0("`lambda` must be strictly increasing; index ", bad + 1L,
+                " has value ", format(lambda[bad + 1L]), " after ",
+                format(lambda[bad]), "."),
+         "lambda", lambda[bad + 1L], bad + 1L, "grid")
+  }
+  bad <- which(abs(steps - steps[1L]) > .grid_tolerance(steps))[1L]
+  if (!is.na(bad)) {
+    fail(paste0("`lambda` must be regularly spaced; the step before index ",
+                bad + 1L, " is ", format(steps[bad]), " nm, expected ",
+                format(steps[1L]), " nm."),
+         "lambda", lambda[bad + 1L], bad + 1L, "grid")
+  }
+  if (is.null(binwidth)) {
+    if (length(lambda) == 1L) {
+      fail("`binwidth` is required for a single wavelength.", "binwidth",
+           NULL, NULL, "value")
+    }
+    return(steps[1L])
+  }
+  .check_input(binwidth, "binwidth", operation, scalar = TRUE, lower = 0,
+               lower_open = TRUE)
+  if (length(lambda) > 1L &&
+      abs(binwidth - steps[1L]) > .grid_tolerance(binwidth, steps[1L])) {
+    fail(paste0("`binwidth` (", format(binwidth), " nm) must equal the ",
+                "wavelength spacing (", format(steps[1L]), " nm)."),
+         "binwidth", binwidth, NULL, "grid")
+  }
+  binwidth
+}
+
 # `fail` callback raising lux_spectrum validation errors.
 .lux_spectrum_fail <- function(context = list()) {
   function(message, field, value, index, kind) {
@@ -49,4 +102,18 @@
       subclass = paste0("lux_spectrum_", kind, "_error"), context = context
     )
   }
+}
+
+# Two vectors combined elementwise must have equal lengths, or one of length 1.
+.check_recyclable <- function(a, b, fields, operation) {
+  if (length(a) == length(b) || length(a) == 1L || length(b) == 1L) {
+    return(invisible())
+  }
+  .stop_lux_spectrum_validation(
+    paste0(operation, ": `", fields[1L], "` (length ", length(a), ") and `",
+           fields[2L], "` (length ", length(b), ") must have equal lengths, ",
+           "or one must have length 1."),
+    field = fields, value = c(length(a), length(b)),
+    subclass = "lux_spectrum_dimension_error"
+  )
 }

@@ -7,9 +7,11 @@
 beam_attenuation(absorption, scattering)
 }
 \arguments{
-\item{absorption}{Absorption coefficient \eqn{a} (1/m). Vectorised.}
+\item{absorption}{Absorption coefficient \eqn{a} (1/m), finite and
+non-negative. Vectorised.}
 
-\item{scattering}{Scattering coefficient \eqn{b} (1/m). Vectorised.}
+\item{scattering}{Scattering coefficient \eqn{b} (1/m), finite and
+non-negative; same length as \code{absorption} or length 1.}
 }
 \value{
 Beam attenuation coefficient \eqn{c} (1/m).

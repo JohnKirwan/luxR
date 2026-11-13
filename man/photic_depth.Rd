@@ -7,7 +7,7 @@
 photic_depth(Kd, fraction = 0.01)
 }
 \arguments{
-\item{Kd}{Diffuse attenuation coefficient(s) in 1/m.}
+\item{Kd}{Diffuse attenuation coefficient(s) in 1/m; positive.}
 
 \item{fraction}{Fraction of surface irradiance. Must be in (0, 1).
 Default 0.01 (1\%).}

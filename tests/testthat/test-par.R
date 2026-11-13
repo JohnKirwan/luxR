@@ -40,11 +40,11 @@ test_that("par_irradiance decreases with depth via attenuate_spectrum", {
   expect_gt(par0, par50)
 })
 
-test_that("par_irradiance photonic = TRUE works with Naples data", {
-  lam <- Naples$wv
-  E   <- Naples$depth_0m
-  par <- par_irradiance(E, lam, photonic = TRUE)
-  expect_gt(par, 0)
+test_that("par_irradiance photonic = TRUE takes raw photons", {
+  x   <- from_naples("0m")                       # umol/m2/s/nm
+  raw <- x$E * 1e-6 * 6.02214076e23              # photons/m2/s/nm
+  expect_equal(par_irradiance(raw, x$lambda, photonic = TRUE),
+               par_irradiance(x))
 })
 
 test_that("par_irradiance: umol lux_spectrum returns same value as direct sum", {
@@ -118,9 +118,54 @@ test_that("par_irradiance and par_fraction reject mismatched lengths", {
   expect_error(par_fraction(1, lam), class = "lux_spectrum_dimension_error")
 })
 
-test_that("par_fraction: a flat spectrum gives the PAR share of the bin extent", {
+test_that("par_fraction: energy basis of a flat spectrum is the PAR bin share", {
   lam <- seq(300, 800, by = 10)
-  expect_equal(par_fraction(rep(1, length(lam)), lam), 300 / 510)
+  expect_equal(par_fraction(rep(1, length(lam)), lam, basis = "energy"),
+               300 / 510)
+})
+
+test_that("par_fraction: photon basis weights each bin by wavelength", {
+  lam   <- seq(300, 800, by = 10)
+  w_all <- .band_widths(lam, operation = "t")
+  w_par <- .band_widths(lam, NULL, 400, 700, "t", cover = FALSE)
+  expect_equal(par_fraction(rep(1, length(lam)), lam),
+               sum(lam * w_par) / sum(lam * w_all))
+})
+
+test_that("par_fraction: photonic input in energy basis divides by wavelength", {
+  lam <- seq(300, 800, by = 10)
+  N   <- W2photon(rep(1, length(lam)), lam)
+  expect_equal(par_fraction(N, lam, photonic = TRUE, basis = "energy"),
+               300 / 510)
+})
+
+test_that("par_fraction: the unit of a lux_spectrum does not change the answer", {
+  x <- from_naples("0m")
+  expect_equal(par_fraction(x), par_fraction(convert_unit(x, "W/m2/nm")))
+  expect_equal(par_fraction(x, basis = "energy"),
+               par_fraction(convert_unit(x, "W/m2/nm"), basis = "energy"))
+})
+
+test_that("par_fraction rejects radiance, negative and all-zero spectra", {
+  lam <- seq(400, 700, by = 10)
+  r <- lux_spectrum(rep(1, 31), lam, "radiance", "W/m2/sr/nm")
+  expect_error(par_fraction(r), class = "lux_spectrum_dimension_error")
+  expect_error(par_fraction(rep(0, 31), lam), class = "lux_spectrum_value_error")
+  expect_error(par_fraction(c(-1, rep(1, 30)), lam),
+               class = "lux_spectrum_value_error")
+})
+
+test_that("par_fraction keeps binwidth third and rejects a non-logical photonic", {
+  lam <- seq(300, 800, by = 10)
+  E   <- rep(1, length(lam))
+  expect_equal(par_fraction(E, lam, 10), par_fraction(E, lam))
+  expect_error(par_fraction(E, lam, photonic = 1), class = "lux_spectrum_type_error")
+  expect_error(par_fraction(E, lam, photonic = NA), class = "lux_spectrum_type_error")
+})
+
+test_that("par_fraction is 0 for a spectrum entirely outside PAR", {
+  lam <- seq(300, 380, by = 10)
+  expect_equal(par_fraction(rep(1, length(lam)), lam), 0)
 })
 
 test_that("PAR and band functions reject non-finite irradiance, even outside the band", {

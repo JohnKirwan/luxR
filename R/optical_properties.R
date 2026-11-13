@@ -8,8 +8,10 @@
 #' how a collimated beam — and the contrast of a sighted object — fades with
 #' distance, and is always larger than the diffuse attenuation \eqn{K_d}.
 #'
-#' @param absorption Absorption coefficient \eqn{a} (1/m). Vectorised.
-#' @param scattering Scattering coefficient \eqn{b} (1/m). Vectorised.
+#' @param absorption Absorption coefficient \eqn{a} (1/m), finite and
+#'   non-negative. Vectorised.
+#' @param scattering Scattering coefficient \eqn{b} (1/m), finite and
+#'   non-negative; same length as \code{absorption} or length 1.
 #' @return Beam attenuation coefficient \eqn{c} (1/m).
 #' @references
 #'   Johnsen S (2012) The Optics of Life. Princeton University Press, ch. 5.
@@ -19,8 +21,10 @@
 #' beam_attenuation(absorption = 0.1, scattering = 0.05)   # 0.15
 #' @export
 beam_attenuation <- function(absorption, scattering) {
-  if (any(absorption < 0, na.rm = TRUE) || any(scattering < 0, na.rm = TRUE))
-    stop("`absorption` and `scattering` must be >= 0.")
+  op <- "beam_attenuation()"
+  .check_input(absorption, "absorption", op, lower = 0)
+  .check_input(scattering, "scattering", op, lower = 0)
+  .check_recyclable(absorption, scattering, c("absorption", "scattering"), op)
   absorption + scattering
 }
 

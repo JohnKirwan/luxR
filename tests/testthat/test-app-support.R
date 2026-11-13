@@ -439,9 +439,12 @@ test_that("Species Perception applies optical-density self-screening", {
     expect_equal(max(sp_effective_S()$S), max(sp_sensitivity()$S),
                  tolerance = 1e-9)
 
-    # OD = 1 -> absorptance with base-10 peak capture of 1 - 10^-1 = 0.9
+    # OD = 1 -> absorptance 1 - 10^-S; the template is not rescaled, so the
+    # on-grid maximum stays just below the true-peak capture of 0.9
     session$setInputs(sp_od = 1)
-    expect_equal(max(sp_effective_S()$S), 0.9, tolerance = 1e-6)
+    expect_equal(max(sp_effective_S()$S), 1 - 10^-max(sp_sensitivity()$S),
+                 tolerance = 1e-12)
+    expect_lt(max(sp_effective_S()$S), 0.9)
 
     # quantum catch computes, and the references gain the self-screening cite
     session$setInputs(sp_calc = 1)

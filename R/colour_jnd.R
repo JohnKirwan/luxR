@@ -32,7 +32,7 @@
 #'   receptors, or a named numeric vector with one entry per receptor class.
 #'   Default 0.05 (5\% noise), typical for cones in well-lit conditions.
 #' @param binwidth Wavelength bin width in nm. Inferred from \code{lambda}
-#'   spacing if \code{NULL} (default).
+#'   spacing if \code{NULL} (default). The grid must be regularly spaced.
 #' @return Scalar: chromatic distance \eqn{\Delta S} in just-noticeable
 #'   differences (JNDs).
 #' @references
@@ -87,8 +87,7 @@ colour_jnd <- function(stim1, stim2, lambda, species,
     )
 
   # ---- binwidth -----------------------------------------------------------
-  if (is.null(binwidth))
-    binwidth <- if (length(lambda) > 1) mean(diff(lambda)) else 1
+  binwidth <- .grid_binwidth(lambda, binwidth, "colour_jnd()")
 
   # ---- quantum catches for each receptor ----------------------------------
   lam_s <- seq(300, 750, by = 1)

@@ -60,8 +60,8 @@ test_that("W2mol_spec_irradiance: radiance preserves steradian and W scale", {
 
 test_that("W2mol_spec_irradiance: mW radiance applies the 1e-3 scale", {
   lambda <- 500
-  x_mW   <- lux_spectrum(1, lambda, "radiance", "mW/m2/sr/nm")
-  x_W    <- lux_spectrum(1e-3, lambda, "radiance", "W/m2/sr/nm")
+  x_mW   <- lux_spectrum(1, lambda, "radiance", "mW/m2/sr/nm", binwidth = 1)
+  x_W    <- lux_spectrum(1e-3, lambda, "radiance", "W/m2/sr/nm", binwidth = 1)
 
   result <- W2mol_spec_irradiance(x_mW, molar_unit = "mol")
   expect_equal(result$unit, "mol/m2/s/sr/nm")
