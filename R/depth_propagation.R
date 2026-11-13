@@ -563,7 +563,7 @@ propagate_spectrum.lux_spectrum <- function(E_lambda, Kd_lambda, from = 0, to,
 #' Solves exp(-Kd * z) = fraction for z, giving -log(fraction) / Kd.
 #' The default 1% threshold is the classic euphotic depth.
 #'
-#' @param Kd       Diffuse attenuation coefficient(s) in 1/m.
+#' @param Kd       Diffuse attenuation coefficient(s) in 1/m; positive.
 #' @param fraction Fraction of surface irradiance. Must be in (0, 1).
 #'   Default 0.01 (1\%).
 #' @return Depth(s) in metres at which \code{fraction} of surface light remains.
@@ -599,13 +599,15 @@ photic_depth <- function(Kd, fraction = 0.01) {
 #'   handles both arguments; passing a numeric \code{E1} with a
 #'   \code{lux_spectrum} \code{E2} is not supported. Two \code{lux_spectrum}
 #'   inputs must both be spectral irradiance on the same wavelength grid;
-#'   they are converted to a common unit before the ratio is taken.
+#'   they are converted to a common unit before the ratio is taken. Numeric
+#'   values must be finite and positive.
 #' @param z1 Depth of E1 in metres. Must be < z2.
 #' @param E2 Irradiance at the deeper depth \code{z2}. Numeric vector or
 #'   \code{lux_spectrum}. It must be a \code{lux_spectrum} exactly when
 #'   \code{E1} is one; mixing the two is an error.
 #' @param z2 Depth of E2 in metres. Must be > z1.
-#' @return Kd in 1/m. Same length as E1/E2.
+#' @return Kd in 1/m. Same length as E1/E2. Vector arguments must have
+#'   equal lengths or length 1.
 #' @references
 #'   Kirk JTO (1994) Light and Photosynthesis in Aquatic Ecosystems,
 #'   2nd edn. Cambridge University Press.
@@ -636,6 +638,7 @@ fit_Kd.numeric <- function(E1, z1, E2, z2, ...) {
   .check_recyclable(E1, E2, c("E1", "E2"), op)
   .check_recyclable(z1, z2, c("z1", "z2"), op)
   dz <- z2 - z1
+  .check_recyclable(E1, dz, c("E1", "z2 - z1"), op)
   if (any(dz <= 0)) {
     i <- which(dz <= 0)[1L]
     .stop_lux_spectrum_validation(

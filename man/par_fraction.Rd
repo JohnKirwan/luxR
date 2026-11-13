@@ -11,9 +11,9 @@ par_fraction(irradiance, ...)
 \method{par_fraction}{numeric}(
   irradiance,
   lambda,
+  binwidth = NULL,
   photonic = FALSE,
   basis = c("photon", "energy"),
-  binwidth = NULL,
   ...
 )
 
@@ -27,14 +27,14 @@ object (radiance and reflectance are rejected).}
 
 \item{lambda}{Wavelength vector in nm.}
 
+\item{binwidth}{Bin width in nm. Inferred from \code{lambda} if \code{NULL}.}
+
 \item{photonic}{Logical. \code{FALSE} (default): numeric input is in
 energy units (e.g. W m\eqn{^{-2}} nm\eqn{^{-1}}). \code{TRUE}: input is a
 photon or molar flux per nm. A \code{lux_spectrum} records its own unit.}
 
 \item{basis}{\code{"photon"} (default) or \code{"energy"}: what the
 fraction counts.}
-
-\item{binwidth}{Bin width in nm. Inferred from \code{lambda} if \code{NULL}.}
 }
 \value{
 Numeric scalar in [0, 1]. An error is raised if the total

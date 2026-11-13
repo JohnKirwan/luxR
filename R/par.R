@@ -107,11 +107,17 @@ par_fraction <- function(irradiance, ...) UseMethod("par_fraction")
 
 #' @rdname par_fraction
 #' @export
-par_fraction.numeric <- function(irradiance, lambda, photonic = FALSE,
-                                 basis = c("photon", "energy"),
-                                 binwidth = NULL, ...) {
+par_fraction.numeric <- function(irradiance, lambda, binwidth = NULL,
+                                 photonic = FALSE,
+                                 basis = c("photon", "energy"), ...) {
   op <- "par_fraction()"
   basis <- match.arg(basis)
+  if (!isTRUE(photonic) && !isFALSE(photonic)) {
+    .stop_lux_spectrum_validation(
+      paste0(op, ": `photonic` must be TRUE or FALSE."),
+      field = "photonic", value = photonic, subclass = "lux_spectrum_type_error"
+    )
+  }
   .check_spectral_values(irradiance, lambda, "irradiance", op)
   .check_input(irradiance, "irradiance", op, lower = 0)
   # Wavelength weighting converts between bases; the constants cancel.

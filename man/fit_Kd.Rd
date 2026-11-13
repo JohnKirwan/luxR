@@ -18,7 +18,8 @@ fit_Kd(E1, ...)
 handles both arguments; passing a numeric \code{E1} with a
 \code{lux_spectrum} \code{E2} is not supported. Two \code{lux_spectrum}
 inputs must both be spectral irradiance on the same wavelength grid;
-they are converted to a common unit before the ratio is taken.}
+they are converted to a common unit before the ratio is taken. Numeric
+values must be finite and positive.}
 
 \item{...}{Ignored.}
 
@@ -31,7 +32,8 @@ they are converted to a common unit before the ratio is taken.}
 \item{z2}{Depth of E2 in metres. Must be > z1.}
 }
 \value{
-Kd in 1/m. Same length as E1/E2.
+Kd in 1/m. Same length as E1/E2. Vector arguments must have
+  equal lengths or length 1.
 }
 \description{
 Closed-form Beer-Lambert inversion: Kd = log(E1/E2) / (z2 - z1).

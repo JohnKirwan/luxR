@@ -516,6 +516,8 @@ test_that("fit_Kd numeric validates input with typed errors", {
   expect_error(fit_Kd(0, 0, 0.5, 2), class = "lux_spectrum_value_error")
   expect_error(fit_Kd(1, 0, NA_real_, 2), class = "lux_spectrum_value_error")
   expect_error(fit_Kd(1:3, 0, 1:2, 2), class = "lux_spectrum_dimension_error")
+  expect_error(fit_Kd(1:3, 0:1, 1:3 / 2, 2:3),
+               class = "lux_spectrum_dimension_error")
   expect_error(fit_Kd(1, 0, from_naples("0m"), 2),
                class = "lux_spectrum_type_error")
 })

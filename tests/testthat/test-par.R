@@ -155,6 +155,14 @@ test_that("par_fraction rejects radiance, negative and all-zero spectra", {
                class = "lux_spectrum_value_error")
 })
 
+test_that("par_fraction keeps binwidth third and rejects a non-logical photonic", {
+  lam <- seq(300, 800, by = 10)
+  E   <- rep(1, length(lam))
+  expect_equal(par_fraction(E, lam, 10), par_fraction(E, lam))
+  expect_error(par_fraction(E, lam, photonic = 1), class = "lux_spectrum_type_error")
+  expect_error(par_fraction(E, lam, photonic = NA), class = "lux_spectrum_type_error")
+})
+
 test_that("par_fraction is 0 for a spectrum entirely outside PAR", {
   lam <- seq(300, 380, by = 10)
   expect_equal(par_fraction(rep(1, length(lam)), lam), 0)

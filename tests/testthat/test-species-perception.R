@@ -411,3 +411,13 @@ test_that("fit_sensitivity rejects inverted spectra and bad arguments", {
                                lambda_max_range = c(600, 400)),
                class = "lux_species_input_error")
 })
+
+test_that("fit_sensitivity drops NA as unmeasured wavelengths (documented policy)", {
+  tmpl <- govardovskii_template(300:700, 520)
+  s <- tmpl$S
+  s[c(10, 200, 350)] <- NA
+  fit <- fit_sensitivity(tmpl$lambda, s)
+  expect_equal(fit$lambda_max, 520, tolerance = 1e-3)
+  expect_error(fit_sensitivity(tmpl$lambda, rep(NA_real_, nrow(tmpl))),
+               class = "lux_invalid_sensitivity_error")
+})
