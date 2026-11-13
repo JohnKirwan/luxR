@@ -29,7 +29,11 @@ A list with components:
   \describe{
     \item{\code{lambda_max}}{Best-fit peak wavelength (nm).}
     \item{\code{chromophore}}{Chromophore used.}
-    \item{\code{SS}}{Residual sum of squares at the optimum.}
+    \item{\code{amplitude}}{Best-fit scale of the template relative to
+      the peak-normalised input. Below 1 when the template's peak lies
+      outside the measured wavelengths.}
+    \item{\code{SS}}{Residual sum of squares at the optimum, between the
+      peak-normalised input and \code{amplitude * fitted$S}.}
     \item{\code{fitted}}{Data frame with columns \code{lambda} and \code{S}
       giving the template evaluated on the input wavelength grid.}
   }

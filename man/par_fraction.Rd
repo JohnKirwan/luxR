@@ -31,6 +31,11 @@ total integrated irradiance across the full wavelength range supplied.
 Useful for characterising how spectrally narrowed a light field has become
 (e.g. at depth, where red wavelengths are preferentially removed).
 }
+\details{
+Samples are bins of width \code{binwidth} centred on their wavelengths, on
+a regularly spaced grid. A bin straddling 400 or 700 nm contributes only
+its part inside the PAR window. The grid need not span the whole window.
+}
 \examples{
 sp <- solar_irradiance("clear_noon")
 par_fraction(sp$irradiance, sp$wavelength)

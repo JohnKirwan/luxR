@@ -16,14 +16,17 @@ fit_Kd(E1, ...)
 \item{E1}{Irradiance at the shallower depth \code{z1}. Numeric vector or
 \code{lux_spectrum}. When \code{E1} is a \code{lux_spectrum}, S3 dispatch
 handles both arguments; passing a numeric \code{E1} with a
-\code{lux_spectrum} \code{E2} is not supported.}
+\code{lux_spectrum} \code{E2} is not supported. Two \code{lux_spectrum}
+inputs must both be spectral irradiance on the same wavelength grid;
+they are converted to a common unit before the ratio is taken.}
 
 \item{...}{Ignored.}
 
 \item{z1}{Depth of E1 in metres. Must be < z2.}
 
 \item{E2}{Irradiance at the deeper depth \code{z2}. Numeric vector or
-\code{lux_spectrum} (only when \code{E1} is also a \code{lux_spectrum}).}
+\code{lux_spectrum}. It must be a \code{lux_spectrum} exactly when
+\code{E1} is one; mixing the two is an error.}
 
 \item{z2}{Depth of E2 in metres. Must be > z1.}
 }
