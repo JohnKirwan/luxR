@@ -96,3 +96,41 @@ test_that("resample_spectrum: Kd coarsening use-case works", {
   expect_length(Kd_fine, length(lam_naples))
   expect_true(all(!is.na(Kd_fine)))
 })
+
+# ---- out-of-range behaviour of the cubic method ---------------------------
+
+test_that("resample_spectrum: cubic does not extrapolate under rule = 1", {
+  from <- seq(400, 700, by = 50)
+  y    <- (from - 400)^2
+  out  <- resample_spectrum(y, lambda = c(350, 400, 425, 700, 750),
+                            from = from, method = "cubic")
+  expect_identical(unname(is.na(out)), c(TRUE, FALSE, FALSE, FALSE, TRUE))
+})
+
+test_that("resample_spectrum: cubic extends with boundary values under rule = 2", {
+  from <- seq(400, 700, by = 50)
+  y    <- (from - 400)^2
+  out  <- resample_spectrum(y, lambda = c(350, 750), from = from,
+                            method = "cubic", rule = 2)
+  expect_equal(unname(out), c(y[1], y[length(y)]))
+})
+
+test_that("resample_spectrum.lux_spectrum: cubic out of range is an error", {
+  # E10 + 1 is strictly positive, so an extrapolated spectrum would be accepted
+  pos <- lux_spectrum(E10 + 1, lam10, "irradiance", "W/m2/nm")
+  expect_error(
+    resample_spectrum(pos, seq(min(lam10) - 20, max(lam10), by = 5),
+                      method = "cubic"),
+    class = "lux_spectrum_validation_error"
+  )
+})
+
+test_that("resample_spectrum: rejects a rule other than 1 or 2", {
+  for (m in c("linear", "cubic")) {
+    expect_error(resample_spectrum(c(1, 2, 3, 4), lambda = 2, from = 1:4,
+                                   method = m, rule = 3),
+                 class = "lux_spectrum_value_error")
+    expect_no_error(resample_spectrum(c(1, 2, 3, 4), lambda = 2, from = 1:4,
+                                      method = m, rule = 1L))
+  }
+})

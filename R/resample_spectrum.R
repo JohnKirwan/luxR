@@ -82,9 +82,18 @@ resample_spectrum.numeric <- function(x, lambda, from = NULL,
 }
 
 .interp <- function(y, x_from, x_to, method, rule) {
-  if (method == "cubic") {
-    stats::spline(x_from, y, xout = x_to, method = "natural")$y
-  } else {
-    stats::approx(x_from, y, xout = x_to, rule = rule)$y
+  if (length(rule) != 1L || !rule %in% c(1, 2)) {
+    .stop_lux_spectrum_validation(
+      "`rule` must be 1 (NA outside the source range) or 2 (boundary value).",
+      field = "rule", value = rule, subclass = "lux_spectrum_value_error"
+    )
   }
+  if (method == "linear") {
+    return(stats::approx(x_from, y, xout = x_to, rule = rule)$y)
+  }
+  out <- stats::spline(x_from, y, xout = x_to, method = "natural")$y
+  # A spline extrapolates; outside the source range apply `rule` as approx does.
+  outside <- x_to < min(x_from) | x_to > max(x_from)
+  out[outside] <- stats::approx(x_from, y, xout = x_to[outside], rule = rule)$y
+  out
 }
