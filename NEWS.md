@@ -8,6 +8,13 @@
   own unit, so µmol and W spectra now give the same answer. Non-irradiance
   spectra and negative values are rejected, and a zero total raises a
   `lux_spectrum_value_error` instead of returning `NA`.
+- `secchi_depth()` weights the bins straddling 400 and 700 nm by their
+  overlap with the window instead of counting them whole, converts a
+  `lux_spectrum` to W m^-2 nm^-1 before weighting (µmol spectra previously
+  weighted by photon flux), and validates its input: `Kd` must be positive and
+  finite, `lambda` and `irradiance` come together and match `Kd` in length,
+  irradiance is non-negative with some in the window, and only irradiance
+  spectra are accepted.
 
 ## Unit handling
 - `par_irradiance()` now rejects radiance and reflectance `lux_spectrum`
