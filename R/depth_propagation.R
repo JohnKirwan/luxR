@@ -585,10 +585,13 @@ photic_depth <- function(Kd, fraction = 0.01) {
 #' @param E1 Irradiance at the shallower depth \code{z1}. Numeric vector or
 #'   \code{lux_spectrum}. When \code{E1} is a \code{lux_spectrum}, S3 dispatch
 #'   handles both arguments; passing a numeric \code{E1} with a
-#'   \code{lux_spectrum} \code{E2} is not supported.
+#'   \code{lux_spectrum} \code{E2} is not supported. Two \code{lux_spectrum}
+#'   inputs must both be spectral irradiance on the same wavelength grid;
+#'   they are converted to a common unit before the ratio is taken.
 #' @param z1 Depth of E1 in metres. Must be < z2.
 #' @param E2 Irradiance at the deeper depth \code{z2}. Numeric vector or
-#'   \code{lux_spectrum} (only when \code{E1} is also a \code{lux_spectrum}).
+#'   \code{lux_spectrum}. It must be a \code{lux_spectrum} exactly when
+#'   \code{E1} is one; mixing the two is an error.
 #' @param z2 Depth of E2 in metres. Must be > z1.
 #' @return Kd in 1/m. Same length as E1/E2.
 #' @references
@@ -616,9 +619,31 @@ fit_Kd.numeric <- function(E1, z1, E2, z2, ...) {
 #' @rdname fit_Kd
 #' @export
 fit_Kd.lux_spectrum <- function(E1, z1, E2, z2, ...) {
-  e1 <- if (inherits(E1, "lux_spectrum")) E1$E else E1
-  e2 <- if (inherits(E2, "lux_spectrum")) E2$E else E2
-  fit_Kd.numeric(e1, z1, e2, z2)
+  if (!inherits(E2, "lux_spectrum")) {
+    .stop_lux_spectrum_validation(
+      paste0("fit_Kd(): `E2` must be a lux_spectrum when `E1` is one; got ",
+             paste(class(E2), collapse = "/"), ". The unit of a bare numeric ",
+             "vector is unknown."),
+      field = "E2", value = E2, subclass = "lux_spectrum_type_error",
+      context = E1$meta
+    )
+  }
+  e1 <- .as_energy_irradiance(E1, "fit_Kd()")
+  e2 <- .as_energy_irradiance(E2, "fit_Kd()")
+  l1 <- e1$lambda
+  l2 <- e2$lambda
+  if (length(l1) != length(l2) ||
+      max(abs(l1 - l2)) > .grid_tolerance(l1, l2)) {
+    .stop_lux_spectrum_validation(
+      paste0("fit_Kd(): `E1` and `E2` must share one wavelength grid; got ",
+             length(l1), " points over ", min(l1), "-", max(l1), " nm and ",
+             length(l2), " points over ", min(l2), "-", max(l2),
+             " nm. Resample one spectrum explicitly first."),
+      field = "lambda", value = l2, subclass = "lux_spectrum_grid_error",
+      context = E1$meta
+    )
+  }
+  fit_Kd.numeric(e1$E, z1, e2$E, z2)
 }
 
 

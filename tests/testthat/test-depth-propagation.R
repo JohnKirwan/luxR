@@ -479,3 +479,25 @@ test_that("inverse propagation fails on non-finite numerical output", {
   expect_identical(error$context$target_depth_m, 0)
   expect_identical(error$context$model_version, "beer-lambert-kd-v1")
 })
+
+test_that("fit_Kd.lux_spectrum: mixed energy and photon units give the same Kd", {
+  lam <- seq(400, 700, by = 10)
+  Kd  <- seq(0.03, 0.3, length.out = length(lam))
+  s1  <- lux_spectrum(rep(1, length(lam)), lam, "irradiance", "W/m2/nm")
+  s2  <- lux_spectrum(exp(-Kd * 10), lam, "irradiance", "W/m2/nm")
+  expect_equal(fit_Kd(s1, 0, convert_unit(s2, "umol/m2/s/nm"), 10), Kd,
+               tolerance = 1e-8)
+})
+
+test_that("fit_Kd.lux_spectrum: rejects non-irradiance, numeric E2 and grid mismatch", {
+  lam <- seq(400, 700, by = 10)
+  s1  <- lux_spectrum(rep(2, length(lam)), lam, "irradiance", "W/m2/nm")
+  rad <- lux_spectrum(rep(1, length(lam)), lam, "radiance", "W/m2/sr/nm")
+  off <- lux_spectrum(rep(1, length(lam)), lam + 5, "irradiance", "W/m2/nm")
+  expect_error(fit_Kd(s1, 0, rad, 10), class = "lux_spectrum_dimension_error")
+  expect_error(fit_Kd(s1, 0, rep(1, length(lam)), 10),
+               class = "lux_spectrum_type_error")
+  expect_error(fit_Kd(s1, 0, off, 10), class = "lux_spectrum_grid_error")
+  short <- lux_spectrum(rep(1, 5), lam[1:5], "irradiance", "W/m2/nm")
+  expect_error(fit_Kd(s1, 0, short, 10), class = "lux_spectrum_grid_error")
+})
