@@ -12,6 +12,6 @@
 #'   from \eqn{photons\,m^{-2}\,s^{-1}\,nm^{-1}}{photons m^-2 s^-1 nm^-1} into \eqn{W\,m^{-2}\,nm^{-1}}{W m^-2 nm^-1}.
 #
 n2W_spec_irradiance_FUN <- function(photons,lambda){
-    W = photons * 1.98644585714893e-16 / lambda
+    W = photons * .HC_J_NM / lambda
     return(W)
 }

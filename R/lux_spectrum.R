@@ -1,19 +1,24 @@
 # lux_spectrum — S3 spectral abstraction class
 
-.UNIT_QUANTITIES <- c(
-  "W/m2/nm"          = "irradiance",
-  "umol/m2/s/nm"     = "irradiance",
-  "mmol/m2/s/nm"     = "irradiance",
-  "mol/m2/s/nm"      = "irradiance",
-  "W/m2/sr/nm"       = "radiance",
-  "mW/m2/sr/nm"      = "radiance",
-  "umol/m2/s/sr/nm"  = "radiance",
-  "mmol/m2/s/sr/nm"  = "radiance",
-  "mol/m2/s/sr/nm"   = "radiance",
-  "dimensionless"    = "reflectance"
+# Controlled unit vocabulary. `basis` is the conversion family and `scale`
+# converts a value to that family's base unit (W or mol).
+.UNITS <- data.frame(
+  unit = c("W/m2/nm", "umol/m2/s/nm", "mmol/m2/s/nm", "mol/m2/s/nm",
+           "W/m2/sr/nm", "mW/m2/sr/nm", "umol/m2/s/sr/nm",
+           "mmol/m2/s/sr/nm", "mol/m2/s/sr/nm", "dimensionless"),
+  quantity = c(rep("irradiance", 4L), rep("radiance", 5L), "reflectance"),
+  basis = c("energy", rep("photon", 3L), "energy", "energy",
+            rep("photon", 3L), NA),
+  scale = c(1, 1e-6, 1e-3, 1, 1, 1e-3, 1e-6, 1e-3, 1, NA),
+  stringsAsFactors = FALSE
 )
 
-.VALID_UNITS <- names(.UNIT_QUANTITIES)
+.UNIT_QUANTITIES <- stats::setNames(.UNITS$quantity, .UNITS$unit)
+
+.VALID_UNITS <- .UNITS$unit
+
+.HC_J_NM <- 1.98644585714893e-16  # Planck constant x speed of light, J nm
+.AVOGADRO <- 6.02214076e23        # photons per mol
 
 .stop_lux_spectrum_validation <- function(message, field, value = NULL,
                                            index = NULL, subclass,
@@ -31,26 +36,6 @@
               "error", "condition")
   )
   stop(condition)
-}
-
-.validate_numeric_vector <- function(x, field, context) {
-  if (!is.numeric(x) || is.complex(x) || is.object(x) ||
-      !is.null(dim(x))) {
-    .stop_lux_spectrum_validation(
-      paste0("`", field, "` must be a numeric vector; got ",
-             paste(class(x), collapse = "/"), "."),
-      field = field, value = x, subclass = "lux_spectrum_type_error",
-      context = context
-    )
-  }
-  if (length(x) == 0L) {
-    .stop_lux_spectrum_validation(
-      paste0("`", field, "` must be non-empty."),
-      field = field, value = x, subclass = "lux_spectrum_value_error",
-      context = context
-    )
-  }
-  invisible(x)
 }
 
 .validate_scalar_character <- function(x, field, context) {
@@ -120,8 +105,9 @@ lux_spectrum <- function(E, lambda,
                          meta     = list()) {
   context <- if (is.list(meta)) meta else list()
 
-  .validate_numeric_vector(E, "E", context)
-  .validate_numeric_vector(lambda, "lambda", context)
+  fail <- .lux_spectrum_fail(context)
+  .check_numeric(E, "E", fail)
+  .check_numeric(lambda, "lambda", fail)
   .validate_scalar_character(quantity, "quantity", context)
   .validate_scalar_character(unit, "unit", context)
 
@@ -147,27 +133,6 @@ lux_spectrum <- function(E, lambda,
       paste0("`E` and `lambda` must have equal length; got ",
              length(E), " and ", length(lambda), "."),
       field = c("E", "lambda"), value = c(length(E), length(lambda)),
-      subclass = "lux_spectrum_value_error", context = context
-    )
-  }
-
-  invalid_E <- which(!is.finite(E))
-  if (length(invalid_E) > 0L) {
-    i <- invalid_E[1L]
-    .stop_lux_spectrum_validation(
-      paste0("`E` must contain only finite values; index ", i,
-             " is ", format(E[i]), "."),
-      field = "E", value = E[i], index = i,
-      subclass = "lux_spectrum_value_error", context = context
-    )
-  }
-  invalid_lambda <- which(!is.finite(lambda))
-  if (length(invalid_lambda) > 0L) {
-    i <- invalid_lambda[1L]
-    .stop_lux_spectrum_validation(
-      paste0("`lambda` must contain only finite values; index ", i,
-             " is ", format(lambda[i]), "."),
-      field = "lambda", value = lambda[i], index = i,
       subclass = "lux_spectrum_value_error", context = context
     )
   }
@@ -419,64 +384,39 @@ convert_unit <- function(x, to, ...) UseMethod("convert_unit")
 
 #' @export
 convert_unit.lux_spectrum <- function(x, to, ...) {
-  .PHOTON_UNITS  <- c("umol/m2/s/nm", "mmol/m2/s/nm", "mol/m2/s/nm",
-                      "umol/m2/s/sr/nm", "mmol/m2/s/sr/nm",
-                      "mol/m2/s/sr/nm")
-  .PHOTON_SCALE  <- c(umol = 1e-6, mmol = 1e-3, mol = 1)
-  is_radiance <- function(unit) grepl("/sr/", unit, fixed = TRUE)
-
   if (!to %in% .VALID_UNITS)
     stop("'", to, "' is not in the controlled unit vocabulary.")
   if (to == "dimensionless")
     stop("Cannot convert to 'dimensionless' via unit conversion.")
   if (x$unit == to) return(x)
 
-  from <- x$unit
+  from <- .UNITS[.UNITS$unit == x$unit, ]
+  target <- .UNITS[.UNITS$unit == to, ]
+  if (from$quantity != target$quantity)
+    stop("No conversion defined from '", x$unit, "' to '", to, "'",
+         if (!is.na(from$basis))
+           ": cannot convert between irradiance and radiance units",
+         ".")
 
-  # mW <-> W (radiance only)
-  if (from == "mW/m2/sr/nm" && to == "W/m2/sr/nm")
-    return(lux_spectrum(x$E * 1e-3, x$lambda, x$quantity, to, x$binwidth, x$meta))
-  if (from == "W/m2/sr/nm"  && to == "mW/m2/sr/nm")
-    return(lux_spectrum(x$E * 1e3,  x$lambda, x$quantity, to, x$binwidth, x$meta))
-
-  # Energy -> photonic, preserving irradiance versus radiance.
-  if (from %in% c("W/m2/nm", "W/m2/sr/nm", "mW/m2/sr/nm") &&
-      to %in% .PHOTON_UNITS) {
-    if (is_radiance(from) != is_radiance(to))
-      stop("Cannot convert between irradiance and radiance units.")
-    mu <- sub("/m2/s/sr/nm", "", to, fixed = TRUE)
-    mu <- sub("/m2/s/nm", "", mu, fixed = TRUE)
-    E <- if (from == "mW/m2/sr/nm") x$E * 1e-3 else x$E
-    Enew <- W2mol_spec_irradiance.numeric(E, x$lambda, molar_unit = mu)
-    return(lux_spectrum(Enew, x$lambda, x$quantity, to, x$binwidth, x$meta))
+  E <- x$E * from$scale
+  if (from$basis != target$basis) {
+    joules_per_mol <- .HC_J_NM * .AVOGADRO / x$lambda
+    E <- if (from$basis == "energy") E / joules_per_mol else E * joules_per_mol
   }
+  lux_spectrum(E / target$scale, x$lambda, x$quantity, to, x$binwidth, x$meta)
+}
 
-  # Photonic -> energy, preserving irradiance versus radiance.
-  if (from %in% .PHOTON_UNITS &&
-      to %in% c("W/m2/nm", "W/m2/sr/nm", "mW/m2/sr/nm")) {
-    if (is_radiance(from) != is_radiance(to))
-      stop("Cannot convert between irradiance and radiance units.")
-    mu <- sub("/m2/s/sr/nm", "", from, fixed = TRUE)
-    mu <- sub("/m2/s/nm", "", mu, fixed = TRUE)
-    Enew <- n2W_spec_irradiance.numeric(x$E, x$lambda,
-                                        photonic = TRUE, molar_unit = mu)
-    if (to == "mW/m2/sr/nm") Enew <- Enew * 1e3
-    return(lux_spectrum(Enew, x$lambda, x$quantity, to, x$binwidth, x$meta))
+# Spectral irradiance in W/m2/nm, or a typed error for any other quantity.
+.as_energy_irradiance <- function(x, operation) {
+  if (!identical(x$quantity, "irradiance")) {
+    .stop_lux_spectrum_validation(
+      paste0(operation, " requires spectral irradiance; got quantity '",
+             x$quantity, "' with unit '", x$unit, "'."),
+      field = c("quantity", "unit"), value = c(x$quantity, x$unit),
+      subclass = "lux_spectrum_dimension_error", context = x$meta
+    )
   }
-
-  # photonic <-> photonic
-  if (from %in% .PHOTON_UNITS && to %in% .PHOTON_UNITS) {
-    if (is_radiance(from) != is_radiance(to))
-      stop("Cannot convert between irradiance and radiance units.")
-    from_mu <- sub("/m2/s/nm", "", from)
-    to_mu   <- sub("/m2/s/nm", "", to)
-    from_mu <- sub("/sr", "", from_mu, fixed = TRUE)
-    to_mu   <- sub("/sr", "", to_mu, fixed = TRUE)
-    factor  <- .PHOTON_SCALE[[from_mu]] / .PHOTON_SCALE[[to_mu]]
-    return(lux_spectrum(x$E * factor, x$lambda, x$quantity, to, x$binwidth, x$meta))
-  }
-
-  stop("No conversion defined from '", from, "' to '", to, "'.")
+  convert_unit(x, "W/m2/nm")
 }
 
 #' @export

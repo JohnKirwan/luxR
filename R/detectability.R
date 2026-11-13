@@ -35,46 +35,12 @@
 .validate_detection_numeric <- function(x, field, operation,
                                         scalar = FALSE, positive = FALSE,
                                         nonnegative = FALSE) {
-  if (!is.numeric(x) || is.complex(x) || is.object(x) ||
-      !is.null(dim(x)) || length(x) == 0L) {
-    .stop_detection(
-      paste0("`", field, "` must be a non-empty numeric vector."),
-      field = field, value = x, operation = operation
-    )
+  fail <- function(message, field, value, index, kind) {
+    .stop_detection(message, field = field, value = value, index = index,
+                    operation = operation)
   }
-  if (scalar && length(x) != 1L) {
-    .stop_detection(
-      paste0("`", field, "` must be one numeric value; got length ",
-             length(x), "."),
-      field = field, value = x, operation = operation
-    )
-  }
-  invalid <- which(!is.finite(x))
-  if (length(invalid)) {
-    i <- invalid[1L]
-    .stop_detection(
-      paste0("`", field, "` must contain only finite values; index ", i,
-             " is ", format(x[i]), "."),
-      field = field, value = x[i], index = i, operation = operation
-    )
-  }
-  if (positive && any(x <= 0)) {
-    i <- which(x <= 0)[1L]
-    .stop_detection(
-      paste0("`", field, "` must be strictly positive; index ", i,
-             " is ", format(x[i]), "."),
-      field = field, value = x[i], index = i, operation = operation
-    )
-  }
-  if (nonnegative && any(x < 0)) {
-    i <- which(x < 0)[1L]
-    .stop_detection(
-      paste0("`", field, "` must be non-negative; index ", i,
-             " is ", format(x[i]), "."),
-      field = field, value = x[i], index = i, operation = operation
-    )
-  }
-  invisible(x)
+  .check_numeric(x, field, fail, scalar = scalar,
+                 lower = if (positive || nonnegative) 0, lower_open = positive)
 }
 
 .validate_detection_grid <- function(lambda, operation) {

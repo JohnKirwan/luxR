@@ -46,25 +46,11 @@
 }
 
 .validate_jerlov_lambda <- function(lambda, context) {
-  if (!is.numeric(lambda) || is.complex(lambda) || is.object(lambda) ||
-      !is.null(dim(lambda)) || length(lambda) == 0L) {
-    .stop_jerlov(
-      "`lambda` must be a non-empty numeric vector of wavelengths in nm.",
-      class = "luxR_jerlov_input_error", field = "lambda", value = lambda,
-      context = context
-    )
+  fail <- function(message, field, value, index, kind) {
+    .stop_jerlov(message, class = "luxR_jerlov_input_error", field = field,
+                 value = value, index = index, context = context)
   }
-  invalid <- which(!is.finite(lambda))
-  if (length(invalid) > 0L) {
-    i <- invalid[[1L]]
-    .stop_jerlov(
-      paste0("`lambda` must contain only finite wavelengths; index ", i,
-             " is ", format(lambda[[i]]), "."),
-      class = "luxR_jerlov_input_error", field = "lambda",
-      value = lambda[[i]], index = i, context = context
-    )
-  }
-  invisible(lambda)
+  .check_numeric(lambda, "lambda", fail)
 }
 
 .prepare_jerlov_domain <- function(lambda, values,

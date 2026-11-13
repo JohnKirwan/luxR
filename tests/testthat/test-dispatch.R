@@ -228,3 +228,30 @@ test_that("reflectance_to_radiance: errors on mismatched lambda grids", {
                         "irradiance", "W/m2/nm")
   expect_error(reflectance_to_radiance(refl, illum), "[Ll]ambda")
 })
+
+# ---- unit and quantity handling ------------------------------------------
+
+test_that("par_irradiance rejects radiance and reflectance spectra", {
+  radiance <- lux_spectrum(E, lam, "radiance", "umol/m2/s/sr/nm")
+  reflectance <- lux_spectrum(E / 2, lam, "reflectance", "dimensionless")
+  expect_error(par_irradiance(radiance), "requires spectral irradiance",
+               class = "lux_spectrum_dimension_error")
+  expect_error(par_irradiance(reflectance), "requires spectral irradiance",
+               class = "lux_spectrum_dimension_error")
+})
+
+test_that("band_irradiance gives the same result for W and photon spectra", {
+  Kd <- rep(0.05, length(lam))
+  x_umol <- convert_unit(x, "umol/m2/s/nm")
+  for (photonic in c(FALSE, TRUE)) {
+    expect_equal(
+      band_irradiance(x_umol, Kd, depths = c(0, 10), photonic = photonic),
+      band_irradiance(x, Kd, depths = c(0, 10), photonic = photonic)
+    )
+  }
+  expect_error(
+    band_irradiance(lux_spectrum(E, lam, "radiance", "W/m2/sr/nm"), Kd,
+                    depths = 0),
+    "requires spectral irradiance", class = "lux_spectrum_dimension_error"
+  )
+})

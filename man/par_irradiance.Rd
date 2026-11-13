@@ -39,7 +39,8 @@ Scalar PAR irradiance in µmol photons m\eqn{^{-2}} s\eqn{^{-1}}.
 Integrates spectral irradiance over the photosynthetically active range
 400–700 nm and returns the result in µmol photons m\eqn{^{-2}}
 s\eqn{^{-1}}. Accepts energy units (W m\eqn{^{-2}} nm\eqn{^{-1}}),
-raw photon counts, or a \code{lux_spectrum} object in any supported unit.
+raw photon counts, or an irradiance \code{lux_spectrum} in any supported
+irradiance unit. Radiance and reflectance spectra are rejected.
 }
 \details{
 PAR is the photon flux integrated over the photosynthetically active range

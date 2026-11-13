@@ -45,56 +45,12 @@
                                            lower = NULL, upper = NULL,
                                            lower_open = FALSE,
                                            configuration = list()) {
-  if (!is.numeric(x) || is.complex(x) || is.object(x) ||
-      !is.null(dim(x)) || length(x) == 0L) {
-    .stop_polarization(
-      paste0("`", field, "` must be a non-empty, unclassed numeric vector."),
-      operation, field = field, value = x, configuration = configuration
-    )
+  fail <- function(message, field, value, index, kind) {
+    .stop_polarization(message, operation, field = field, value = value,
+                       index = index, configuration = configuration)
   }
-  if (scalar && length(x) != 1L) {
-    .stop_polarization(
-      paste0("`", field, "` must contain exactly one value; got length ",
-             length(x), "."),
-      operation, field = field, value = x, configuration = configuration
-    )
-  }
-  invalid <- which(!is.finite(x))
-  if (length(invalid)) {
-    i <- invalid[[1L]]
-    .stop_polarization(
-      paste0("`", field, "` must contain only finite values; index ", i,
-             " is ", format(x[[i]]), "."),
-      operation, field = field, value = x[[i]], index = i,
-      configuration = configuration
-    )
-  }
-  if (!is.null(lower)) {
-    invalid <- if (lower_open) which(x <= lower) else which(x < lower)
-    if (length(invalid)) {
-      i <- invalid[[1L]]
-      relation <- if (lower_open) "greater than" else "at least"
-      .stop_polarization(
-        paste0("`", field, "` must be ", relation, " ", format(lower),
-               "; index ", i, " is ", format(x[[i]]), "."),
-        operation, field = field, value = x[[i]], index = i,
-        configuration = configuration
-      )
-    }
-  }
-  if (!is.null(upper)) {
-    invalid <- which(x > upper)
-    if (length(invalid)) {
-      i <- invalid[[1L]]
-      .stop_polarization(
-        paste0("`", field, "` must be at most ", format(upper),
-               "; index ", i, " is ", format(x[[i]]), "."),
-        operation, field = field, value = x[[i]], index = i,
-        configuration = configuration
-      )
-    }
-  }
-  invisible(x)
+  .check_numeric(x, field, fail, scalar = scalar, lower = lower,
+                 upper = upper, lower_open = lower_open)
 }
 
 .broadcast_polarization <- function(values, operation,

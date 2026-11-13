@@ -12,7 +12,7 @@
 #' @examples
 #' photon2W(1e15, 555)
 #' @export
-photon2W <- function(n, lambda) n * 1.98644585714893e-16 / lambda
+photon2W <- function(n, lambda) n * .HC_J_NM / lambda
 
 
 #' Convert watts to photon counts at a given wavelength.
@@ -25,7 +25,7 @@ photon2W <- function(n, lambda) n * 1.98644585714893e-16 / lambda
 #' @examples
 #' W2photon(1, 555)
 #' @export
-W2photon <- function(W, lambda) W * lambda / 1.98644585714893e-16
+W2photon <- function(W, lambda) W * lambda / .HC_J_NM
 
 
 #' Wavelength of light inside an optical medium.
@@ -282,7 +282,7 @@ broadband2spectrum <- function(value,
     kW         = sum(shape) * binwidth / 1e3,
     umol       = {
       par <- lambda >= 400 & lambda <= 700
-      sum(W2photon(shape[par], lambda[par])) * binwidth / 6.02214076e17
+      sum(W2photon(shape[par], lambda[par])) * binwidth / (.AVOGADRO * 1e-6)
     },
     radiance_W = sum(shape) * binwidth / pi,
     cd         = irradiance2lux(shape, lambda, total = TRUE,
@@ -359,16 +359,7 @@ reflectance_to_radiance.lux_spectrum <- function(reflectance, illuminant, ...) {
     stop("lambda grids must be identical.")
 
   if (illuminant$quantity == "irradiance") {
-    unit_map <- c(
-      "W/m2/nm"      = "W/m2/sr/nm",
-      "umol/m2/s/nm" = "umol/m2/s/sr/nm",
-      "mmol/m2/s/nm" = "mmol/m2/s/sr/nm",
-      "mol/m2/s/nm"  = "mol/m2/s/sr/nm"
-    )
-    new_unit <- unname(unit_map[[illuminant$unit]])
-    if (is.null(new_unit))
-      stop("No radiance unit is defined for irradiance unit '",
-           illuminant$unit, "'.")
+    new_unit <- sub("/nm", "/sr/nm", illuminant$unit, fixed = TRUE)
     E_new <- reflectance$E * illuminant$E / pi
   } else {
     new_unit <- illuminant$unit

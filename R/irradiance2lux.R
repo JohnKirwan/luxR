@@ -131,26 +131,6 @@ irradiance2lux.default <- function(irradiance, ...) {
   invisible(LEF)
 }
 
-.validate_photometric_spectrum <- function(x) {
-  supported_units <- c(
-    "W/m2/nm",
-    "umol/m2/s/nm", "mmol/m2/s/nm", "mol/m2/s/nm"
-  )
-  if (!identical(x$quantity, "irradiance") || !x$unit %in% supported_units) {
-    .stop_lux_spectrum_validation(
-      paste0(
-        "Photometric integration requires spectral irradiance; got quantity '",
-        x$quantity, "' with unit '", x$unit, "'."
-      ),
-      field = c("quantity", "unit"),
-      value = c(x$quantity, x$unit),
-      subclass = "lux_spectrum_dimension_error",
-      context = x$meta
-    )
-  }
-  invisible(x)
-}
-
 .resolve_photometric_binwidth <- function(irradiance, lambda, binwidth) {
   single_bin_without_width <- length(lambda) == 1L && is.null(binwidth)
   validation_binwidth <- if (single_bin_without_width) 1 else binwidth
@@ -177,9 +157,9 @@ irradiance2lux.default <- function(irradiance, ...) {
 }
 
 .validate_trapezoid_input <- function(irradiance, lambda) {
-  context <- list()
-  .validate_numeric_vector(irradiance, "irradiance", context)
-  .validate_numeric_vector(lambda, "lambda", context)
+  fail <- .lux_spectrum_fail()
+  .check_numeric(irradiance, "irradiance", fail, lower = 0)
+  .check_numeric(lambda, "lambda", fail)
 
   if (length(irradiance) != length(lambda)) {
     .stop_lux_spectrum_validation(
@@ -187,39 +167,6 @@ irradiance2lux.default <- function(irradiance, ...) {
              length(irradiance), " and ", length(lambda), "."),
       field = c("irradiance", "lambda"),
       value = c(length(irradiance), length(lambda)),
-      subclass = "lux_spectrum_value_error"
-    )
-  }
-
-  invalid_irradiance <- which(!is.finite(irradiance))
-  if (length(invalid_irradiance) > 0L) {
-    i <- invalid_irradiance[1L]
-    .stop_lux_spectrum_validation(
-      paste0("`irradiance` must contain only finite values; index ", i,
-             " is ", format(irradiance[i]), "."),
-      field = "irradiance", value = irradiance[i], index = i,
-      subclass = "lux_spectrum_value_error"
-    )
-  }
-
-  invalid_lambda <- which(!is.finite(lambda))
-  if (length(invalid_lambda) > 0L) {
-    i <- invalid_lambda[1L]
-    .stop_lux_spectrum_validation(
-      paste0("`lambda` must contain only finite values; index ", i,
-             " is ", format(lambda[i]), "."),
-      field = "lambda", value = lambda[i], index = i,
-      subclass = "lux_spectrum_value_error"
-    )
-  }
-
-  invalid_irradiance <- which(irradiance < 0)
-  if (length(invalid_irradiance) > 0L) {
-    i <- invalid_irradiance[1L]
-    .stop_lux_spectrum_validation(
-      paste0("`irradiance` must be non-negative; index ", i, " is ",
-             format(irradiance[i]), "."),
-      field = "irradiance", value = irradiance[i], index = i,
       subclass = "lux_spectrum_value_error"
     )
   }
@@ -326,10 +273,7 @@ irradiance2lux.lux_spectrum <- function(irradiance,
                                          integration = c("rectangle", "trapezoid"),
                                          verbose = FALSE, ...) {
   integration <- match.arg(integration)
-  x <- irradiance
-  .validate_photometric_spectrum(x)
-  if (x$unit != "W/m2/nm")
-    x <- convert_unit(x, "W/m2/nm")
+  x <- .as_energy_irradiance(irradiance, "Photometric integration")
 
   irradiance2lux.numeric(x$E, x$lambda,
                           photonic   = FALSE,
