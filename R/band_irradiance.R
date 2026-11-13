@@ -119,57 +119,18 @@ band_irradiance.lux_spectrum <- function(E_lambda, Kd_lambda, depths,
 # `cover = TRUE` the bins must span the whole band.
 .band_widths <- function(lambda, binwidth = NULL, lo = NULL, hi = NULL,
                          operation, cover = TRUE) {
-  fail <- function(message, field, value, kind, index = NULL) {
-    .stop_lux_spectrum_validation(
-      paste0(operation, ": ", message), field = field, value = value,
-      index = index, subclass = paste0("lux_spectrum_", kind, "_error")
-    )
-  }
-  check <- function(x, field, ...) {
-    .check_numeric(x, field, function(message, field, value, index, kind) {
-      fail(message, field, value, kind, index)
-    }, ...)
-  }
-  check(lambda, "lambda", lower = 0, lower_open = TRUE)
-  steps <- diff(lambda)
-  bad <- which(steps <= 0)[1L]
-  if (!is.na(bad)) {
-    fail(paste0("`lambda` must be strictly increasing; index ", bad + 1L,
-                " has value ", format(lambda[bad + 1L]), " after ",
-                format(lambda[bad]), "."),
-         "lambda", lambda[bad + 1L], "grid", bad + 1L)
-  }
-  bad <- which(abs(steps - steps[1L]) > .grid_tolerance(steps))[1L]
-  if (!is.na(bad)) {
-    fail(paste0("`lambda` must be regularly spaced; the step before index ",
-                bad + 1L, " is ", format(steps[bad]), " nm, expected ",
-                format(steps[1L]), " nm."),
-         "lambda", lambda[bad + 1L], "grid", bad + 1L)
-  }
-  if (is.null(binwidth)) {
-    if (length(lambda) == 1L) {
-      fail("`binwidth` is required for a single wavelength.", "binwidth",
-           NULL, "value")
-    }
-    binwidth <- steps[1L]
-  } else {
-    check(binwidth, "binwidth", scalar = TRUE, lower = 0, lower_open = TRUE)
-    if (length(lambda) > 1L &&
-        abs(binwidth - steps[1L]) > .grid_tolerance(binwidth, steps[1L])) {
-      fail(paste0("`binwidth` (", format(binwidth), " nm) must equal the ",
-                  "wavelength spacing (", format(steps[1L]), " nm)."),
-           "binwidth", binwidth, "grid")
-    }
-  }
+  fail <- .input_fail(operation)
+  binwidth <- .grid_binwidth(lambda, binwidth, operation)
   left  <- lambda - binwidth / 2
   right <- lambda + binwidth / 2
-  if (is.null(lo)) lo <- left[1L] else check(lo, "lambda_min", scalar = TRUE)
+  if (is.null(lo)) lo <- left[1L] else
+    .check_input(lo, "lambda_min", operation, scalar = TRUE)
   if (is.null(hi)) hi <- right[length(right)] else
-    check(hi, "lambda_max", scalar = TRUE)
+    .check_input(hi, "lambda_max", operation, scalar = TRUE)
   if (lo >= hi) {
     fail(paste0("the band's lower limit (", format(lo), " nm) must be below ",
                 "its upper limit (", format(hi), " nm)."),
-         c("lambda_min", "lambda_max"), c(lo, hi), "value")
+         c("lambda_min", "lambda_max"), c(lo, hi), NULL, "value")
   }
   tolerance <- .grid_tolerance(lo, hi)
   if (cover && (lo < left[1L] - tolerance ||
@@ -177,7 +138,7 @@ band_irradiance.lux_spectrum <- function(E_lambda, Kd_lambda, depths,
     fail(paste0("the wavelength bins span ", format(left[1L]), "-",
                 format(right[length(right)]), " nm and do not cover the band ",
                 format(lo), "-", format(hi), " nm."),
-         "lambda", range(lambda), "grid")
+         "lambda", range(lambda), NULL, "grid")
   }
   pmax(0, pmin(hi, right) - pmax(lo, left))
 }
@@ -185,12 +146,7 @@ band_irradiance.lux_spectrum <- function(E_lambda, Kd_lambda, depths,
 # Spectral values must be finite (a non-finite value outside the band would
 # otherwise reach the result as NA * 0) and match the wavelength grid.
 .check_spectral_values <- function(x, lambda, field, operation) {
-  .check_numeric(x, field, function(message, field, value, index, kind) {
-    .stop_lux_spectrum_validation(
-      paste0(operation, ": ", message), field = field, value = value,
-      index = index, subclass = paste0("lux_spectrum_", kind, "_error")
-    )
-  })
+  .check_input(x, field, operation)
   if (length(x) != length(lambda)) {
     .stop_lux_spectrum_validation(
       paste0(operation, ": `", field, "` has length ", length(x),
