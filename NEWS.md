@@ -1,5 +1,14 @@
 # luxR 0.1.1
 
+## Breaking changes
+- `par_fraction()` now returns the photon fraction by default, since PAR is
+  defined as a photon flux. `basis = "energy"` gives the energy fraction (the
+  previous result for energy input). Numeric input states its unit with
+  `photonic`, as in `par_irradiance()`; a `lux_spectrum` is converted from its
+  own unit, so µmol and W spectra now give the same answer. Non-irradiance
+  spectra and negative values are rejected, and a zero total raises a
+  `lux_spectrum_value_error` instead of returning `NA`.
+
 ## Unit handling
 - `par_irradiance()` now rejects radiance and reflectance `lux_spectrum`
   objects with a `lux_spectrum_dimension_error`. Photon-radiance spectra were
