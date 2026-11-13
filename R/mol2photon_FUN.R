@@ -13,13 +13,13 @@ mol2photon_FUN <- function(value,molar_unit=NULL){
   if(is.null(molar_unit)){molar_unit="mol"}
   
   if(molar_unit %in% c("mol","mole","Einstein","E")){
-    n = value * 6.02214076e23
+    n = value * .AVOGADRO
   }else if(
     molar_unit %in% c("mmol","millimole","milliEinstein","mE")){
-    n = value * 6.02214076e20
+    n = value * .AVOGADRO * 1e-3
   }else if(
     molar_unit %in% c("umol","micromole","microEinstein","uE")){
-    n = value * 6.02214076e17
+    n = value * .AVOGADRO * 1e-6
   } else {
     stop("Unrecognised molar_unit '", molar_unit, "'. ",
          "Use 'mol', 'mmol', 'umol' or their aliases.")

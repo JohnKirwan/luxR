@@ -131,26 +131,6 @@ irradiance2lux.default <- function(irradiance, ...) {
   invisible(LEF)
 }
 
-.validate_photometric_spectrum <- function(x) {
-  supported_units <- c(
-    "W/m2/nm",
-    "umol/m2/s/nm", "mmol/m2/s/nm", "mol/m2/s/nm"
-  )
-  if (!identical(x$quantity, "irradiance") || !x$unit %in% supported_units) {
-    .stop_lux_spectrum_validation(
-      paste0(
-        "Photometric integration requires spectral irradiance; got quantity '",
-        x$quantity, "' with unit '", x$unit, "'."
-      ),
-      field = c("quantity", "unit"),
-      value = c(x$quantity, x$unit),
-      subclass = "lux_spectrum_dimension_error",
-      context = x$meta
-    )
-  }
-  invisible(x)
-}
-
 .resolve_photometric_binwidth <- function(irradiance, lambda, binwidth) {
   single_bin_without_width <- length(lambda) == 1L && is.null(binwidth)
   validation_binwidth <- if (single_bin_without_width) 1 else binwidth
@@ -293,10 +273,7 @@ irradiance2lux.lux_spectrum <- function(irradiance,
                                          integration = c("rectangle", "trapezoid"),
                                          verbose = FALSE, ...) {
   integration <- match.arg(integration)
-  x <- irradiance
-  .validate_photometric_spectrum(x)
-  if (x$unit != "W/m2/nm")
-    x <- convert_unit(x, "W/m2/nm")
+  x <- .as_energy_irradiance(irradiance, "Photometric integration")
 
   irradiance2lux.numeric(x$E, x$lambda,
                           photonic   = FALSE,

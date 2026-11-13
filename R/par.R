@@ -5,7 +5,8 @@
 #' Integrates spectral irradiance over the photosynthetically active range
 #' 400–700 nm and returns the result in µmol photons m\eqn{^{-2}}
 #' s\eqn{^{-1}}. Accepts energy units (W m\eqn{^{-2}} nm\eqn{^{-1}}),
-#' raw photon counts, or a \code{lux_spectrum} object in any supported unit.
+#' raw photon counts, or an irradiance \code{lux_spectrum} in any supported
+#' irradiance unit. Radiance and reflectance spectra are rejected.
 #'
 #' @details
 #' PAR is the photon flux integrated over the photosynthetically active range
@@ -59,16 +60,13 @@ par_irradiance.numeric <- function(irradiance, lambda, photonic = FALSE,
     binwidth <- if (length(lam) > 1) mean(diff(lam)) else 1
 
   if (!photonic) E <- W2photon(E, lam)
-  sum(E * binwidth) / 6.02214076e17
+  sum(E * binwidth) / (.AVOGADRO * 1e-6)
 }
 
 #' @rdname par_irradiance
 #' @export
 par_irradiance.lux_spectrum <- function(irradiance, ...) {
-  x <- irradiance
-  .PHOTON_UNITS <- c("umol/m2/s/nm", "mmol/m2/s/nm", "mol/m2/s/nm")
-  if (x$unit %in% .PHOTON_UNITS)
-    x <- convert_unit(x, "W/m2/nm")
+  x <- .as_energy_irradiance(irradiance, "par_irradiance()")
   par_irradiance.numeric(x$E, x$lambda, photonic = FALSE, binwidth = x$binwidth)
 }
 

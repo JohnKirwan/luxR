@@ -368,9 +368,7 @@ quantum_catch <- function(irradiance, lambda, S,
     input_unit,
     "W/m2/nm" = W2photon(irradiance, lambda),
     "photon/m2/s/nm" = irradiance,
-    "mol/m2/s/nm" = irradiance * 6.02214076e23,
-    "mmol/m2/s/nm" = irradiance * 6.02214076e20,
-    "umol/m2/s/nm" = irradiance * 6.02214076e17
+    irradiance * .UNITS$scale[.UNITS$unit == input_unit] * .AVOGADRO
   )
 
   Q <- photons * Sg * binwidth

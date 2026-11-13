@@ -1,5 +1,16 @@
 # luxR 0.1.1
 
+## Unit handling
+- `par_irradiance()` now rejects radiance and reflectance `lux_spectrum`
+  objects with a `lux_spectrum_dimension_error`. Photon-radiance spectra were
+  previously integrated as if they were W m^-2 nm^-1.
+- `band_irradiance()` converts a photon-unit `lux_spectrum` to W m^-2 nm^-1
+  before integrating, as documented. `photonic = TRUE` no longer applies the
+  photon conversion twice, and `photonic = FALSE` now returns W m^-2 instead
+  of a photon-unit integral. Non-irradiance spectra are rejected.
+- Unit conversion is driven by one internal unit table and one pair of
+  physical constants.
+
 ## Package identity
 - Added the hexagonal luxR logo with a transparent background. The logo is
   displayed in the GitHub and r-universe README and in the bundled Shiny app.

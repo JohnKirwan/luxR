@@ -21,7 +21,8 @@
 #' documentation.
 #'
 #' @param E_lambda   Spectral irradiance (\eqn{W\,m^{-2}\,nm^{-1}}{W m^-2 nm^-1}) at depth \code{from}.
-#'   Length-N vector, or a \code{lux_spectrum} object.
+#'   Length-N vector, or an irradiance \code{lux_spectrum}, which is
+#'   converted to \eqn{W\,m^{-2}\,nm^{-1}}{W m^-2 nm^-1} first.
 #' @param Kd_lambda  Diffuse attenuation coefficients (1/m) at the same
 #'   wavelengths. Length-N vector.
 #' @param lambda     Wavelengths in nm. Length-N vector (not needed when
@@ -99,7 +100,7 @@ band_irradiance.numeric <- function(E_lambda, Kd_lambda, lambda, depths,
 
   if (isTRUE(photonic)) {
     photons_per_mol <- mol2photon_FUN(1, molar_unit)
-    mat <- mat * (lam_sub / 1.98644585714893e-16) / photons_per_mol
+    mat <- W2photon(mat, lam_sub) / photons_per_mol
   }
 
   data.frame(
@@ -112,7 +113,7 @@ band_irradiance.numeric <- function(E_lambda, Kd_lambda, lambda, depths,
 #' @export
 band_irradiance.lux_spectrum <- function(E_lambda, Kd_lambda, depths,
                                           lambda = NULL, ...) {
-  x <- E_lambda
+  x <- .as_energy_irradiance(E_lambda, "band_irradiance()")
   band_irradiance.numeric(x$E, Kd_lambda, x$lambda, depths,
                            binwidth = x$binwidth, ...)
 }

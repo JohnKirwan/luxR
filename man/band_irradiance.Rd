@@ -27,7 +27,8 @@ band_irradiance(E_lambda, ...)
 }
 \arguments{
 \item{E_lambda}{Spectral irradiance (\eqn{W\,m^{-2}\,nm^{-1}}{W m^-2 nm^-1}) at depth \code{from}.
-Length-N vector, or a \code{lux_spectrum} object.}
+Length-N vector, or an irradiance \code{lux_spectrum}, which is
+converted to \eqn{W\,m^{-2}\,nm^{-1}}{W m^-2 nm^-1} first.}
 
 \item{...}{Ignored.}
 

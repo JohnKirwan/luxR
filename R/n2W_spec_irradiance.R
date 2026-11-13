@@ -53,20 +53,12 @@ n2W_spec_irradiance.numeric <- function(value, lambda,
 #' @rdname n2W_spec_irradiance
 #' @export
 n2W_spec_irradiance.lux_spectrum <- function(value, ...) {
-  x             <- value
-  .PHOTON_UNITS <- c("umol/m2/s/nm", "mmol/m2/s/nm", "mol/m2/s/nm",
-                     "umol/m2/s/sr/nm", "mmol/m2/s/sr/nm",
-                     "mol/m2/s/sr/nm")
-  if (!x$unit %in% .PHOTON_UNITS)
+  x <- value
+  unit <- .UNITS[.UNITS$unit == x$unit, ]
+  if (!identical(unit$basis, "photon"))
     stop("n2W_spec_irradiance requires a photonic unit; x$unit is '",
          x$unit, "'.")
-  radiance <- grepl("/sr/", x$unit, fixed = TRUE)
-  mu   <- sub("/m2/s/sr/nm", "", x$unit, fixed = TRUE)
-  mu   <- sub("/m2/s/nm", "", mu, fixed = TRUE)
-  Enew <- n2W_spec_irradiance.numeric(x$E, x$lambda,
-                                       photonic = TRUE, molar_unit = mu)
-  new_unit <- if (radiance) "W/m2/sr/nm" else "W/m2/nm"
-  lux_spectrum(Enew, x$lambda, x$quantity, new_unit, x$binwidth, x$meta)
+  convert_unit(x, if (unit$quantity == "radiance") "W/m2/sr/nm" else "W/m2/nm")
 }
 
 
@@ -113,15 +105,12 @@ W2mol_spec_irradiance.numeric <- function(W, lambda, molar_unit = "umol", ...) {
 #' @rdname W2mol_spec_irradiance
 #' @export
 W2mol_spec_irradiance.lux_spectrum <- function(W, molar_unit = "umol", ...) {
-  x             <- W
-  .ENERGY_UNITS <- c("W/m2/nm", "W/m2/sr/nm", "mW/m2/sr/nm")
-  if (!x$unit %in% .ENERGY_UNITS)
+  x <- W
+  unit <- .UNITS[.UNITS$unit == x$unit, ]
+  if (!identical(unit$basis, "energy"))
     stop("W2mol_spec_irradiance requires an energy-based unit; x$unit is '",
          x$unit, "'. Use n2W_spec_irradiance() to convert photonic units.")
-  radiance <- grepl("/sr/", x$unit, fixed = TRUE)
-  E        <- if (x$unit == "mW/m2/sr/nm") x$E * 1e-3 else x$E
-  Enew     <- W2mol_spec_irradiance.numeric(E, x$lambda, molar_unit)
-  new_unit <- if (radiance) paste0(molar_unit, "/m2/s/sr/nm") else
-    paste0(molar_unit, "/m2/s/nm")
-  lux_spectrum(Enew, x$lambda, x$quantity, new_unit, x$binwidth, x$meta)
+  convert_unit(x, paste0(
+    molar_unit, if (unit$quantity == "radiance") "/m2/s/sr/nm" else "/m2/s/nm"
+  ))
 }
