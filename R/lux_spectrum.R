@@ -66,7 +66,7 @@
 #'   or \code{"reflectance"}.
 #' @param unit     Unit string from the controlled vocabulary. See Details.
 #' @param binwidth Bin width in nm. Inferred from the wavelength spacing
-#'   when \code{NULL}; defaults to 1 for a single-bin spectrum. An explicit
+#'   when \code{NULL}; required for a single-bin spectrum. An explicit
 #'   value must be finite, positive, scalar, and match the regular wavelength
 #'   spacing.
 #' @param meta     Named list of free-form metadata (depth, instrument, etc.).
@@ -211,7 +211,14 @@ lux_spectrum <- function(E, lambda,
   }
 
   if (is.null(binwidth)) {
-    binwidth <- if (is.null(spacing)) 1 else spacing
+    if (is.null(spacing)) {
+      .stop_lux_spectrum_validation(
+        "`binwidth` is required for a single wavelength.",
+        field = "binwidth", value = NULL,
+        subclass = "lux_spectrum_value_error", context = context
+      )
+    }
+    binwidth <- spacing
   } else {
     if (!is.numeric(binwidth) || is.complex(binwidth) ||
         is.object(binwidth) || !is.null(dim(binwidth)) ||

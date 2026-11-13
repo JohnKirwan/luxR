@@ -354,7 +354,7 @@ function(input, output, session) {
     S   <- sp_effective_S()
     src <- sp_light()
     if (is.null(S)) return(NULL)
-    binw <- if (length(src$lambda) > 1) mean(diff(src$lambda)) else 10
+    binw <- luxR:::.grid_binwidth(src$lambda, NULL, "quantum catch")
     value <- quantum_catch(
       irradiance = src$irradiance,
       lambda = src$lambda,
@@ -450,7 +450,6 @@ function(input, output, session) {
     peak_capture <- max(Eff$S, na.rm = TRUE)           # absolute peak absorptance
     screened     <- isTRUE(input$sp_od > 0)
 
-    binw <- if (length(src$lambda) > 1) mean(diff(src$lambda)) else 10
     irr_w <- W2photon(src$irradiance, src$lambda)
     irr_n <- irr_w / max(irr_w, na.rm = TRUE)
 

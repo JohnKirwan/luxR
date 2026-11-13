@@ -6,7 +6,7 @@
   # `spectra` is a named list keyed by depth (names must parse as numeric);
   # values are per-depth irradiance vectors over `lambda`. Full numeric
   # precision is kept here; display rounding is the caller's concern.
-  binw   <- if (length(lambda) > 1) mean(diff(lambda)) else 10
+  binw   <- .grid_binwidth(lambda, NULL, ".depth_summary_df()")
   depths <- as.numeric(names(spectra))
   rows <- lapply(seq_along(spectra), function(i) {
     E   <- spectra[[i]]

@@ -270,3 +270,10 @@ test_that("colour_jnd rejects species without a validated chromatic channel", {
     class = "lux_channel_unavailable_error"
   )
 })
+
+test_that("colour_jnd rejects an irregular wavelength grid", {
+  sp <- solar_irradiance("clear_noon")[-5, ]
+  expect_error(colour_jnd(sp$irradiance, sp$irradiance,
+                          lambda = sp$wavelength, species = "Danio rerio"),
+               class = "lux_spectrum_grid_error")
+})

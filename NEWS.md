@@ -21,6 +21,14 @@
   `z2 <= z1`, and vectors whose lengths neither match nor are 1.
   `beam_attenuation()` no longer lets `NA` through, and `weber_contrast()`
   rejects a negative target or background.
+- A wavelength grid's bin width is no longer guessed. `lux_spectrum()` with a
+  single wavelength now needs an explicit `binwidth` (it was 1 nm), so
+  single-row file imports also need one. `resample_spectrum()` needs at least
+  two regularly spaced target wavelengths. `colour_jnd()`, the Shiny app and
+  every `broadband2spectrum()` unit raise a `lux_spectrum_grid_error` for an
+  irregular grid instead of averaging its spacing. `broadband2spectrum()`
+  also rejects a negative or non-finite `value` or `depth`, and a reference
+  spectrum that integrates to zero.
 
 ## Unit handling
 - `par_irradiance()` now rejects radiance and reflectance `lux_spectrum`
