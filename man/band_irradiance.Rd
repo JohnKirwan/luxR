@@ -44,11 +44,11 @@ wavelengths. Length-N vector.}
 (surface). Set to a positive value to propagate from a subsurface
 measurement.}
 
-\item{lambda_min}{Lower wavelength bound in nm (inclusive). Defaults to
-\code{min(lambda)}.}
+\item{lambda_min}{Lower wavelength bound in nm. Defaults to the outer edge
+of the first bin, \code{min(lambda) - binwidth / 2}.}
 
-\item{lambda_max}{Upper wavelength bound in nm (inclusive). Defaults to
-\code{max(lambda)}.}
+\item{lambda_max}{Upper wavelength bound in nm. Defaults to the outer edge
+of the last bin, \code{max(lambda) + binwidth / 2}.}
 
 \item{photonic}{Logical; if \code{TRUE} the result is returned in
 \eqn{\mu}mol photons m\eqn{^{-2}} s\eqn{^{-1}} rather than \eqn{W\,m^{-2}}{W m^-2}.
@@ -57,7 +57,7 @@ Default \code{FALSE}.}
 \item{molar_unit}{Molar unit for photonic output. Default \code{"umol"}.}
 
 \item{binwidth}{Wavelength bin width in nm. Inferred from \code{lambda}
-if not supplied.}
+if not supplied; if supplied it must equal the wavelength spacing.}
 
 \item{allow_above_surface}{Logical; permits target depths above the surface
 (negative values). Default \code{FALSE}.}
@@ -87,8 +87,11 @@ propagated spectrum is integrated over the specified wavelength window
 [\eqn{\lambda_{\min}}, \eqn{\lambda_{\max}}]:
 \deqn{E_{\mathrm{band}}(z) =
       \int_{\lambda_{\min}}^{\lambda_{\max}} E(z,\,\lambda)\,d\lambda}
-approximated as \eqn{\sum_i E(z,\lambda_i)\,\Delta\lambda} over bins within
-the window. See \code{\link{propagate_spectrum}} for the full Beer-Lambert
+approximated as \eqn{\sum_i E(z,\lambda_i)\,w_i}. Each sample is a bin of
+width \code{binwidth} centred on its wavelength, and \eqn{w_i} is the part
+of that bin inside the window, so a bin straddling a band edge counts only
+its overlap. The wavelength grid must be regularly spaced and its bins must
+span the window. See \code{\link{propagate_spectrum}} for the full Beer-Lambert
 documentation.
 }
 \examples{

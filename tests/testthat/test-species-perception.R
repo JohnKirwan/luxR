@@ -27,11 +27,10 @@ test_that("govardovskii_template S is non-negative", {
   expect_true(all(out2$S >= 0))
 })
 
-test_that("govardovskii_template is normalised to a peak of one", {
+test_that("govardovskii_template never exceeds one", {
   lam <- seq(300, 750, by = 1)
   for (chromophore in c("A1", "A2")) {
     out <- govardovskii_template(lam, 500, chromophore = chromophore)
-    expect_equal(max(out$S), 1)
     expect_true(all(out$S <= 1))
   }
 })
@@ -320,4 +319,65 @@ test_that("species_brightness zebrafish has more receptors than human L-cone alo
     input_unit = "photon/m2/s/nm", channel = "by_receptor"
   )
   expect_gte(length(zf), 3)
+})
+
+# ---- template normalisation is independent of the wavelength grid ---------
+
+test_that("govardovskii_template does not depend on the wavelength grid", {
+  wide   <- govardovskii_template(seq(300, 750, by = 1), 360)
+  narrow <- govardovskii_template(seq(400, 700, by = 1), 360)
+  expect_equal(narrow$S, wide$S[wide$lambda >= 400 & wide$lambda <= 700],
+               tolerance = 1e-12)
+  expect_lt(max(narrow$S), 0.5)
+})
+
+test_that("govardovskii_template stays small when the peak is far off the grid", {
+  out <- govardovskii_template(seq(600, 700, by = 1), 360)
+  expect_true(all(out$S >= 0 & out$S < 0.01))
+})
+
+test_that("govardovskii_template never exceeds one on a fine grid", {
+  for (ch in c("A1", "A2")) for (lmax in c(300, 360, 500, 620, 700)) {
+    S <- govardovskii_template(seq(250, 750, by = 0.01), lmax, ch)$S
+    expect_lte(max(S), 1)
+    expect_equal(max(S), 1, tolerance = 1e-6)
+  }
+})
+
+test_that("govardovskii_template rejects lambda_max outside 300-700 nm", {
+  lam <- seq(300, 750, by = 1)
+  expect_error(govardovskii_template(lam, 260),
+               class = "lux_invalid_sensitivity_peak_error")
+  expect_error(govardovskii_template(lam, 701),
+               class = "lux_invalid_sensitivity_peak_error")
+})
+
+test_that("fit_sensitivity recovers a peak that lies off the measured grid", {
+  lam  <- seq(400, 700, by = 5)
+  true <- govardovskii_template(lam, 380)$S
+  fit  <- fit_sensitivity(lam, true)
+  expect_equal(fit$lambda_max, 380, tolerance = 0.5 / 380)
+  expect_lt(fit$SS, 1e-8)
+  expect_equal(fit$amplitude * fit$fitted$S, true / max(true), tolerance = 1e-4)
+})
+
+test_that("fit_sensitivity amplitude is the inverse of the template's on-grid maximum", {
+  lam  <- seq(400, 700, by = 5)
+  true <- govardovskii_template(lam, 380)$S
+  expect_equal(fit_sensitivity(lam, true)$amplitude, 1 / max(true),
+               tolerance = 1e-3)
+  on_grid <- govardovskii_template(lam, 530)$S
+  expect_equal(fit_sensitivity(lam, on_grid)$amplitude, 1 / max(on_grid),
+               tolerance = 1e-3)
+})
+
+test_that("fit_sensitivity raises typed errors before fitting", {
+  lam <- seq(400, 700, by = 5)
+  S   <- govardovskii_template(lam, 530)$S
+  expect_error(fit_sensitivity(lam, S, lambda_max_range = c(250, 700)),
+               class = "lux_invalid_sensitivity_peak_error")
+  bad <- lam
+  bad[3] <- NA
+  expect_error(expect_no_warning(fit_sensitivity(bad, S)),
+               class = "lux_invalid_sensitivity_grid_error")
 })

@@ -30,7 +30,8 @@ molar units. For molar-unit (µmol/m²/s/nm) input, either wrap in a
 molar units in \code{\link{n2W_spec_irradiance}} and photon-or-molar
 units in \code{\link{irradiance2lux}}.}
 
-\item{binwidth}{Bin width in nm. Inferred from \code{lambda} if \code{NULL}.}
+\item{binwidth}{Bin width in nm. Inferred from \code{lambda} if
+\code{NULL}; if supplied it must equal the wavelength spacing.}
 }
 \value{
 Scalar PAR irradiance in µmol photons m\eqn{^{-2}} s\eqn{^{-1}}.
@@ -53,6 +54,12 @@ divided by Avogadro's constant scaled to µmol:
 where \eqn{N_A = 6.022 \times 10^{23}} mol\eqn{^{-1}} and
 \eqn{hc = 1.98645 \times 10^{-16}} J nm. The result is in
 µmol photons m\eqn{^{-2}} s\eqn{^{-1}}.
+
+Each sample is treated as a bin of width \code{binwidth} centred on its
+wavelength. A bin that straddles 400 or 700 nm contributes only the part
+inside the PAR window, so the result does not depend on where the grid
+points fall. The wavelength grid must be regularly spaced and its bins
+must span 400–700 nm; otherwise an error is raised.
 }
 \examples{
 sp  <- solar_irradiance("clear_noon")

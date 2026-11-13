@@ -23,15 +23,20 @@
 #' \right]}
 #' with \eqn{\lambda_\beta = 189 + 0.315\,\lambda_{\max}} and
 #' \eqn{b = -40.5 + 0.195\,\lambda_{\max}}. The full template is
-#' \eqn{S(\lambda) = \max(0,\, S_\alpha + S_\beta)}, normalised to a peak of 1.
+#' \eqn{S(\lambda) = \max(0,\, S_\alpha + S_\beta)}, normalised to the
+#' template's own maximum. That maximum lies slightly below
+#' \eqn{\lambda_{\max}} and is found numerically, so the returned values do not
+#' depend on the wavelength grid supplied: a grid that misses the peak returns
+#' values below 1 rather than being rescaled.
 #'
 #' @param lambda      Wavelength grid in nm (numeric vector).
-#' @param lambda_max  Peak absorbance wavelength in nm.
+#' @param lambda_max  Peak absorbance wavelength in nm, between 300 and 700.
 #' @param chromophore Chromophore type: \code{"A1"} (11-cis retinal, default)
 #'   or \code{"A2"} (11-cis 3,4-didehydroretinal). A2 shifts the peak toward
 #'   longer wavelengths and broadens the spectrum.
 #' @return A data frame with columns \code{lambda} and \code{S} (normalised
-#'   absorbance, 0–1).
+#'   absorbance, at most 1; it reaches 1 only if \code{lambda} includes the
+#'   template's peak).
 #' @references
 #'   Govardovskii VI, Fyhrquist N, Reuter T, Kuzmin DG, Donner K (2000)
 #'   In search of the visual pigment template. Visual Neuroscience 17:509–528.
@@ -41,6 +46,30 @@
 #' @export
 govardovskii_template <- function(lambda, lambda_max,
                                    chromophore = c("A1", "A2")) {
+  .check_template_grid(lambda)
+  if (!is.numeric(lambda_max) || is.complex(lambda_max) ||
+      is.object(lambda_max) || !is.null(dim(lambda_max)) ||
+      length(lambda_max) != 1L || !is.finite(lambda_max) ||
+      lambda_max < 300 || lambda_max > 700) {
+    .stop_species_model(
+      "'lambda_max' must be one finite number between 300 and 700 nm.",
+      "lux_invalid_sensitivity_peak_error",
+      field = "lambda_max", value = lambda_max
+    )
+  }
+  chromophore <- match.arg(chromophore)
+
+  S <- .govardovskii_raw(lambda, lambda_max, chromophore)
+  # Normalise to the template's own maximum, which lies just below
+  # `lambda_max`, so the values do not depend on the grid supplied. `max()`
+  # with the on-grid values keeps S <= 1 despite the optimiser's tolerance.
+  peak <- stats::optimize(.govardovskii_raw, lambda_max * c(0.95, 1.01),
+                          lambda_max = lambda_max, chromophore = chromophore,
+                          maximum = TRUE, tol = 1e-6)$objective
+  data.frame(lambda = lambda, S = S / max(peak, S))
+}
+
+.check_template_grid <- function(lambda) {
   if (!is.numeric(lambda) || is.complex(lambda) || is.object(lambda) ||
       !is.null(dim(lambda)) || length(lambda) == 0L ||
       any(!is.finite(lambda)) || any(lambda <= 0) ||
@@ -51,18 +80,10 @@ govardovskii_template <- function(lambda, lambda_max,
       field = "lambda", value = lambda
     )
   }
-  if (!is.numeric(lambda_max) || is.complex(lambda_max) ||
-      is.object(lambda_max) || !is.null(dim(lambda_max)) ||
-      length(lambda_max) != 1L || !is.finite(lambda_max) ||
-      lambda_max <= 0) {
-    .stop_species_model(
-      "'lambda_max' must be one finite, strictly positive number.",
-      "lux_invalid_sensitivity_peak_error",
-      field = "lambda_max", value = lambda_max
-    )
-  }
-  chromophore <- match.arg(chromophore)
+}
 
+# Un-normalised Govardovskii template (alpha band plus beta band).
+.govardovskii_raw <- function(lambda, lambda_max, chromophore) {
   if (chromophore == "A1") {
     a_coef <- 0.8795 + 0.0459 * exp(-(lambda_max - 300)^2 / 11940)
     coefs  <- list(A = 69.7, B = 28, C = -14.9, D = 0.674, a = a_coef)
@@ -81,9 +102,7 @@ govardovskii_template <- function(lambda, lambda_max,
   b    <- -40.5 + 0.195 * lambda_max
   beta <- 0.26 * exp(-((lambda - lmb) / b)^2)
 
-  S <- pmax(0, alpha + beta)
-  S <- S / max(S)
-  data.frame(lambda = lambda, S = S)
+  pmax(0, alpha + beta)
 }
 
 
@@ -197,7 +216,13 @@ receptor_absorptance <- function(S, optical_density = NULL,
 #'   \describe{
 #'     \item{\code{lambda_max}}{Best-fit peak wavelength (nm).}
 #'     \item{\code{chromophore}}{Chromophore used.}
-#'     \item{\code{SS}}{Residual sum of squares at the optimum.}
+#'     \item{\code{amplitude}}{Best-fit scale applied to the template to
+#'       match the input, which is first rescaled to a maximum of 1. About 1
+#'       when the measured wavelengths include the template's peak, and above
+#'       1 (the inverse of the template's largest measured value) when the
+#'       peak lies outside them.}
+#'     \item{\code{SS}}{Residual sum of squares at the optimum, between the
+#'       peak-normalised input and \code{amplitude * fitted$S}.}
 #'     \item{\code{fitted}}{Data frame with columns \code{lambda} and \code{S}
 #'       giving the template evaluated on the input wavelength grid.}
 #'   }
@@ -221,6 +246,14 @@ fit_sensitivity <- function(lambda, sensitivity,
     length(lambda_max_range) == 2,
     lambda_max_range[1] < lambda_max_range[2]
   )
+  if (lambda_max_range[1] < 300 || lambda_max_range[2] > 700) {
+    .stop_species_model(
+      "'lambda_max_range' must lie within 300-700 nm, where the template is defined.",
+      "lux_invalid_sensitivity_peak_error",
+      field = "lambda_max_range", value = lambda_max_range
+    )
+  }
+  .check_template_grid(lambda)
 
   s_max <- max(sensitivity, na.rm = TRUE)
   if (!is.finite(s_max) || s_max == 0)
@@ -229,9 +262,14 @@ fit_sensitivity <- function(lambda, sensitivity,
 
   keep <- !is.na(sensitivity)
 
+  # The amplitude is fitted too (closed-form least squares), so a spectrum
+  # whose peak lies off the measured grid is not forced to a peak of 1.
+  amplitude <- function(tmpl) {
+    sum(tmpl * sensitivity[keep]) / sum(tmpl^2)
+  }
   obj <- function(lmax) {
-    tmpl <- govardovskii_template(lambda[keep], lmax, chromophore)
-    sum((tmpl$S - sensitivity[keep])^2)
+    tmpl <- .govardovskii_raw(lambda[keep], lmax, chromophore)
+    sum((amplitude(tmpl) * tmpl - sensitivity[keep])^2)
   }
 
   res    <- optimize(obj, interval = lambda_max_range)
@@ -240,6 +278,7 @@ fit_sensitivity <- function(lambda, sensitivity,
   list(
     lambda_max  = res$minimum,
     chromophore = chromophore,
+    amplitude   = amplitude(fitted$S[keep]),
     SS          = res$objective,
     fitted      = fitted
   )

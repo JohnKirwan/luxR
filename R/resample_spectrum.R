@@ -18,7 +18,8 @@
 #' \code{NA}. The target grid for a \code{lux_spectrum} must also be strictly
 #' increasing and regular. The numeric method can be used to resample raw
 #' values from an irregular source grid before constructing a
-#' \code{lux_spectrum}.
+#' \code{lux_spectrum}. Non-finite values in the spectrum or in either
+#' wavelength grid are an error rather than being dropped.
 #'
 #' @param x        A \code{lux_spectrum} object or numeric spectral-value
 #'   vector.
@@ -29,9 +30,9 @@
 #'   (wavelengths are taken from \code{x$lambda}).
 #' @param method   Interpolation method: \code{"linear"} (default) or
 #'   \code{"cubic"}.
-#' @param rule     Integer passed to \code{\link[stats]{approx}} controlling
-#'   out-of-range behaviour. Default \code{1} (return \code{NA}); use
-#'   \code{2} to extend with boundary values.
+#' @param rule     Out-of-range behaviour for both methods: \code{1}
+#'   (default) returns \code{NA}; \code{2} extends with boundary values.
+#'   Any other value is an error.
 #' @return A \code{lux_spectrum} (when \code{x} is a \code{lux_spectrum})
 #'   or a named numeric vector, resampled onto \code{lambda}.
 #' @seealso \code{\link{lux_spectrum}}, \code{\link{as_lux_spectrum}}
@@ -82,9 +83,37 @@ resample_spectrum.numeric <- function(x, lambda, from = NULL,
 }
 
 .interp <- function(y, x_from, x_to, method, rule) {
-  if (method == "cubic") {
-    stats::spline(x_from, y, xout = x_to, method = "natural")$y
-  } else {
-    stats::approx(x_from, y, xout = x_to, rule = rule)$y
+  if (!is.numeric(rule) || length(rule) != 1L || !rule %in% c(1, 2)) {
+    .stop_lux_spectrum_validation(
+      "`rule` must be 1 (NA outside the source range) or 2 (boundary value).",
+      field = "rule", value = rule, subclass = "lux_spectrum_value_error"
+    )
   }
+  # approx() and spline() drop non-finite points silently, which would narrow
+  # the source range, so every input must be finite.
+  fail <- .lux_spectrum_fail()
+  .check_numeric(y, "x", fail)
+  .check_numeric(x_from, "from", fail)
+  .check_numeric(x_to, "lambda", fail)
+  if (length(y) != length(x_from)) {
+    .stop_lux_spectrum_validation(
+      paste0("`x` has length ", length(y), " but its source wavelength grid ",
+             "has length ", length(x_from), "."),
+      field = "x", value = length(y), subclass = "lux_spectrum_dimension_error"
+    )
+  }
+  if (length(x_from) < 2L) {
+    .stop_lux_spectrum_validation(
+      "Interpolation needs at least two source wavelengths.",
+      field = "from", value = x_from, subclass = "lux_spectrum_value_error"
+    )
+  }
+  if (method == "linear") {
+    return(stats::approx(x_from, y, xout = x_to, rule = rule)$y)
+  }
+  out <- stats::spline(x_from, y, xout = x_to, method = "natural")$y
+  # A spline extrapolates; outside the source range apply `rule` as approx does.
+  outside <- x_to < min(x_from) | x_to > max(x_from)
+  out[outside] <- stats::approx(x_from, y, xout = x_to[outside], rule = rule)$y
+  out
 }
