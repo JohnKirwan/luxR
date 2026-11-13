@@ -44,9 +44,9 @@ a numeric vector; ignored when \code{x} is a \code{lux_spectrum}
 \item{method}{Interpolation method: \code{"linear"} (default) or
 \code{"cubic"}.}
 
-\item{rule}{Integer passed to \code{\link[stats]{approx}} controlling
-out-of-range behaviour. Default \code{1} (return \code{NA}); use
-\code{2} to extend with boundary values.}
+\item{rule}{Out-of-range behaviour for both methods: \code{1}
+(default) returns \code{NA}; \code{2} extends with boundary values.
+Any other value is an error.}
 }
 \value{
 A \code{lux_spectrum} (when \code{x} is a \code{lux_spectrum})
@@ -69,7 +69,8 @@ values, its method raises a validation error when \code{rule = 1} produces
 \code{NA}. The target grid for a \code{lux_spectrum} must also be strictly
 increasing and regular. The numeric method can be used to resample raw
 values from an irregular source grid before constructing a
-\code{lux_spectrum}.
+\code{lux_spectrum}. Non-finite values in the spectrum or in either
+wavelength grid are an error rather than being dropped.
 }
 \examples{
 # Resample a solar spectrum from 10 nm to 5 nm bins

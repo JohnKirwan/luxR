@@ -18,7 +18,8 @@
 #' \code{NA}. The target grid for a \code{lux_spectrum} must also be strictly
 #' increasing and regular. The numeric method can be used to resample raw
 #' values from an irregular source grid before constructing a
-#' \code{lux_spectrum}.
+#' \code{lux_spectrum}. Non-finite values in the spectrum or in either
+#' wavelength grid are an error rather than being dropped.
 #'
 #' @param x        A \code{lux_spectrum} object or numeric spectral-value
 #'   vector.
@@ -29,9 +30,9 @@
 #'   (wavelengths are taken from \code{x$lambda}).
 #' @param method   Interpolation method: \code{"linear"} (default) or
 #'   \code{"cubic"}.
-#' @param rule     Integer passed to \code{\link[stats]{approx}} controlling
-#'   out-of-range behaviour. Default \code{1} (return \code{NA}); use
-#'   \code{2} to extend with boundary values.
+#' @param rule     Out-of-range behaviour for both methods: \code{1}
+#'   (default) returns \code{NA}; \code{2} extends with boundary values.
+#'   Any other value is an error.
 #' @return A \code{lux_spectrum} (when \code{x} is a \code{lux_spectrum})
 #'   or a named numeric vector, resampled onto \code{lambda}.
 #' @seealso \code{\link{lux_spectrum}}, \code{\link{as_lux_spectrum}}

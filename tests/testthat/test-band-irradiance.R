@@ -154,6 +154,8 @@ test_that("band_irradiance: rejects a spectrum shorter than its wavelength grid"
 })
 
 test_that(".band_widths: a descending grid is reported as not increasing", {
+  # the old message said "the step ... is -10 nm, expected -10 nm"
   expect_error(luxR:::.band_widths(rev(lam), operation = "t()"),
-               "strictly increasing", class = "lux_spectrum_grid_error")
+               "strictly increasing; index 2 has value 690 after 700",
+               class = "lux_spectrum_grid_error")
 })
