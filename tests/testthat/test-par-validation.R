@@ -5,9 +5,9 @@
 # reference is photobiology::q_irrad() over a 400-700 nm waveband, which
 # returns photon irradiance in mol/m2/s. Both rest on the same per-photon
 # energy relation n(lambda) = E * lambda / (h c), so they must agree up to the
-# quadrature convention: luxR sums E * binwidth (rectangle rule) while
-# photobiology integrates trapezoidally, differing by the endpoint-bin weight
-# (~0.2 percent on a 1 nm grid). This benchmark validates the per-photon
+# quadrature convention: luxR sums E over bins centred on each wavelength,
+# counting only the part of an edge bin inside 400-700 nm, while photobiology
+# integrates trapezoidally. This benchmark validates the per-photon
 # conversion and band weighting, not the choice of quadrature rule.
 # photobiology is a Suggests dependency, so these tests skip when it is absent.
 

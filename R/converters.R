@@ -280,10 +280,7 @@ broadband2spectrum <- function(value,
                                 binwidth = binwidth),
     W          = sum(shape) * binwidth,
     kW         = sum(shape) * binwidth / 1e3,
-    umol       = {
-      par <- lambda >= 400 & lambda <= 700
-      sum(W2photon(shape[par], lambda[par])) * binwidth / (.AVOGADRO * 1e-6)
-    },
+    umol       = par_irradiance(shape, lambda, binwidth = binwidth),
     radiance_W = sum(shape) * binwidth / pi,
     cd         = irradiance2lux(shape, lambda, total = TRUE,
                                 binwidth = binwidth) / pi

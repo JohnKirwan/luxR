@@ -27,11 +27,9 @@ test_that("band_irradiance: wavelength subsetting reduces E vs full band", {
 })
 
 test_that("band_irradiance: band subset integrates the correct wavelengths only", {
-  # with flat spectrum and uniform Kd, band E at z=0 = n_bins * binwidth * E0[1]
+  # with a flat unit spectrum, band E at z=0 is the band width in nm
   sub  <- band_irradiance(E0, Kd, lam, depths = 0, lambda_min = 500, lambda_max = 600)
-  bw   <- mean(diff(lam))
-  n_bins <- sum(lam >= 500 & lam <= 600)
-  expect_equal(sub$E, n_bins * bw, tolerance = 1e-10)
+  expect_equal(sub$E, 100, tolerance = 1e-10)
 })
 
 test_that("band_irradiance: full band with no limits equals PAR-range subset for PAR spectrum", {
@@ -40,16 +38,15 @@ test_that("band_irradiance: full band with no limits equals PAR-range subset for
   Kd2   <- rep(0.05, length(lam2))
   full  <- band_irradiance(E2, Kd2, lam2, depths = 5)
   sub   <- band_irradiance(E2, Kd2, lam2, depths = 5,
-                           lambda_min = 400, lambda_max = 700)
+                           lambda_min = 395, lambda_max = 705)
   expect_equal(full$E, sub$E, tolerance = 1e-10)
 })
 
 test_that("band_irradiance: matches manual attenuate_spectrum + sum", {
   depths <- c(0, 10, 25)
   mat    <- attenuate_spectrum(E0, Kd, depths = depths, format = "matrix")
-  bw     <- mean(diff(lam))
   idx    <- lam >= 500 & lam <= 600
-  manual <- colSums(mat[idx, ]) * bw
+  manual <- colSums(mat[idx, ] * c(5, rep(10, 9), 5))  # edge bins half inside
   result <- band_irradiance(E0, Kd, lam, depths = depths,
                             lambda_min = 500, lambda_max = 600)
   expect_equal(result$E, manual, tolerance = 1e-10)
@@ -60,6 +57,7 @@ test_that("band_irradiance: photonic output matches par_irradiance for PAR band"
   E_z <- E0 * exp(-Kd * 10)           # manually attenuated spectrum at 10 m
   par <- par_irradiance(E_z, lam)
   bi  <- band_irradiance(E0, Kd, lam, depths = 10,
+                         lambda_min = 400, lambda_max = 700,
                          photonic = TRUE, molar_unit = "umol")$E
   expect_equal(bi, par, tolerance = 1e-6)
 })
@@ -67,13 +65,13 @@ test_that("band_irradiance: photonic output matches par_irradiance for PAR band"
 test_that("band_irradiance: error when lambda_min >= lambda_max", {
   expect_error(band_irradiance(E0, Kd, lam, depths = 0,
                                lambda_min = 600, lambda_max = 500),
-               "lambda_min")
+               class = "lux_spectrum_value_error")
 })
 
 test_that("band_irradiance: error when no wavelengths fall in range", {
   expect_error(band_irradiance(E0, Kd, lam, depths = 0,
                                lambda_min = 800, lambda_max = 900),
-               "[Nn]o wavelength")
+               class = "lux_spectrum_grid_error")
 })
 
 # ---- from parameter (bidirectional) ----------------------------------------
@@ -114,4 +112,43 @@ test_that("band_irradiance: E increases when propagating upward (from > depth)",
   result  <- band_irradiance(E_deep, Kd, lam,
                              depths = c(20, 10, 5, 0), from = z_deep)
   expect_true(all(diff(result$E) > 0))  # shallower = brighter
+})
+
+# ---- band-edge weighting ----------------------------------------------------
+
+test_that(".band_widths: edge bins contribute only their overlap", {
+  lam2 <- seq(390, 710, by = 10)
+  w    <- luxR:::.band_widths(lam2, lo = 400, hi = 700, operation = "t()")
+  expect_equal(w[lam2 == 390], 0)
+  expect_equal(w[lam2 %in% c(400, 700)], c(5, 5))
+  expect_equal(w[lam2 == 550], 10)
+  expect_equal(sum(w), 300)
+})
+
+test_that(".band_widths: default band is the full bin extent", {
+  expect_equal(luxR:::.band_widths(lam, operation = "t()"), rep(10, length(lam)))
+})
+
+test_that(".band_widths: rejects irregular, descending, uncovered and single-point grids", {
+  bw <- function(...) luxR:::.band_widths(..., operation = "t()")
+  expect_error(bw(c(400, 410, 430), lo = 400, hi = 430), class = "lux_spectrum_grid_error")
+  expect_error(bw(c(700, 690, 680), lo = 680, hi = 700), class = "lux_spectrum_grid_error")
+  expect_error(bw(seq(450, 700, by = 10), lo = 400, hi = 700), class = "lux_spectrum_grid_error")
+  expect_error(bw(550, lo = 400, hi = 700), class = "lux_spectrum_value_error")
+  expect_error(bw(lam, binwidth = 2, lo = 400, hi = 700), class = "lux_spectrum_grid_error")
+  expect_error(bw(lam, lo = 600, hi = 500), class = "lux_spectrum_value_error")
+  expect_equal(sum(bw(seq(450, 650, by = 10), lo = 400, hi = 700, cover = FALSE)), 210)
+  expect_equal(bw(550, binwidth = 10, lo = 400, hi = 700, cover = FALSE), 10)
+})
+
+test_that("band_irradiance: a flat spectrum integrates to the band width", {
+  lam2 <- seq(390, 710, by = 10)
+  out  <- band_irradiance(rep(1, length(lam2)), rep(0.05, length(lam2)), lam2,
+                          depths = 0, lambda_min = 400, lambda_max = 700)
+  expect_equal(out$E, 300, tolerance = 1e-10)
+})
+
+test_that("band_irradiance: rejects a spectrum shorter than its wavelength grid", {
+  expect_error(band_irradiance(1, Kd, lam, depths = 0),
+               class = "lux_spectrum_dimension_error")
 })

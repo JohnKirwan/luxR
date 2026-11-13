@@ -55,7 +55,8 @@ test_that("par_irradiance: umol lux_spectrum returns same value as direct sum", 
 })
 
 test_that("par_irradiance errors when no wavelengths in PAR range", {
-  expect_error(par_irradiance(c(1, 2), c(800, 900)), "PAR range")
+  expect_error(par_irradiance(c(1, 2), c(800, 900)),
+               class = "lux_spectrum_grid_error")
 })
 
 test_that("par_irradiance infers binwidth from lambda spacing", {
@@ -84,7 +85,40 @@ test_that("par_fraction of underwater spectrum is higher than noon surface", {
 })
 
 test_that("par_fraction of all-PAR spectrum is 1", {
-  lam <- seq(400, 700, by = 10)
+  lam <- seq(405, 695, by = 10)
   E   <- rep(1, length(lam))
   expect_equal(par_fraction(E, lam), 1)
+})
+
+# ---- band-edge weighting ----------------------------------------------------
+
+test_that("par_irradiance: flat photon spectrum integrates over exactly 300 nm", {
+  lam <- seq(300, 800, by = 10)
+  E   <- rep(luxR:::.AVOGADRO * 1e-6, length(lam)) # 1 umol/m2/s/nm as photons
+  expect_equal(par_irradiance(E, lam, photonic = TRUE), 300, tolerance = 1e-10)
+})
+
+test_that("par_irradiance: is independent of grid resolution for a flat spectrum", {
+  f <- function(by) {
+    lam <- seq(300, 800, by = by)
+    par_irradiance(rep(1e18, length(lam)), lam, photonic = TRUE)
+  }
+  expect_equal(f(10), f(1), tolerance = 1e-10)
+})
+
+test_that("par_irradiance: a grid that does not span PAR is an error", {
+  lam <- seq(450, 700, by = 10)
+  expect_error(par_irradiance(rep(1, length(lam)), lam),
+               class = "lux_spectrum_grid_error")
+})
+
+test_that("par_irradiance and par_fraction reject mismatched lengths", {
+  lam <- seq(300, 800, by = 10)
+  expect_error(par_irradiance(1, lam), class = "lux_spectrum_dimension_error")
+  expect_error(par_fraction(1, lam), class = "lux_spectrum_dimension_error")
+})
+
+test_that("par_fraction: a flat spectrum gives the PAR share of the bin extent", {
+  lam <- seq(300, 800, by = 10)
+  expect_equal(par_fraction(rep(1, length(lam)), lam), 300 / 510)
 })
