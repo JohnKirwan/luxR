@@ -29,14 +29,16 @@ michelson_contrast <- function(I_bright, I_dark) {
 #'
 #' @param I_target Luminance or radiance of the target (scalar or vector).
 #' @param I_background Luminance or radiance of the background (scalar or
-#'   vector). Must be non-zero.
+#'   vector). Must be positive; \code{I_target} must be non-negative.
 #' @return Contrast value(s); unbounded but typically in \eqn{[-1, \infty)}.
 #' @seealso [michelson_contrast()]
 #' @examples
 #' weber_contrast(I_target = 8, I_background = 4)
 #' @export
 weber_contrast <- function(I_target, I_background) {
-  if (any(I_background == 0))
-    stop("I_background cannot be zero.")
+  op <- "weber_contrast()"
+  .check_input(I_target, "I_target", op, lower = 0)
+  .check_input(I_background, "I_background", op, lower = 0, lower_open = TRUE)
+  .check_recyclable(I_target, I_background, c("I_target", "I_background"), op)
   (I_target - I_background) / I_background
 }

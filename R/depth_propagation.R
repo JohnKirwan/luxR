@@ -572,7 +572,19 @@ propagate_spectrum.lux_spectrum <- function(E_lambda, Kd_lambda, from = 0, to,
 #' photic_depth(0.06, fraction = 0.1)
 #' @export
 photic_depth <- function(Kd, fraction = 0.01) {
-  stopifnot(all(fraction > 0 & fraction < 1))
+  op <- "photic_depth()"
+  .check_input(Kd, "Kd", op, lower = 0, lower_open = TRUE)
+  .check_input(fraction, "fraction", op, lower = 0, lower_open = TRUE)
+  if (any(fraction >= 1)) {
+    i <- which(fraction >= 1)[1L]
+    .stop_lux_spectrum_validation(
+      paste0(op, ": `fraction` must be below 1; index ", i, " is ",
+             format(fraction[i]), "."),
+      field = "fraction", value = fraction[i], index = i,
+      subclass = "lux_spectrum_value_error"
+    )
+  }
+  .check_recyclable(Kd, fraction, c("Kd", "fraction"), op)
   -log(fraction) / Kd
 }
 
@@ -609,11 +621,32 @@ fit_Kd <- function(E1, ...) UseMethod("fit_Kd")
 #' @rdname fit_Kd
 #' @export
 fit_Kd.numeric <- function(E1, z1, E2, z2, ...) {
-  if (inherits(E2, "lux_spectrum"))
-    stop("When E1 is numeric, E2 must also be numeric. ",
-         "Pass a lux_spectrum as E1 to use the lux_spectrum method.")
-  stopifnot(all(z2 > z1), all(E1 > 0), all(E2 > 0))
-  log(E1 / E2) / (z2 - z1)
+  op <- "fit_Kd()"
+  if (inherits(E2, "lux_spectrum")) {
+    .stop_lux_spectrum_validation(
+      paste0(op, ": when `E1` is numeric, `E2` must also be numeric. Pass a ",
+             "lux_spectrum as `E1` to use the lux_spectrum method."),
+      field = "E2", value = class(E2), subclass = "lux_spectrum_type_error"
+    )
+  }
+  .check_input(E1, "E1", op, lower = 0, lower_open = TRUE)
+  .check_input(E2, "E2", op, lower = 0, lower_open = TRUE)
+  .check_input(z1, "z1", op)
+  .check_input(z2, "z2", op)
+  .check_recyclable(E1, E2, c("E1", "E2"), op)
+  .check_recyclable(z1, z2, c("z1", "z2"), op)
+  dz <- z2 - z1
+  if (any(dz <= 0)) {
+    i <- which(dz <= 0)[1L]
+    .stop_lux_spectrum_validation(
+      paste0(op, ": `z2` must be deeper than `z1`; index ", i, " has z1 = ",
+             format(rep_len(z1, length(dz))[i]), ", z2 = ",
+             format(rep_len(z2, length(dz))[i]), "."),
+      field = c("z1", "z2"), value = dz[i], index = i,
+      subclass = "lux_spectrum_value_error"
+    )
+  }
+  log(E1 / E2) / dz
 }
 
 #' @rdname fit_Kd

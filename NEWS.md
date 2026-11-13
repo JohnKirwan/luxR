@@ -15,6 +15,12 @@
   finite, `lambda` and `irradiance` come together and match `Kd` in length,
   irradiance is non-negative with some in the window, and only irradiance
   spectra are accepted.
+- `photic_depth()`, `weber_contrast()`, `beam_attenuation()` and the numeric
+  `fit_Kd()` validate their input and raise typed `lux_spectrum_*_error`s:
+  non-finite (including `NA`) or out-of-range values, `fraction >= 1`,
+  `z2 <= z1`, and vectors whose lengths neither match nor are 1.
+  `beam_attenuation()` no longer lets `NA` through, and `weber_contrast()`
+  rejects a negative target or background.
 
 ## Unit handling
 - `par_irradiance()` now rejects radiance and reflectance `lux_spectrum`

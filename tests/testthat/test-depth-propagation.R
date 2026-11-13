@@ -501,3 +501,21 @@ test_that("fit_Kd.lux_spectrum: rejects non-irradiance, numeric E2 and grid mism
   short <- lux_spectrum(rep(1, 5), lam[1:5], "irradiance", "W/m2/nm")
   expect_error(fit_Kd(s1, 0, short, 10), class = "lux_spectrum_grid_error")
 })
+
+test_that("photic_depth validates Kd and fraction", {
+  expect_equal(photic_depth(0.1), -log(0.01) / 0.1)
+  expect_error(photic_depth(0.1, fraction = 1), class = "lux_spectrum_value_error")
+  expect_error(photic_depth(0.1, fraction = 0), class = "lux_spectrum_value_error")
+  expect_error(photic_depth(-0.1), class = "lux_spectrum_value_error")
+  expect_error(photic_depth(NA_real_), class = "lux_spectrum_value_error")
+})
+
+test_that("fit_Kd numeric validates input with typed errors", {
+  expect_equal(fit_Kd(1, 0, exp(-1), 2), 0.5)
+  expect_error(fit_Kd(1, 5, 0.5, 2), class = "lux_spectrum_value_error")
+  expect_error(fit_Kd(0, 0, 0.5, 2), class = "lux_spectrum_value_error")
+  expect_error(fit_Kd(1, 0, NA_real_, 2), class = "lux_spectrum_value_error")
+  expect_error(fit_Kd(1:3, 0, 1:2, 2), class = "lux_spectrum_dimension_error")
+  expect_error(fit_Kd(1, 0, from_naples("0m"), 2),
+               class = "lux_spectrum_type_error")
+})

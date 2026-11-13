@@ -103,3 +103,17 @@
     )
   }
 }
+
+# Two vectors combined elementwise must have equal lengths, or one of length 1.
+.check_recyclable <- function(a, b, fields, operation) {
+  if (length(a) == length(b) || length(a) == 1L || length(b) == 1L) {
+    return(invisible())
+  }
+  .stop_lux_spectrum_validation(
+    paste0(operation, ": `", fields[1L], "` (length ", length(a), ") and `",
+           fields[2L], "` (length ", length(b), ") must have equal lengths, ",
+           "or one must have length 1."),
+    field = fields, value = c(length(a), length(b)),
+    subclass = "lux_spectrum_dimension_error"
+  )
+}
