@@ -2,6 +2,16 @@
 
 ## luxR 0.1.1
 
+### Bug fixes
+
+- Functions that use bundled datasets
+  ([`jerlov_Kd()`](https://johnkirwan.github.io/luxR/reference/jerlov_Kd.md),
+  [`irradiance2lux()`](https://johnkirwan.github.io/luxR/reference/irradiance2lux.md),
+  [`colour_jnd()`](https://johnkirwan.github.io/luxR/reference/colour_jnd.md),
+  [`solar_irradiance()`](https://johnkirwan.github.io/luxR/reference/solar_irradiance.md)
+  and others) now work when called as `luxR::fn()` without attaching the
+  package. Previously they failed with “object not found”.
+
 ### Package identity
 
 - Added the hexagonal luxR logo with a transparent background. The logo

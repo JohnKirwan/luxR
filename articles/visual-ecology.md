@@ -48,7 +48,7 @@ x0m_W
     ##    import: 5952acfab4a04ea1b02eb085e6a768d5
     ##    import: naples-legacy-v1
     ##    import: 0.1.1
-    ##    import: 75ae5c201a47cf658f3ea43bb9ef75689be01158
+    ##    import: b6075358e78287d67064c4794e8a5dea473d6a49
     ##    import: parse canonical processed snapshot; validate schema grid and non-negative irradiance
 
 ``` r
