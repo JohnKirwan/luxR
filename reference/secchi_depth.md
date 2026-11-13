@@ -3,7 +3,7 @@
 Estimates the Secchi disk visibility depth using the Tyler (1968)
 approximation \\z_S \approx 1.7 / K_d\\. When a spectral irradiance is
 supplied the function first computes an irradiance-weighted mean Kd
-across the visible range before applying the approximation.
+across 400–700 nm before applying the approximation.
 
 ## Usage
 
@@ -15,7 +15,7 @@ secchi_depth(Kd, lambda = NULL, irradiance = NULL, spectrum = NULL)
 
 - Kd:
 
-  Diffuse attenuation coefficient(s) in 1/m.
+  Diffuse attenuation coefficient(s) in 1/m, all positive.
 
 - lambda:
 
@@ -23,7 +23,8 @@ secchi_depth(Kd, lambda = NULL, irradiance = NULL, spectrum = NULL)
 
 - irradiance:
 
-  Optional spectral irradiance for PAR-weighted mean Kd.
+  Optional non-negative spectral irradiance matching `lambda`; supply
+  with `lambda`.
 
 - spectrum:
 
@@ -33,6 +34,13 @@ secchi_depth(Kd, lambda = NULL, irradiance = NULL, spectrum = NULL)
 ## Value
 
 Secchi depth in metres.
+
+## Details
+
+Each sample is a bin centred on its wavelength on a regular grid; a bin
+straddling 400 or 700 nm is weighted by its part inside the window.
+Numeric irradiance is used as given; a `lux_spectrum` is converted to W
+m\\^{-2}\\ nm\\^{-1}\\ first.
 
 ## References
 

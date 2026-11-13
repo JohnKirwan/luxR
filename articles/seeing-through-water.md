@@ -90,7 +90,7 @@ round(catch)
 ```
 
     ##      UV-cone       S-cone       M-cone       L-cone 
-    ## 2.165623e+19 6.750210e+19 1.459543e+20 1.677082e+20
+    ## 2.165486e+19 6.750207e+19 1.459538e+20 1.677029e+20
 
 The catches span almost an order of magnitude across the four cones — a
 direct readout of how much each receptor’s sensitivity overlaps the

@@ -20,7 +20,7 @@ weber_contrast(I_target, I_background)
 - I_background:
 
   Luminance or radiance of the background (scalar or vector). Must be
-  non-zero.
+  positive; `I_target` must be non-negative.
 
 ## Value
 

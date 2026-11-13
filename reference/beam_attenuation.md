@@ -16,11 +16,13 @@ beam_attenuation(absorption, scattering)
 
 - absorption:
 
-  Absorption coefficient \\a\\ (1/m). Vectorised.
+  Absorption coefficient \\a\\ (1/m), finite and non-negative.
+  Vectorised.
 
 - scattering:
 
-  Scattering coefficient \\b\\ (1/m). Vectorised.
+  Scattering coefficient \\b\\ (1/m), finite and non-negative; same
+  length as `absorption` or length 1.
 
 ## Value
 

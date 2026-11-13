@@ -52,7 +52,7 @@ colour_jnd(
 - binwidth:
 
   Wavelength bin width in nm. Inferred from `lambda` spacing if `NULL`
-  (default).
+  (default). The grid must be regularly spaced.
 
 ## Value
 

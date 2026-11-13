@@ -52,7 +52,7 @@ x0m
     ##    import: 5952acfab4a04ea1b02eb085e6a768d5
     ##    import: naples-legacy-v1
     ##    import: 0.1.1
-    ##    import: 7a195f7be04af13d6b8195893f5a6fe872c769b7
+    ##    import: f6bf000ba9ef64bd12fc5ff4be56bed1897c4d24
     ##    import: parse canonical processed snapshot; validate schema grid and non-negative irradiance
 
 ``` r
@@ -66,9 +66,12 @@ The spectrum peaks in the blue-green window typical of coastal
 Mediterranean water.
 
 > **Numeric API note:** All functions in luxR also accept plain numeric
-> vectors. For example,
-> `par_irradiance(Naples$depth_0m, Naples$wv, photonic = TRUE)`. See
-> each function’s help page for the numeric signature.
+> vectors. For a numeric vector the unit is not recorded, so state it:
+> `photonic = TRUE` means raw photons m⁻² s⁻¹ nm⁻¹, not µmol. The Naples
+> data are in µmol, so either wrap them
+> (`par_irradiance(from_naples("0m"))`) or convert first:
+> `par_irradiance(Naples$depth_0m * 1e-6 * 6.02214076e23, Naples$wv, photonic = TRUE)`.
+> See each function’s help page for the numeric signature.
 
 ## Converting units
 
@@ -113,7 +116,7 @@ x0m_W
     ##    import: 5952acfab4a04ea1b02eb085e6a768d5
     ##    import: naples-legacy-v1
     ##    import: 0.1.1
-    ##    import: 7a195f7be04af13d6b8195893f5a6fe872c769b7
+    ##    import: f6bf000ba9ef64bd12fc5ff4be56bed1897c4d24
     ##    import: parse canonical processed snapshot; validate schema grid and non-negative irradiance
 
 ### Validation against photobiology

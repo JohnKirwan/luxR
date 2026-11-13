@@ -106,7 +106,7 @@ metadata.</p>
 <span><span class="co">##    import: 5952acfab4a04ea1b02eb085e6a768d5</span></span>
 <span><span class="co">##    import: naples-legacy-v1</span></span>
 <span><span class="co">##    import: 0.1.1</span></span>
-<span><span class="co">##    import: 7a195f7be04af13d6b8195893f5a6fe872c769b7</span></span>
+<span><span class="co">##    import: f6bf000ba9ef64bd12fc5ff4be56bed1897c4d24</span></span>
 <span><span class="co">##    import: parse canonical processed snapshot; validate schema grid and non-negative irradiance</span></span></code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x0m</span>, main <span class="op">=</span> <span class="st">"Surface irradiance — Naples coastal site"</span><span class="op">)</span></span></code></pre></div>
@@ -115,8 +115,11 @@ metadata.</p>
 Mediterranean water.</p>
 <blockquote>
 <p><strong>Numeric API note:</strong> All functions in luxR also accept
-plain numeric vectors. For example,
-<code>par_irradiance(Naples$depth_0m, Naples$wv, photonic = TRUE)</code>.
+plain numeric vectors. For a numeric vector the unit is not recorded, so
+state it: <code>photonic = TRUE</code> means raw photons m⁻² s⁻¹ nm⁻¹,
+not µmol. The Naples data are in µmol, so either wrap them
+(<code>par_irradiance(from_naples("0m"))</code>) or convert first:
+<code>par_irradiance(Naples$depth_0m * 1e-6 * 6.02214076e23, Naples$wv, photonic = TRUE)</code>.
 See each function’s help page for the numeric signature.</p>
 </blockquote>
 </div>
@@ -159,7 +162,7 @@ Beer-Lambert propagation and PAR integration we work in energy units;
 <span><span class="co">##    import: 5952acfab4a04ea1b02eb085e6a768d5</span></span>
 <span><span class="co">##    import: naples-legacy-v1</span></span>
 <span><span class="co">##    import: 0.1.1</span></span>
-<span><span class="co">##    import: 7a195f7be04af13d6b8195893f5a6fe872c769b7</span></span>
+<span><span class="co">##    import: f6bf000ba9ef64bd12fc5ff4be56bed1897c4d24</span></span>
 <span><span class="co">##    import: parse canonical processed snapshot; validate schema grid and non-negative irradiance</span></span></code></pre>
 <div class="section level3">
 <h3 id="validation-against-photobiology">Validation against photobiology<a class="anchor" aria-label="anchor" href="#validation-against-photobiology"></a>

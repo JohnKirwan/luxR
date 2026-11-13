@@ -79,8 +79,10 @@ or dense photoreceptors (e.g. deep-sea rods).</p>
 <dl><dt id="arg-s">S<a class="anchor" aria-label="anchor" href="#arg-s"></a></dt>
 <dd><p>A data frame with columns <code>lambda</code> and <code>S</code> (a
 normalised absorbance template, e.g. from <code><a href="govardovskii_template.html">govardovskii_template</a></code>),
-or a bare numeric vector of normalised absorbance values. Re-normalised to a
-peak of 1 internally, so the optical density refers to the peak.</p></dd>
+or a bare numeric vector of normalised absorbance values. Values must be
+finite and in [0, 1]; they are not rescaled, so a template sampled on a
+grid that misses its peak keeps its true peak of 1 and the optical
+density refers to that peak.</p></dd>
 
 
 <dt id="arg-optical-density">optical_density<a class="anchor" aria-label="anchor" href="#arg-optical-density"></a></dt>

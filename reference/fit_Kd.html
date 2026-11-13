@@ -62,7 +62,8 @@ Works for scalar or spectral (vector) inputs, or <code>lux_spectrum</code> objec
 handles both arguments; passing a numeric <code>E1</code> with a
 <code>lux_spectrum</code> <code>E2</code> is not supported. Two <code>lux_spectrum</code>
 inputs must both be spectral irradiance on the same wavelength grid;
-they are converted to a common unit before the ratio is taken.</p></dd>
+they are converted to a common unit before the ratio is taken. Numeric
+values must be finite and positive.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -85,7 +86,8 @@ they are converted to a common unit before the ratio is taken.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Kd in 1/m. Same length as E1/E2.</p>
+    <p>Kd in 1/m. Same length as E1/E2. Vector arguments must have
+  equal lengths or length 1.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>

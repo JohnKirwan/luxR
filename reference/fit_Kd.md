@@ -24,7 +24,8 @@ fit_Kd(E1, z1, E2, z2, ...)
   both arguments; passing a numeric `E1` with a `lux_spectrum` `E2` is
   not supported. Two `lux_spectrum` inputs must both be spectral
   irradiance on the same wavelength grid; they are converted to a common
-  unit before the ratio is taken.
+  unit before the ratio is taken. Numeric values must be finite and
+  positive.
 
 - ...:
 
@@ -46,7 +47,8 @@ fit_Kd(E1, z1, E2, z2, ...)
 
 ## Value
 
-Kd in 1/m. Same length as E1/E2.
+Kd in 1/m. Same length as E1/E2. Vector arguments must have equal
+lengths or length 1.
 
 ## References
 

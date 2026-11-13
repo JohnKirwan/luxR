@@ -39,8 +39,8 @@ lux_spectrum(
 - binwidth:
 
   Bin width in nm. Inferred from the wavelength spacing when `NULL`;
-  defaults to 1 for a single-bin spectrum. An explicit value must be
-  finite, positive, scalar, and match the regular wavelength spacing.
+  required for a single-bin spectrum. An explicit value must be finite,
+  positive, scalar, and match the regular wavelength spacing.
 
 - meta:
 

@@ -41,8 +41,8 @@ broadband2spectrum(
 
 - depth:
 
-  Depth in metres at which the measurement was taken. Only used when
-  `water_type` is not `NULL`. Default 0.
+  Depth in metres at which the measurement was taken. Finite and
+  non-negative. Only used when `water_type` is not `NULL`. Default 0.
 
 - wavelength_policy:
 

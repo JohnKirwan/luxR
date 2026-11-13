@@ -13,7 +13,7 @@ photic_depth(Kd, fraction = 0.01)
 
 - Kd:
 
-  Diffuse attenuation coefficient(s) in 1/m.
+  Diffuse attenuation coefficient(s) in 1/m; positive.
 
 - fraction:
 

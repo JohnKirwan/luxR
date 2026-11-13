@@ -27,7 +27,14 @@ band_irradiance(
 )
 
 # S3 method for class 'lux_spectrum'
-band_irradiance(E_lambda, Kd_lambda, depths, lambda = NULL, ...)
+band_irradiance(
+  E_lambda,
+  Kd_lambda,
+  depths,
+  lambda = NULL,
+  binwidth = NULL,
+  ...
+)
 ```
 
 ## Arguments

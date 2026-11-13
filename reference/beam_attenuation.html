@@ -57,11 +57,13 @@ distance, and is always larger than the diffuse attenuation \(K_d\).</p>
 
 
 <dl><dt id="arg-absorption">absorption<a class="anchor" aria-label="anchor" href="#arg-absorption"></a></dt>
-<dd><p>Absorption coefficient \(a\) (1/m). Vectorised.</p></dd>
+<dd><p>Absorption coefficient \(a\) (1/m), finite and
+non-negative. Vectorised.</p></dd>
 
 
 <dt id="arg-scattering">scattering<a class="anchor" aria-label="anchor" href="#arg-scattering"></a></dt>
-<dd><p>Scattering coefficient \(b\) (1/m). Vectorised.</p></dd>
+<dd><p>Scattering coefficient \(b\) (1/m), finite and
+non-negative; same length as <code>absorption</code> or length 1.</p></dd>
 
 </dl></div>
     <div class="section level2">

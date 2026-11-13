@@ -30,9 +30,10 @@ receptor_absorptance(
   A data frame with columns `lambda` and `S` (a normalised absorbance
   template, e.g. from
   [`govardovskii_template`](https://johnkirwan.github.io/luxR/reference/govardovskii_template.md)),
-  or a bare numeric vector of normalised absorbance values.
-  Re-normalised to a peak of 1 internally, so the optical density refers
-  to the peak.
+  or a bare numeric vector of normalised absorbance values. Values must
+  be finite and in \[0, 1\]; they are not rescaled, so a template
+  sampled on a grid that misses its peak keeps its true peak of 1 and
+  the optical density refers to that peak.
 
 - optical_density:
 
