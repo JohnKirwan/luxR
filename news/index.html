@@ -36,8 +36,13 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="luxr-011">luxR 0.1.1<a class="anchor" aria-label="anchor" href="#luxr-011"></a></h2>
 <div class="section level3">
-<h3 id="bug-fixes-0-1-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-1"></a></h3>
-<ul><li>Functions that use bundled datasets (<code><a href="../reference/jerlov_Kd.html">jerlov_Kd()</a></code>, <code><a href="../reference/irradiance2lux.html">irradiance2lux()</a></code>, <code><a href="../reference/colour_jnd.html">colour_jnd()</a></code>, <code><a href="../reference/solar_irradiance.html">solar_irradiance()</a></code> and others) now work when called as <code>luxR::fn()</code> without attaching the package. Previously they failed with “object not found”.</li>
+<h3 id="unit-handling-0-1-1">Unit handling<a class="anchor" aria-label="anchor" href="#unit-handling-0-1-1"></a></h3>
+<ul><li>
+<code><a href="../reference/par_irradiance.html">par_irradiance()</a></code> now rejects radiance and reflectance <code>lux_spectrum</code> objects with a <code>lux_spectrum_dimension_error</code>. Photon-radiance spectra were previously integrated as if they were W m^-2 nm^-1.</li>
+<li>
+<code><a href="../reference/band_irradiance.html">band_irradiance()</a></code> converts a photon-unit <code>lux_spectrum</code> to W m^-2 nm^-1 before integrating, as documented. <code>photonic = TRUE</code> no longer applies the photon conversion twice, and <code>photonic = FALSE</code> now returns W m^-2 instead of a photon-unit integral. Non-irradiance spectra are rejected.</li>
+<li>Unit conversion is driven by one internal unit table and one pair of physical constants. ## Bug fixes</li>
+<li>Functions that use bundled datasets (<code><a href="../reference/jerlov_Kd.html">jerlov_Kd()</a></code>, <code><a href="../reference/irradiance2lux.html">irradiance2lux()</a></code>, <code><a href="../reference/colour_jnd.html">colour_jnd()</a></code>, <code><a href="../reference/solar_irradiance.html">solar_irradiance()</a></code> and others) now work when called as <code>luxR::fn()</code> without attaching the package. Previously they failed with “object not found”.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="package-identity-0-1-1">Package identity<a class="anchor" aria-label="anchor" href="#package-identity-0-1-1"></a></h3>

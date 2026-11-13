@@ -2,8 +2,20 @@
 
 ## luxR 0.1.1
 
-### Bug fixes
+### Unit handling
 
+- [`par_irradiance()`](https://johnkirwan.github.io/luxR/reference/par_irradiance.md)
+  now rejects radiance and reflectance `lux_spectrum` objects with a
+  `lux_spectrum_dimension_error`. Photon-radiance spectra were
+  previously integrated as if they were W m^-2 nm^-1.
+- [`band_irradiance()`](https://johnkirwan.github.io/luxR/reference/band_irradiance.md)
+  converts a photon-unit `lux_spectrum` to W m^-2 nm^-1 before
+  integrating, as documented. `photonic = TRUE` no longer applies the
+  photon conversion twice, and `photonic = FALSE` now returns W m^-2
+  instead of a photon-unit integral. Non-irradiance spectra are
+  rejected.
+- Unit conversion is driven by one internal unit table and one pair of
+  physical constants. \## Bug fixes
 - Functions that use bundled datasets
   ([`jerlov_Kd()`](https://johnkirwan.github.io/luxR/reference/jerlov_Kd.md),
   [`irradiance2lux()`](https://johnkirwan.github.io/luxR/reference/irradiance2lux.md),

@@ -2,8 +2,9 @@
 
 Integrates spectral irradiance over the photosynthetically active range
 400–700 nm and returns the result in µmol photons m\\^{-2}\\ s\\^{-1}\\.
-Accepts energy units (W m\\^{-2}\\ nm\\^{-1}\\), raw photon counts, or a
-`lux_spectrum` object in any supported unit.
+Accepts energy units (W m\\^{-2}\\ nm\\^{-1}\\), raw photon counts, or
+an irradiance `lux_spectrum` in any supported irradiance unit. Radiance
+and reflectance spectra are rejected.
 
 ## Usage
 

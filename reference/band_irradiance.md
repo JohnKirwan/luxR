@@ -35,7 +35,8 @@ band_irradiance(E_lambda, Kd_lambda, depths, lambda = NULL, ...)
 - E_lambda:
 
   Spectral irradiance (\\W\\m^{-2}\\nm^{-1}\\) at depth `from`. Length-N
-  vector, or a `lux_spectrum` object.
+  vector, or an irradiance `lux_spectrum`, which is converted to
+  \\W\\m^{-2}\\nm^{-1}\\ first.
 
 - ...:
 
