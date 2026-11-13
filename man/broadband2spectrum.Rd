@@ -27,7 +27,8 @@ If supplied, the reference shape is pre-attenuated to \code{depth} before
 rescaling — use when the measurement was taken at depth.}
 
 \item{depth}{Depth in metres at which the measurement was taken.
-Only used when \code{water_type} is not \code{NULL}. Default 0.}
+Finite and non-negative. Only used when \code{water_type} is not
+\code{NULL}. Default 0.}
 
 \item{wavelength_policy}{Policy for wavelengths outside the bundled Jerlov
 domain when attenuation is requested: \code{"error"} (default), explicit

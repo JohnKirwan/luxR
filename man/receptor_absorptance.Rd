@@ -14,8 +14,10 @@ receptor_absorptance(
 \arguments{
 \item{S}{A data frame with columns \code{lambda} and \code{S} (a
 normalised absorbance template, e.g. from \code{\link{govardovskii_template}}),
-or a bare numeric vector of normalised absorbance values. Re-normalised to a
-peak of 1 internally, so the optical density refers to the peak.}
+or a bare numeric vector of normalised absorbance values. Values must be
+finite and in [0, 1]; they are not rescaled, so a template sampled on a
+grid that misses its peak keeps its true peak of 1 and the optical
+density refers to that peak.}
 
 \item{optical_density}{Peak axial optical density (base-10 absorbance),
 dimensionless. Typically ~0.3–0.5 for vertebrate cones, up to ~1 or more

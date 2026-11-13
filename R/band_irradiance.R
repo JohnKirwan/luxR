@@ -104,8 +104,20 @@ band_irradiance.numeric <- function(E_lambda, Kd_lambda, lambda, depths,
 #' @rdname band_irradiance
 #' @export
 band_irradiance.lux_spectrum <- function(E_lambda, Kd_lambda, depths,
-                                          lambda = NULL, ...) {
-  x <- .as_energy_irradiance(E_lambda, "band_irradiance()")
+                                          lambda = NULL, binwidth = NULL,
+                                          ...) {
+  op <- "band_irradiance()"
+  for (arg in c("lambda", "binwidth")) {
+    if (!is.null(get(arg))) {
+      .stop_lux_spectrum_validation(
+        paste0(op, ": `", arg, "` is taken from the lux_spectrum; do not ",
+               "supply it."),
+        field = arg, value = get(arg), subclass = "lux_spectrum_value_error",
+        context = E_lambda$meta
+      )
+    }
+  }
+  x <- .as_energy_irradiance(E_lambda, op)
   band_irradiance.numeric(x$E, Kd_lambda, x$lambda, depths,
                            binwidth = x$binwidth, ...)
 }

@@ -255,3 +255,12 @@ test_that("band_irradiance gives the same result for W and photon spectra", {
     "requires spectral irradiance", class = "lux_spectrum_dimension_error"
   )
 })
+
+test_that("band_irradiance: lux_spectrum rejects lambda and binwidth arguments", {
+  x  <- from_naples("0m")
+  Kd <- rep(0.1, length(x$lambda))
+  expect_error(band_irradiance(x, Kd, 1, binwidth = 5),
+               class = "lux_spectrum_value_error")
+  expect_error(band_irradiance(x, Kd, 1, lambda = x$lambda),
+               class = "lux_spectrum_value_error")
+})

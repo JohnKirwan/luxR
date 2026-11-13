@@ -130,8 +130,10 @@ govardovskii_template <- function(lambda, lambda_max,
 #'
 #' @param S       A data frame with columns \code{lambda} and \code{S} (a
 #'   normalised absorbance template, e.g. from \code{\link{govardovskii_template}}),
-#'   or a bare numeric vector of normalised absorbance values. Re-normalised to a
-#'   peak of 1 internally, so the optical density refers to the peak.
+#'   or a bare numeric vector of normalised absorbance values. Values must be
+#'   finite and in [0, 1]; they are not rescaled, so a template sampled on a
+#'   grid that misses its peak keeps its true peak of 1 and the optical
+#'   density refers to that peak.
 #' @param optical_density Peak axial optical density (base-10 absorbance),
 #'   dimensionless. Typically ~0.3–0.5 for vertebrate cones, up to ~1 or more
 #'   for long deep-sea rods. Supply this \emph{or} (\code{alpha} and
@@ -160,38 +162,54 @@ govardovskii_template <- function(lambda, lambda_max,
 receptor_absorptance <- function(S, optical_density = NULL,
                                  alpha = NULL, path_length = NULL) {
 
+  fail <- function(message, field, value = NULL, index = NULL,
+                   class = "lux_species_input_error") {
+    .stop_species_model(paste0("receptor_absorptance(): ", message), class,
+                        field = field, value = value, index = index)
+  }
+  check <- function(x, field, ...) {
+    .check_numeric(x, field, function(message, field, value, index, kind) {
+      fail(message, field, value, index)
+    }, ...)
+  }
+
   # ---- resolve the peak natural-log absorbance (kappa) --------------------
   has_od <- !is.null(optical_density)
   has_al <- !is.null(alpha) || !is.null(path_length)
   if (has_od == has_al)
-    stop("Supply either `optical_density`, or both `alpha` and `path_length` ",
-         "(exactly one parameterisation).")
+    fail(paste0("supply either `optical_density`, or both `alpha` and ",
+                "`path_length` (exactly one parameterisation)."),
+         c("optical_density", "alpha", "path_length"))
 
   if (has_od) {
-    if (!is.numeric(optical_density) || length(optical_density) != 1L ||
-        optical_density <= 0)
-      stop("`optical_density` must be a single positive number.")
+    check(optical_density, "optical_density", scalar = TRUE, lower = 0,
+          lower_open = TRUE)
     kappa <- optical_density * log(10)
   } else {
     if (is.null(alpha) || is.null(path_length))
-      stop("Supply both `alpha` and `path_length`.")
-    if (!is.numeric(alpha) || !is.numeric(path_length) ||
-        length(alpha) != 1L || length(path_length) != 1L ||
-        alpha <= 0 || path_length <= 0)
-      stop("`alpha` and `path_length` must be single positive numbers.")
+      fail("supply both `alpha` and `path_length`.", c("alpha", "path_length"))
+    check(alpha, "alpha", scalar = TRUE, lower = 0, lower_open = TRUE)
+    check(path_length, "path_length", scalar = TRUE, lower = 0,
+          lower_open = TRUE)
     kappa <- alpha * path_length
   }
 
-  # ---- normalise the template to a peak of 1 ------------------------------
+  # ---- S must already be a peak-normalised template -----------------------
   is_df  <- is.data.frame(S)
   s_vals <- if (is_df) S$S else S
-  if (is.null(s_vals) || !is.numeric(s_vals))
-    stop("`S` must be a numeric vector or a data frame with an `S` column.")
-  peak <- max(s_vals, na.rm = TRUE)
-  if (!is.finite(peak) || peak <= 0)
-    stop("`S` has no positive values to normalise.")
+  if (is.null(s_vals))
+    fail("`S` must be a numeric vector or a data frame with an `S` column.",
+         "S", class(S), class = "lux_invalid_sensitivity_error")
+  check(s_vals, "S", lower = 0)
+  over <- which(s_vals > 1 + sqrt(.Machine$double.eps))
+  if (length(over) > 0L)
+    fail(paste0("`S` must be a peak-normalised template with values in ",
+                "[0, 1]; index ", over[1L], " is ", format(s_vals[over[1L]]),
+                ". Normalise it first (e.g. govardovskii_template())."),
+         "S", s_vals[over[1L]], over[1L],
+         class = "lux_invalid_sensitivity_error")
 
-  A <- 1 - exp(-kappa * (s_vals / peak))
+  A <- 1 - exp(-kappa * s_vals)
   if (is_df) data.frame(lambda = S$lambda, S = A) else A
 }
 
@@ -241,11 +259,20 @@ fit_sensitivity <- function(lambda, sensitivity,
                              chromophore      = c("A1", "A2"),
                              lambda_max_range = c(300, 700)) {
   chromophore <- match.arg(chromophore)
-  stopifnot(
-    length(lambda) == length(sensitivity),
-    length(lambda_max_range) == 2,
-    lambda_max_range[1] < lambda_max_range[2]
-  )
+  fail <- function(message, field, value = NULL,
+                   class = "lux_species_input_error") {
+    .stop_species_model(paste0("fit_sensitivity(): ", message), class,
+                        field = field, value = value)
+  }
+  if (!is.numeric(sensitivity) || length(lambda) != length(sensitivity))
+    fail(paste0("`sensitivity` must be numeric with one value per ",
+                "wavelength; got ", length(sensitivity), " values for ",
+                length(lambda), " wavelengths."),
+         "sensitivity", length(sensitivity))
+  if (!is.numeric(lambda_max_range) || length(lambda_max_range) != 2L ||
+      anyNA(lambda_max_range) || lambda_max_range[1] >= lambda_max_range[2])
+    fail("`lambda_max_range` must be two increasing wavelengths.",
+         "lambda_max_range", lambda_max_range)
   if (lambda_max_range[1] < 300 || lambda_max_range[2] > 700) {
     .stop_species_model(
       "'lambda_max_range' must lie within 300-700 nm, where the template is defined.",
@@ -255,9 +282,18 @@ fit_sensitivity <- function(lambda, sensitivity,
   }
   .check_template_grid(lambda)
 
-  s_max <- max(sensitivity, na.rm = TRUE)
-  if (!is.finite(s_max) || s_max == 0)
-    stop("`sensitivity` must contain at least one finite non-zero value.")
+  # NA marks an unmeasured wavelength and is dropped (documented policy);
+  # infinite values are errors.
+  if (any(is.infinite(sensitivity)))
+    fail("`sensitivity` must not contain infinite values.", "sensitivity",
+         sensitivity[is.infinite(sensitivity)][1L],
+         class = "lux_invalid_sensitivity_error")
+  s_max <- if (all(is.na(sensitivity))) NA_real_ else
+    max(sensitivity, na.rm = TRUE)
+  if (is.na(s_max) || s_max <= 0)
+    fail(paste0("the largest `sensitivity` value must be positive; is the ",
+                "spectrum inverted or empty?"),
+         "sensitivity", s_max, class = "lux_invalid_sensitivity_error")
   sensitivity <- sensitivity / s_max
 
   keep <- !is.na(sensitivity)

@@ -29,6 +29,18 @@
   irregular grid instead of averaging its spacing. `broadband2spectrum()`
   also rejects a negative or non-finite `value` or `depth`, and a reference
   spectrum that integrates to zero.
+- `receptor_absorptance()` no longer rescales `S` to its on-grid maximum,
+  which undid the true-peak normalisation of `govardovskii_template()` on a
+  grid that misses the peak. `S` must be a peak-normalised template (finite,
+  in [0, 1]); a value above 1 is a `lux_invalid_sensitivity_error`. Argument
+  errors are now `lux_species_input_error`s.
+- `fit_sensitivity()` rejects a spectrum whose largest value is not positive
+  (e.g. an inverted one, which was fitted upside down) and infinite values,
+  and replaces its `stopifnot()` checks with `lux_species_input_error`s. `NA`
+  values are still dropped as unmeasured wavelengths.
+- `band_irradiance()` on a `lux_spectrum` gives a clear error when `lambda`
+  or `binwidth` is supplied (both come from the object); `binwidth` used to
+  fail with "matched by multiple actual arguments".
 
 ## Unit handling
 - `par_irradiance()` now rejects radiance and reflectance `lux_spectrum`
