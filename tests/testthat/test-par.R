@@ -40,11 +40,11 @@ test_that("par_irradiance decreases with depth via attenuate_spectrum", {
   expect_gt(par0, par50)
 })
 
-test_that("par_irradiance photonic = TRUE works with Naples data", {
-  lam <- Naples$wv
-  E   <- Naples$depth_0m
-  par <- par_irradiance(E, lam, photonic = TRUE)
-  expect_gt(par, 0)
+test_that("par_irradiance photonic = TRUE takes raw photons", {
+  x   <- from_naples("0m")                       # umol/m2/s/nm
+  raw <- x$E * 1e-6 * 6.02214076e23              # photons/m2/s/nm
+  expect_equal(par_irradiance(raw, x$lambda, photonic = TRUE),
+               par_irradiance(x))
 })
 
 test_that("par_irradiance: umol lux_spectrum returns same value as direct sum", {
