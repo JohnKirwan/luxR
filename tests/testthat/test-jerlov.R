@@ -137,7 +137,7 @@ test_that("jerlov_Kd validates type and wavelength inputs", {
   for (value in c(NA_real_, NaN, Inf, -Inf)) {
     expect_error(
       jerlov_Kd("IA", value),
-      "finite wavelengths",
+      "finite values",
       class = "luxR_jerlov_input_error"
     )
   }

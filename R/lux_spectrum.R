@@ -33,26 +33,6 @@
   stop(condition)
 }
 
-.validate_numeric_vector <- function(x, field, context) {
-  if (!is.numeric(x) || is.complex(x) || is.object(x) ||
-      !is.null(dim(x))) {
-    .stop_lux_spectrum_validation(
-      paste0("`", field, "` must be a numeric vector; got ",
-             paste(class(x), collapse = "/"), "."),
-      field = field, value = x, subclass = "lux_spectrum_type_error",
-      context = context
-    )
-  }
-  if (length(x) == 0L) {
-    .stop_lux_spectrum_validation(
-      paste0("`", field, "` must be non-empty."),
-      field = field, value = x, subclass = "lux_spectrum_value_error",
-      context = context
-    )
-  }
-  invisible(x)
-}
-
 .validate_scalar_character <- function(x, field, context) {
   if (!is.character(x) || length(x) != 1L || is.na(x) || !nzchar(x)) {
     .stop_lux_spectrum_validation(
@@ -120,8 +100,9 @@ lux_spectrum <- function(E, lambda,
                          meta     = list()) {
   context <- if (is.list(meta)) meta else list()
 
-  .validate_numeric_vector(E, "E", context)
-  .validate_numeric_vector(lambda, "lambda", context)
+  fail <- .lux_spectrum_fail(context)
+  .check_numeric(E, "E", fail)
+  .check_numeric(lambda, "lambda", fail)
   .validate_scalar_character(quantity, "quantity", context)
   .validate_scalar_character(unit, "unit", context)
 
@@ -147,27 +128,6 @@ lux_spectrum <- function(E, lambda,
       paste0("`E` and `lambda` must have equal length; got ",
              length(E), " and ", length(lambda), "."),
       field = c("E", "lambda"), value = c(length(E), length(lambda)),
-      subclass = "lux_spectrum_value_error", context = context
-    )
-  }
-
-  invalid_E <- which(!is.finite(E))
-  if (length(invalid_E) > 0L) {
-    i <- invalid_E[1L]
-    .stop_lux_spectrum_validation(
-      paste0("`E` must contain only finite values; index ", i,
-             " is ", format(E[i]), "."),
-      field = "E", value = E[i], index = i,
-      subclass = "lux_spectrum_value_error", context = context
-    )
-  }
-  invalid_lambda <- which(!is.finite(lambda))
-  if (length(invalid_lambda) > 0L) {
-    i <- invalid_lambda[1L]
-    .stop_lux_spectrum_validation(
-      paste0("`lambda` must contain only finite values; index ", i,
-             " is ", format(lambda[i]), "."),
-      field = "lambda", value = lambda[i], index = i,
       subclass = "lux_spectrum_value_error", context = context
     )
   }

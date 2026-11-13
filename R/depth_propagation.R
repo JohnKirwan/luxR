@@ -75,43 +75,8 @@
 .validate_propagation_numeric <- function(x, field, operation,
                                            nonnegative = FALSE,
                                            scalar = FALSE) {
-  context <- list(operation = operation)
-  .validate_numeric_vector(x, field, context)
-
-  if (scalar && length(x) != 1L) {
-    .stop_lux_spectrum_validation(
-      paste0("`", field, "` must be one numeric value; got length ",
-             length(x), "."),
-      field = field, value = x, subclass = "lux_spectrum_value_error",
-      context = context
-    )
-  }
-
-  invalid <- which(!is.finite(x))
-  if (length(invalid) > 0L) {
-    i <- invalid[1L]
-    .stop_lux_spectrum_validation(
-      paste0("`", field, "` must contain only finite values; index ", i,
-             " is ", format(x[i]), "."),
-      field = field, value = x[i], index = i,
-      subclass = "lux_spectrum_value_error", context = context
-    )
-  }
-
-  if (nonnegative) {
-    invalid <- which(x < 0)
-    if (length(invalid) > 0L) {
-      i <- invalid[1L]
-      .stop_lux_spectrum_validation(
-        paste0("`", field, "` must contain only non-negative values; index ",
-               i, " is ", format(x[i]), "."),
-        field = field, value = x[i], index = i,
-        subclass = "lux_spectrum_value_error", context = context
-      )
-    }
-  }
-
-  invisible(x)
+  .check_numeric(x, field, .lux_spectrum_fail(list(operation = operation)),
+                 scalar = scalar, lower = if (nonnegative) 0)
 }
 
 .validate_propagation_flag <- function(x, field, operation) {
