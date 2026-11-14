@@ -49,12 +49,13 @@
 #' @noRd
 .lookup_unit_label <- function(unit, table) {
   if (!is.character(unit) || length(unit) != 1L || is.na(unit)) {
-    stop("`unit` must be a single non-NA character string.", call. = FALSE)
+    .luxr_abort("`unit` must be a single non-NA character string.",
+                if (is.character(unit)) "value" else "type",
+                field = "unit", value = unit)
   }
   if (!unit %in% names(table)) {
-    stop("`unit` '", unit, "' is not in the controlled vocabulary. ",
-         "Valid units: ", paste(.VALID_UNITS, collapse = ", "), ".",
-         call. = FALSE)
+    .luxr_abort(paste0("`unit` '", unit, "' is not in the controlled vocabulary. ",
+                       "Valid units: ", paste(.VALID_UNITS, collapse = ", "), "."), "unit")
   }
   unname(table[[unit]])
 }

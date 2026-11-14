@@ -49,7 +49,7 @@ irradiance2radiance <- function(E,
   if (!identical(geometry, "custom") && !is.null(solid_angle))
     .stop_detection(
       "`solid_angle` is only valid when `geometry = \"custom\"`.",
-      field = "solid_angle", value = solid_angle,
+      kind = "value", field = "solid_angle", value = solid_angle,
       operation = "irradiance2radiance"
     )
   if (identical(geometry, "custom")) {
@@ -60,7 +60,7 @@ irradiance2radiance <- function(E,
     if (solid_angle > 4 * pi)
       .stop_detection(
         "`solid_angle` cannot exceed 4*pi steradians.",
-        field = "solid_angle", value = solid_angle,
+        kind = "value", field = "solid_angle", value = solid_angle,
         operation = "irradiance2radiance"
       )
   }
@@ -70,7 +70,7 @@ irradiance2radiance <- function(E,
     collimated = E,
     custom     = {
       if (is.null(solid_angle))
-        stop("`solid_angle` (sr) is required for geometry = 'custom'.")
+        .luxr_abort("`solid_angle` (sr) is required for geometry = 'custom'.", "value")
       E / solid_angle
     }
   )
@@ -104,7 +104,7 @@ radiance2irradiance <- function(L,
   if (!identical(geometry, "custom") && !is.null(solid_angle))
     .stop_detection(
       "`solid_angle` is only valid when `geometry = \"custom\"`.",
-      field = "solid_angle", value = solid_angle,
+      kind = "value", field = "solid_angle", value = solid_angle,
       operation = "radiance2irradiance"
     )
   if (identical(geometry, "custom")) {
@@ -115,7 +115,7 @@ radiance2irradiance <- function(L,
     if (solid_angle > 4 * pi)
       .stop_detection(
         "`solid_angle` cannot exceed 4*pi steradians.",
-        field = "solid_angle", value = solid_angle,
+        kind = "value", field = "solid_angle", value = solid_angle,
         operation = "radiance2irradiance"
       )
   }
@@ -125,7 +125,7 @@ radiance2irradiance <- function(L,
     collimated = L,
     custom     = {
       if (is.null(solid_angle))
-        stop("`solid_angle` (sr) is required for geometry = 'custom'.")
+        .luxr_abort("`solid_angle` (sr) is required for geometry = 'custom'.", "value")
       L * solid_angle
     }
   )

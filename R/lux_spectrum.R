@@ -20,29 +20,11 @@
 .HC_J_NM <- 1.98644585714893e-16  # Planck constant x speed of light, J nm
 .AVOGADRO <- 6.02214076e23        # photons per mol
 
-.stop_lux_spectrum_validation <- function(message, field, value = NULL,
-                                           index = NULL, subclass,
-                                           context = list()) {
-  condition <- structure(
-    list(
-      message = message,
-      call = NULL,
-      field = field,
-      value = value,
-      index = index,
-      context = context
-    ),
-    class = c(subclass, "lux_spectrum_validation_error",
-              "error", "condition")
-  )
-  stop(condition)
-}
-
 .validate_scalar_character <- function(x, field, context) {
   if (!is.character(x) || length(x) != 1L || is.na(x) || !nzchar(x)) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`", field, "` must be one non-empty, non-missing string."),
-      field = field, value = x, subclass = "lux_spectrum_type_error",
+      field = field, value = x, kind = "type",
       context = context
     )
   }
@@ -112,69 +94,69 @@ lux_spectrum <- function(E, lambda,
   .validate_scalar_character(unit, "unit", context)
 
   if (!is.list(meta)) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       "`meta` must be a named list.",
-      field = "meta", value = meta, subclass = "lux_spectrum_type_error"
+      field = "meta", value = meta, kind = "type"
     )
   }
   if (length(meta) > 0L &&
       (is.null(names(meta)) || anyNA(names(meta)) ||
        any(!nzchar(names(meta))) ||
        anyDuplicated(names(meta)))) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       "`meta` must have unique, non-empty names.",
-      field = "meta", value = meta, subclass = "lux_spectrum_value_error",
+      field = "meta", value = meta, kind = "value",
       context = context
     )
   }
 
   if (length(E) != length(lambda)) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`E` and `lambda` must have equal length; got ",
              length(E), " and ", length(lambda), "."),
       field = c("E", "lambda"), value = c(length(E), length(lambda)),
-      subclass = "lux_spectrum_value_error", context = context
+      kind = "dimension", context = context
     )
   }
 
   valid_quantities <- unique(unname(.UNIT_QUANTITIES))
   if (!quantity %in% valid_quantities) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`quantity` must be one of: ",
              paste(valid_quantities, collapse = ", "), "; got '",
              quantity, "'."),
       field = "quantity", value = quantity,
-      subclass = "lux_spectrum_dimension_error", context = context
+      kind = "unit", context = context
     )
   }
   if (!unit %in% .VALID_UNITS) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`unit` '", unit, "' is not in the controlled vocabulary. ",
              "Valid: ", paste(.VALID_UNITS, collapse = ", ")),
       field = "unit", value = unit,
-      subclass = "lux_spectrum_dimension_error", context = context
+      kind = "unit", context = context
     )
   }
   expected_quantity <- unname(.UNIT_QUANTITIES[[unit]])
   if (quantity != expected_quantity) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`quantity` and `unit` describe different dimensions: unit '",
              unit, "' requires quantity '", expected_quantity,
              "', not '", quantity, "'."),
       field = c("quantity", "unit"), value = c(quantity, unit),
-      subclass = "lux_spectrum_dimension_error", context = context
+      kind = "unit", context = context
     )
   }
 
   decreasing <- which(diff(lambda) <= 0)
   if (length(decreasing) > 0L) {
     i <- decreasing[1L] + 1L
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`lambda` must be strictly increasing and unique; index ", i,
              " has value ", format(lambda[i]), " after ",
              format(lambda[i - 1L]), "."),
       field = "lambda", value = lambda[i], index = i,
-      subclass = "lux_spectrum_grid_error", context = context
+      kind = "grid", context = context
     )
   }
 
@@ -186,14 +168,14 @@ lux_spectrum <- function(E, lambda,
                          .grid_tolerance(differences, spacing))
     if (length(irregular) > 0L) {
       i <- irregular[1L] + 1L
-      .stop_lux_spectrum_validation(
+      .luxr_abort(
         paste0("`lambda` must be regularly spaced because `binwidth` is ",
                "scalar; spacing before index ", i, " is ",
                format(differences[i - 1L]), " nm, expected ",
                format(spacing), " nm. Resample raw vectors explicitly ",
                "before constructing a lux_spectrum."),
         field = "lambda", value = differences[i - 1L], index = i,
-        subclass = "lux_spectrum_grid_error", context = context
+        kind = "grid", context = context
       )
     }
   }
@@ -202,20 +184,20 @@ lux_spectrum <- function(E, lambda,
   if (length(invalid_physical) > 0L) {
     i <- invalid_physical[1L]
     expected <- if (quantity == "reflectance") "[0, 1]" else "non-negative"
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`E` values for ", quantity, " must be ", expected,
              "; index ", i, " is ", format(E[i]), "."),
       field = "E", value = E[i], index = i,
-      subclass = "lux_spectrum_value_error", context = context
+      kind = "value", context = context
     )
   }
 
   if (is.null(binwidth)) {
     if (is.null(spacing)) {
-      .stop_lux_spectrum_validation(
+      .luxr_abort(
         "`binwidth` is required for a single wavelength.",
         field = "binwidth", value = NULL,
-        subclass = "lux_spectrum_value_error", context = context
+        kind = "value", context = context
       )
     }
     binwidth <- spacing
@@ -223,28 +205,28 @@ lux_spectrum <- function(E, lambda,
     if (!is.numeric(binwidth) || is.complex(binwidth) ||
         is.object(binwidth) || !is.null(dim(binwidth)) ||
         length(binwidth) != 1L) {
-      .stop_lux_spectrum_validation(
+      .luxr_abort(
         "`binwidth` must be one numeric scalar.",
         field = "binwidth", value = binwidth,
-        subclass = "lux_spectrum_type_error", context = context
+        kind = "type", context = context
       )
     }
     if (!is.finite(binwidth) || binwidth <= 0) {
-      .stop_lux_spectrum_validation(
+      .luxr_abort(
         paste0("`binwidth` must be finite and positive; got ",
                format(binwidth), "."),
         field = "binwidth", value = binwidth,
-        subclass = "lux_spectrum_value_error", context = context
+        kind = "value", context = context
       )
     }
     if (!is.null(spacing) &&
         abs(binwidth - spacing) > .grid_tolerance(binwidth, spacing)) {
-      .stop_lux_spectrum_validation(
+      .luxr_abort(
         paste0("`binwidth` must match the regular wavelength spacing; got ",
                format(binwidth), " nm but spacing is ",
                format(spacing), " nm."),
         field = "binwidth", value = binwidth,
-        subclass = "lux_spectrum_grid_error", context = context
+        kind = "grid", context = context
       )
     }
   }
@@ -286,7 +268,7 @@ summary.lux_spectrum <- function(object, ...) {
 `[.lux_spectrum` <- function(x, lambda_min, lambda_max) {
   idx <- x$lambda >= lambda_min & x$lambda <= lambda_max
   if (!any(idx))
-    stop("No wavelengths in [", lambda_min, ", ", lambda_max, "] nm.")
+    .luxr_abort(paste0("No wavelengths in [", lambda_min, ", ", lambda_max, "] nm."), "grid")
   lux_spectrum(x$E[idx], x$lambda[idx],
                quantity = x$quantity, unit = x$unit,
                binwidth = x$binwidth, meta = x$meta)
@@ -295,14 +277,14 @@ summary.lux_spectrum <- function(object, ...) {
 .lux_arithmetic <- function(a, b, op) {
   if (inherits(a, "lux_spectrum") && inherits(b, "lux_spectrum")) {
     if (!identical(a$lambda, b$lambda))
-      stop("lux_spectrum arithmetic requires identical lambda grids.")
+      .luxr_abort("lux_spectrum arithmetic requires identical lambda grids.", "grid")
 
     if (identical(op, `+`) || identical(op, `-`)) {
       if (a$unit != b$unit || a$quantity != b$quantity)
-        stop("Cannot ", if (identical(op, `+`)) "add" else "subtract",
-             " lux_spectrum objects with different quantities or units: ",
-             a$quantity, " [", a$unit, "] and ",
-             b$quantity, " [", b$unit, "].")
+        .luxr_abort(paste0("Cannot ", if (identical(op, `+`)) "add" else "subtract",
+                           " lux_spectrum objects with different quantities or units: ",
+                           a$quantity, " [", a$unit, "] and ",
+                           b$quantity, " [", b$unit, "]."), "unit")
 
       E_new <- op(a$E, b$E)
       return(lux_spectrum(E_new, a$lambda, a$quantity, a$unit,
@@ -322,26 +304,26 @@ summary.lux_spectrum <- function(object, ...) {
         return(lux_spectrum(a$E * b$E, a$lambda, a$quantity, a$unit,
                             a$binwidth, a$meta))
 
-      stop("Unsupported lux_spectrum multiplication: ",
-           a$quantity, " [", a$unit, "] * ",
-           b$quantity, " [", b$unit, "].")
+      .luxr_abort(paste0("Unsupported lux_spectrum multiplication: ",
+                         a$quantity, " [", a$unit, "] * ",
+                         b$quantity, " [", b$unit, "]."), "type")
     }
 
     if (identical(op, `/`))
-      stop("Unsupported lux_spectrum division between two spectra; ",
-           "the resulting dimensions are not represented by lux_spectrum.")
+      .luxr_abort(paste0("Unsupported lux_spectrum division between two spectra; ",
+                         "the resulting dimensions are not represented by lux_spectrum."), "type")
 
-    stop("Unsupported lux_spectrum operator.")
+    .luxr_abort("Unsupported lux_spectrum operator.", "internal")
   } else if (inherits(a, "lux_spectrum")) {
     if (!is.numeric(b) || length(b) != 1L)
-      stop("A lux_spectrum may only be combined with a numeric scalar.")
+      .luxr_abort("A lux_spectrum may only be combined with a numeric scalar.", "type")
     lux_spectrum(op(a$E, b), a$lambda, a$quantity, a$unit, a$binwidth, a$meta)
   } else {
     if (!is.numeric(a) || length(a) != 1L)
-      stop("A lux_spectrum may only be combined with a numeric scalar.")
+      .luxr_abort("A lux_spectrum may only be combined with a numeric scalar.", "type")
     if (identical(op, `/`))
-      stop("Division of a numeric scalar by a lux_spectrum is unsupported: ",
-           "the reciprocal dimensions are not represented by lux_spectrum.")
+      .luxr_abort(paste0("Division of a numeric scalar by a lux_spectrum is unsupported: ",
+                         "the reciprocal dimensions are not represented by lux_spectrum."), "type")
     lux_spectrum(op(a, b$E), b$lambda, b$quantity, b$unit, b$binwidth, b$meta)
   }
 }
@@ -392,18 +374,18 @@ convert_unit <- function(x, to, ...) UseMethod("convert_unit")
 #' @export
 convert_unit.lux_spectrum <- function(x, to, ...) {
   if (!to %in% .VALID_UNITS)
-    stop("'", to, "' is not in the controlled unit vocabulary.")
+    .luxr_abort(paste0("'", to, "' is not in the controlled unit vocabulary."), "unit")
   if (to == "dimensionless")
-    stop("Cannot convert to 'dimensionless' via unit conversion.")
+    .luxr_abort("Cannot convert to 'dimensionless' via unit conversion.", "unit")
   if (x$unit == to) return(x)
 
   from <- .UNITS[.UNITS$unit == x$unit, ]
   target <- .UNITS[.UNITS$unit == to, ]
   if (from$quantity != target$quantity)
-    stop("No conversion defined from '", x$unit, "' to '", to, "'",
-         if (!is.na(from$basis))
-           ": cannot convert between irradiance and radiance units",
-         ".")
+    .luxr_abort(paste0("No conversion defined from '", x$unit, "' to '", to, "'",
+                       if (!is.na(from$basis))
+                         ": cannot convert between irradiance and radiance units",
+                       "."), "unit")
 
   E <- x$E * from$scale
   if (from$basis != target$basis) {
@@ -416,11 +398,11 @@ convert_unit.lux_spectrum <- function(x, to, ...) {
 # Spectral irradiance in W/m2/nm, or a typed error for any other quantity.
 .as_energy_irradiance <- function(x, operation) {
   if (!identical(x$quantity, "irradiance")) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0(operation, " requires spectral irradiance; got quantity '",
              x$quantity, "' with unit '", x$unit, "'."),
       field = c("quantity", "unit"), value = c(x$quantity, x$unit),
-      subclass = "lux_spectrum_dimension_error", context = x$meta
+      kind = "unit", context = x$meta
     )
   }
   convert_unit(x, "W/m2/nm")
@@ -448,7 +430,10 @@ plot.lux_spectrum <- function(x, main = x$quantity, ...) {
 #' @return \code{invisible(x)} — called for its side effect (plot).
 #' @export
 plot_spectra <- function(x, ...) {
-  stopifnot(is.list(x), length(x) > 0)
+  if (!is.list(x) || length(x) == 0L) {
+    .luxr_abort("`x` must be a non-empty list of lux_spectrum objects.",
+                if (is.list(x)) "value" else "type", field = "x")
+  }
   labels <- if (!is.null(names(x))) names(x) else as.character(seq_along(x))
   for (i in seq_along(x))
     if (!is.null(x[[i]]$meta$label)) labels[i] <- x[[i]]$meta$label

@@ -123,7 +123,7 @@ test_that("colour_jnd errors with fewer than 2 receptors", {
                lambda = sp$wavelength, species = "Homo sapiens",
                receptor = "rod"),
     "Unsupported chromatic receptor",
-    class = "lux_invalid_receptor_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -170,7 +170,7 @@ test_that("colour_jnd rejects mixed valid and non-chromatic receptors", {
       binwidth = 10
     ),
     "rod",
-    class = "lux_invalid_receptor_error"
+    class = "luxR_value_error"
   )
   expect_error(
     colour_jnd(
@@ -182,7 +182,7 @@ test_that("colour_jnd rejects mixed valid and non-chromatic receptors", {
       binwidth = 10
     ),
     "not-a-receptor",
-    class = "lux_invalid_receptor_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -200,7 +200,7 @@ test_that("colour_jnd requires finite strictly positive receptor noise", {
         binwidth = 10
       ),
       "finite, strictly positive",
-      class = "lux_invalid_noise_error",
+      class = "luxR_value_error",
       info = paste("noise:", value)
     )
   }
@@ -221,12 +221,12 @@ test_that("multi-receptor noise must exactly name selected receptors", {
   expect_error(
     call_jnd(c(0.05, 0.05, 0.05)),
     "must have unique",
-    class = "lux_invalid_noise_error"
+    class = "luxR_value_error"
   )
   expect_error(
     call_jnd(c("S-cone" = 0.05, "M-cone" = 0.05)),
     "Missing: L-cone",
-    class = "lux_invalid_noise_error"
+    class = "luxR_value_error"
   )
   expect_error(
     call_jnd(c(
@@ -236,7 +236,7 @@ test_that("multi-receptor noise must exactly name selected receptors", {
       "rod" = 0.05
     )),
     "extra: rod",
-    class = "lux_invalid_noise_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -252,7 +252,7 @@ test_that("colour_jnd rejects zero catches instead of substituting epsilon", {
       binwidth = 10
     ),
     "strictly positive quantum catches",
-    class = "lux_invalid_catch_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -267,7 +267,7 @@ test_that("colour_jnd rejects species without a validated chromatic channel", {
       binwidth = 10
     ),
     "no unique default chromatic channel",
-    class = "lux_channel_unavailable_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -275,5 +275,5 @@ test_that("colour_jnd rejects an irregular wavelength grid", {
   sp <- solar_irradiance("clear_noon")[-5, ]
   expect_error(colour_jnd(sp$irradiance, sp$irradiance,
                           lambda = sp$wavelength, species = "Danio rerio"),
-               class = "lux_spectrum_grid_error")
+               class = "luxR_grid_error")
 })

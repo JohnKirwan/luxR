@@ -45,3 +45,18 @@ jobs:
         with:
           upload-snapshots: true
           build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
+
+  conditions-guard:
+    runs-on: ubuntu-latest
+    name: typed errors only
+    steps:
+      - uses: actions/checkout@v4
+      - name: No untyped stop() or stopifnot() in R/
+        # Errors go through .luxr_abort(); only rethrows (stop(e)) and the
+        # constructors in R/conditions.R may call stop() directly.
+        run: |
+          if grep -rnE '\bstop\(|stopifnot\(' R/ \
+               | grep -vE '^R/conditions\.R:|stop\(e\)'; then
+            echo "Use .luxr_abort() instead of stop()/stopifnot()."
+            exit 1
+          fi

@@ -81,11 +81,11 @@ test_that("scotopic_lux infers regular bin width and requires singleton width", 
   expect_error(
     scotopic_lux(1, 505),
     "required for a single-bin",
-    class = "lux_spectrum_grid_error"
+    class = "luxR_grid_error"
   )
   expect_error(
     scotopic_lux(c("1", "2"), c(500, 505)),
-    class = "lux_spectrum_type_error"
+    class = "luxR_type_error"
   )
 })
 
@@ -241,7 +241,7 @@ test_that("broadband2spectrum requires an explicit out-of-range policy", {
     broadband2spectrum(
       500, unit = "W", spectrum = spectrum, water_type = "IA", depth = 10
     ),
-    class = "luxR_jerlov_range_error"
+    class = "luxR_value_error"
   )
 
   trimmed <- broadband2spectrum(
@@ -288,17 +288,17 @@ test_that("broadband2spectrum rejects irregular grids for every unit", {
   irr <- data.frame(wavelength = c(400, 410, 430, 440), irradiance = 1)
   for (u in c("W", "kW", "radiance_W", "lx", "cd", "umol")) {
     expect_error(broadband2spectrum(100, u, irr),
-                 class = "lux_spectrum_grid_error")
+                 class = "luxR_grid_error")
   }
 })
 
 test_that("broadband2spectrum validates value, depth and the reference shape", {
   sp <- solar_irradiance("clear_noon")
-  expect_error(broadband2spectrum(-1, "W", sp), class = "lux_spectrum_value_error")
+  expect_error(broadband2spectrum(-1, "W", sp), class = "luxR_value_error")
   expect_error(broadband2spectrum(NA_real_, "W", sp),
-               class = "lux_spectrum_value_error")
+               class = "luxR_value_error")
   expect_error(broadband2spectrum(1, "W", sp, water_type = "I", depth = -5),
-               class = "lux_spectrum_value_error")
+               class = "luxR_value_error")
   zero <- transform(sp, irradiance = 0)
-  expect_error(broadband2spectrum(1, "W", zero), class = "lux_spectrum_value_error")
+  expect_error(broadband2spectrum(1, "W", zero), class = "luxR_value_error")
 })

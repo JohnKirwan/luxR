@@ -52,12 +52,12 @@ test_that("weber_contrast: vectorised", {
 
 test_that("weber_contrast: error when background is zero", {
   expect_error(weber_contrast(5, 0), "greater than 0",
-               class = "lux_spectrum_value_error")
+               class = "luxR_value_error")
 })
 
 test_that("weber_contrast rejects invalid input", {
-  expect_error(weber_contrast(1, -1), class = "lux_spectrum_value_error")
-  expect_error(weber_contrast(-1, 1), class = "lux_spectrum_value_error")
-  expect_error(weber_contrast(NA_real_, 1), class = "lux_spectrum_value_error")
-  expect_error(weber_contrast(1:3, 1:2), class = "lux_spectrum_dimension_error")
+  expect_error(weber_contrast(1, -1), class = "luxR_value_error")
+  expect_error(weber_contrast(-1, 1), class = "luxR_value_error")
+  expect_error(weber_contrast(NA_real_, 1), class = "luxR_value_error")
+  expect_error(weber_contrast(1:3, 1:2), class = "luxR_dimension_error")
 })

@@ -53,7 +53,7 @@ test_that("invalid bundled source metadata raises a structured error", {
   err <- expect_error(
     luxR:::.validate_solar_source_metadata(bad, "clear_noon"),
     "solar_spectra.*clear_noon.*reference_medium",
-    class = "luxR_source_metadata_error"
+    class = "luxR_data_error"
   )
   expect_identical(err$dataset, "solar_spectra")
   expect_identical(err$source_condition, "clear_noon")

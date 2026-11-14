@@ -1,6 +1,43 @@
 # luxR 0.1.1
 
 ## Breaking changes
+- Every luxR error now inherits `luxR_error` and carries exactly one kind
+  class: `luxR_type_error`, `luxR_value_error`, `luxR_dimension_error`,
+  `luxR_grid_error`, `luxR_unit_error`, `luxR_numerical_error`,
+  `luxR_format_error`, `luxR_data_error`, `luxR_dependency_error` or
+  `luxR_internal_error`. Errors raised while importing a file also carry
+  `luxR_import_error`. See `?luxR-conditions`. The previous ~47 classes are
+  gone:
+  - `lux_spectrum_<kind>_error` becomes `luxR_<kind>_error`, except
+    `lux_spectrum_quantity_error` (now `luxR_unit_error`) and
+    `lux_spectrum_depth_error` (now `luxR_value_error`). Quantity and unit
+    mismatches that raised `lux_spectrum_dimension_error` are now
+    `luxR_unit_error`.
+  - `luxR_spectrum_schema_error` becomes `luxR_format_error` for file
+    contents, `luxR_grid_error` for an unordered imported grid, and
+    `luxR_type_error`/`luxR_value_error` for reader arguments.
+    `luxR_spectrum_dimension_error` becomes `luxR_unit_error`.
+  - `luxR_jerlov_type_error` (unknown water type) and
+    `luxR_jerlov_range_error` become `luxR_value_error`.
+  - Failures of a computation on valid input (`*_calculation_error`,
+    `*_numerical_error`, `*_interpolation_error`, `*_invariant_error`)
+    become `luxR_numerical_error`.
+  - `lux_species_data_error` and `luxR_source_metadata_error` become
+    `luxR_data_error`. Species, sensitivity, detection and polarization
+    input errors become `luxR_type_error`, `luxR_value_error`,
+    `luxR_dimension_error`, `luxR_grid_error` or `luxR_unit_error`.
+  - The parent classes `lux_spectrum_validation_error`,
+    `luxR_spectrum_import_error`, `luxR_jerlov_error`,
+    `luxR_polarization_error`, `lux_detection_error` and
+    `lux_species_model_error` are replaced by `luxR_error` and
+    `luxR_import_error`.
+- Detection and polarization errors no longer carry `random_seed`; neither
+  model uses random numbers.
+- Errors from spectrum arithmetic and subsetting, unit conversion, the
+  optical-property helpers, species lookups and the pavo, photobiology and
+  colourvision bridges, previously untyped, now carry kind classes. A
+  missing suggested package (shiny, pavo, photobiology) raises
+  `luxR_dependency_error`.
 - The A2 `govardovskii_template()` now follows Govardovskii et al. (2000):
   - The α-band uses eqns 6a/6b with B = 20.85, b = 0.9101, C = -10.37,
     c = 1.1123 and D = 0.5343.
@@ -28,7 +65,7 @@
   `photonic`, as in `par_irradiance()`; a `lux_spectrum` is converted from its
   own unit, so µmol and W spectra now give the same answer. Non-irradiance
   spectra and negative values are rejected, and a zero total raises a
-  `lux_spectrum_value_error` instead of returning `NA`.
+  `luxR_value_error` instead of returning `NA`.
 - `secchi_depth()` weights the bins straddling 400 and 700 nm by their
   overlap with the window instead of counting them whole, converts a
   `lux_spectrum` to W m^-2 nm^-1 before weighting (µmol spectra previously
@@ -41,7 +78,7 @@
   Numeric irradiance states its unit with `photonic`, as in `par_fraction()`.
   Setting `photonic` together with `spectrum` is an error.
 - `photic_depth()`, `weber_contrast()`, `beam_attenuation()` and the numeric
-  `fit_Kd()` validate their input and raise typed `lux_spectrum_*_error`s:
+  `fit_Kd()` validate their input and raise typed luxR errors:
   non-finite (including `NA`) or out-of-range values, `fraction >= 1`,
   `z2 <= z1`, and vectors whose lengths neither match nor are 1.
   `beam_attenuation()` no longer lets `NA` through, and `weber_contrast()`
@@ -51,18 +88,18 @@
   readers and `as_lux_spectrum()` conversions, which take no `binwidth`,
   therefore reject single-wavelength input. `resample_spectrum()` needs at least
   two regularly spaced target wavelengths. `colour_jnd()`, the Shiny app and
-  every `broadband2spectrum()` unit raise a `lux_spectrum_grid_error` for an
+  every `broadband2spectrum()` unit raise a `luxR_grid_error` for an
   irregular grid instead of averaging its spacing. `broadband2spectrum()`
   also rejects a negative or non-finite `value` or `depth`, and a reference
   spectrum that integrates to zero.
 - `receptor_absorptance()` no longer rescales `S` to its on-grid maximum,
   which undid the true-peak normalisation of `govardovskii_template()` on a
   grid that misses the peak. `S` must be a peak-normalised template (finite,
-  in [0, 1]); a value above 1 is a `lux_invalid_sensitivity_error`. Argument
-  errors are now `lux_species_input_error`s.
+  in [0, 1]); a value above 1 is a `luxR_value_error`. Argument
+  errors are now typed (`luxR_type_error`, `luxR_value_error`).
 - `fit_sensitivity()` rejects a spectrum whose largest value is not positive
   (e.g. an inverted one, which was fitted upside down) and infinite values,
-  and replaces its `stopifnot()` checks with `lux_species_input_error`s. `NA`
+  and replaces its `stopifnot()` checks with typed luxR errors. `NA`
   values are still dropped as unmeasured wavelengths.
 - `band_irradiance()` on a `lux_spectrum` gives a clear error when `lambda`
   or `binwidth` is supplied (both come from the object); `binwidth` used to
@@ -70,7 +107,7 @@
 
 ## Unit handling
 - `par_irradiance()` now rejects radiance and reflectance `lux_spectrum`
-  objects with a `lux_spectrum_dimension_error`. Photon-radiance spectra were
+  objects with a `luxR_unit_error`. Photon-radiance spectra were
   previously integrated as if they were W m^-2 nm^-1.
 - `band_irradiance()` converts a photon-unit `lux_spectrum` to W m^-2 nm^-1
   before integrating, as documented. `photonic = TRUE` no longer applies the
@@ -88,12 +125,12 @@ These fixes change returned numbers or turn silent results into errors.
   overstated PAR by about 3.3% on a 10 nm grid with points at 400 and 700 nm.
   `band_irradiance()` with no limits still integrates the full extent of the
   bins.
-- The same functions now raise a `lux_spectrum_grid_error` for an irregular
+- The same functions now raise a `luxR_grid_error` for an irregular
   or descending wavelength grid, for a `binwidth` that differs from the grid
   spacing, and (except `par_fraction()`) for a grid whose bins do not span
   the band. A single wavelength needs an explicit `binwidth`, a spectrum
-  whose length differs from `lambda` is a `lux_spectrum_dimension_error`,
-  and non-finite spectral values are a `lux_spectrum_value_error`.
+  whose length differs from `lambda` is a `luxR_dimension_error`,
+  and non-finite spectral values are a `luxR_value_error`.
 - `govardovskii_template()` is normalised to the template's own peak rather
   than to the largest value on the supplied grid. A pigment whose peak lies
   outside the grid (a 360 nm cone on 400-700 nm) is no longer rescaled to 1;

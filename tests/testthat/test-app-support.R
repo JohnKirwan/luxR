@@ -127,7 +127,7 @@ test_that("depth output metadata fails on invalid source context", {
       jerlov_metadata = jerlov_test_metadata("IA")
     ),
     "reference_depth_m.*finite",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
   expect_error(
     luxR:::.format_depth_output_metadata(data.frame(target_depth_m = 10)),
@@ -215,7 +215,7 @@ test_that("Depth Propagation uses bundled solar reference depth", {
     expect_error(
       dp_spectra(),
       "shallower than source 'underwater_10m'",
-      class = "lux_spectrum_depth_error"
+      class = "luxR_value_error"
     )
   })
 })
@@ -272,9 +272,9 @@ test_that("Colour and Detection reject targets shallower than an underwater refe
     expect_equal(det_light()$irradiance, source_1m$irradiance[keep_1m])
 
     session$setInputs(jnd_depth = 5)
-    expect_error(jnd_light(), class = "lux_spectrum_depth_error")
+    expect_error(jnd_light(), class = "luxR_value_error")
     session$setInputs(det_depth = 0)
-    expect_error(det_light(), class = "lux_spectrum_depth_error")
+    expect_error(det_light(), class = "luxR_value_error")
   })
 })
 
@@ -353,12 +353,12 @@ test_that(".read_reflectance_csv rejects repair and extrapolation paths", {
   writeLines(c("wavelength,reflectance", "450,0.1", "650,0.5"),
              short_coverage)
   expect_error(luxR:::.read_reflectance_csv(outside, lambda),
-               class = "luxR_spectrum_value_error")
+               class = "luxR_value_error")
   expect_error(luxR:::.read_reflectance_csv(malformed, lambda),
-               class = "luxR_spectrum_value_error")
+               class = "luxR_value_error")
   expect_error(luxR:::.read_reflectance_csv(short_coverage, lambda),
                "extrapolation is disabled",
-               class = "luxR_spectrum_value_error")
+               class = "luxR_value_error")
 })
 
 test_that(".app_jnd is ~0 for identical reflectances and >0 for different ones", {
@@ -611,4 +611,35 @@ test_that("the app sources carry no un-superscripted squared metres", {
                info = "literal 'm^2' left in an app display string")
   expect_false(any(grepl("/ m\u00b2 /", display, fixed = TRUE)),
                info = "solidus unit style left in the app; use exponents")
+})
+
+test_that("broken app metadata raises internal errors", {
+  meta <- function(...) {
+    args <- list(source_condition = "clear_noon", reference_depth_m = 0,
+                 reference_medium = "air", water_type = "II",
+                 target_depth_m = c(0, 10),
+                 jerlov_metadata = jerlov_test_metadata("II"))
+    dots <- list(...)
+    args[names(dots)] <- dots
+    do.call(luxR:::.depth_output_metadata, args)
+  }
+  expect_error(meta(jerlov_metadata = list()), "propagation context",
+               class = "luxR_internal_error")
+  bad <- jerlov_test_metadata("II")
+  bad$supported_wavelength_range_nm <- c(700, 350)
+  expect_error(meta(jerlov_metadata = bad), "ordered ranges",
+               class = "luxR_internal_error")
+  expect_error(meta(source_import = list(a = 1)), "incomplete",
+               class = "luxR_internal_error")
+  expect_error(luxR:::.format_depth_output_metadata(data.frame()),
+               "missing required fields", class = "luxR_internal_error")
+  md <- meta()
+  md$jerlov_type[2] <- "IA"
+  expect_error(luxR:::.format_depth_output_metadata(md), "inconsistent",
+               class = "luxR_internal_error")
+  expect_error(luxR:::.depth_download_df(data.frame(), meta()), "Depth \\(m\\)",
+               class = "luxR_internal_error")
+  summary <- data.frame(`Depth (m)` = c(1, 2), check.names = FALSE)
+  expect_error(luxR:::.depth_download_df(summary, meta()), "misaligned",
+               class = "luxR_internal_error")
 })

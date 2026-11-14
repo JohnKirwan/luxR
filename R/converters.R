@@ -42,7 +42,7 @@ W2photon <- function(W, lambda) W * lambda / .HC_J_NM
 #' wavelength_in_medium(c(400, 500, 600), n = 1.5)
 #' @export
 wavelength_in_medium <- function(lambda, n) {
-  if (any(n < 1)) stop("`n` must be >= 1 (refractive index of vacuum = 1).")
+  if (any(n < 1)) .luxr_abort("`n` must be >= 1 (refractive index of vacuum = 1).", "value")
   lambda / n
 }
 
@@ -125,11 +125,11 @@ scotopic_lux <- function(irradiance, ...) UseMethod("scotopic_lux")
 #' @rdname scotopic_lux
 #' @export
 scotopic_lux.default <- function(irradiance, ...) {
-  .stop_lux_spectrum_validation(
+  .luxr_abort(
     paste0("`irradiance` must be a numeric vector or lux_spectrum; got ",
            paste(class(irradiance), collapse = "/"), "."),
     field = "irradiance", value = irradiance,
-    subclass = "lux_spectrum_type_error"
+    kind = "type"
   )
 }
 
@@ -294,10 +294,10 @@ broadband2spectrum <- function(value,
   )
 
   if (v_shape == 0) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0(op, ": the reference spectrum integrates to zero in unit '",
              unit, "', so it cannot be scaled to ", format(value), "."),
-      field = "spectrum", value = 0, subclass = "lux_spectrum_value_error"
+      field = "spectrum", value = 0, kind = "value"
     )
   }
   k   <- value / v_shape
@@ -348,9 +348,9 @@ reflectance_to_radiance <- function(reflectance, ...) UseMethod("reflectance_to_
 reflectance_to_radiance.numeric <- function(reflectance, illuminant, lambda, ...) {
   if (length(reflectance) != length(illuminant) ||
       length(reflectance) != length(lambda))
-    stop("reflectance, illuminant, and lambda must all have the same length.")
+    .luxr_abort("reflectance, illuminant, and lambda must all have the same length.", "dimension")
   if (any(reflectance < 0) || any(reflectance > 1))
-    stop("Reflectance values must be in [0, 1].")
+    .luxr_abort("Reflectance values must be in [0, 1].", "value")
   out        <- reflectance * illuminant
   names(out) <- as.character(lambda)
   out
@@ -360,14 +360,14 @@ reflectance_to_radiance.numeric <- function(reflectance, illuminant, lambda, ...
 #' @export
 reflectance_to_radiance.lux_spectrum <- function(reflectance, illuminant, ...) {
   if (!inherits(illuminant, "lux_spectrum"))
-    stop("illuminant must be a lux_spectrum when reflectance is a lux_spectrum.")
+    .luxr_abort("illuminant must be a lux_spectrum when reflectance is a lux_spectrum.", "type")
   if (reflectance$quantity != "reflectance")
-    stop("reflectance$quantity must be 'reflectance'; got '",
-         reflectance$quantity, "'.")
+    .luxr_abort(paste0("reflectance$quantity must be 'reflectance'; got '",
+                       reflectance$quantity, "'."), "unit")
   if (!illuminant$quantity %in% c("irradiance", "radiance"))
-    stop("illuminant$quantity must be 'irradiance' or 'radiance'.")
+    .luxr_abort("illuminant$quantity must be 'irradiance' or 'radiance'.", "unit")
   if (!identical(reflectance$lambda, illuminant$lambda))
-    stop("lambda grids must be identical.")
+    .luxr_abort("lambda grids must be identical.", "grid")
 
   if (illuminant$quantity == "irradiance") {
     new_unit <- sub("/nm", "/sr/nm", illuminant$unit, fixed = TRUE)

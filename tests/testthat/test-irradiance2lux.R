@@ -40,17 +40,17 @@ test_that("irradiance2lux interpolates an irregular custom LEF", {
 test_that("irradiance2lux rejects malformed luminous efficiency functions", {
   expect_error(
     irradiance2lux(1, 500, LEF = data.frame(lambda = 500)),
-    class = "lux_lef_validation_error"
+    class = "luxR_value_error"
   )
   expect_error(
     irradiance2lux(1, 500,
                    LEF = data.frame(lambda = c(500, 490), W = c(1, 0.5))),
-    class = "lux_lef_validation_error"
+    class = "luxR_grid_error"
   )
   expect_error(
     irradiance2lux(1, 500,
                    LEF = data.frame(lambda = c(490, 500), W = c(0.5, NA))),
-    class = "lux_lef_validation_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -88,7 +88,7 @@ test_that("irradiance2lux requires an explicit width for one wavelength", {
   expect_error(
     irradiance2lux(1, 555),
     "required for a single-bin",
-    class = "lux_spectrum_grid_error"
+    class = "luxR_grid_error"
   )
   expect_equal(
     irradiance2lux(1, 555, binwidth = 1),
@@ -100,18 +100,18 @@ test_that("irradiance2lux requires explicit trapezoidal integration for irregula
   expect_error(
     irradiance2lux(c(1, 1, 1), c(500, 510, 525)),
     "regularly spaced",
-    class = "lux_spectrum_grid_error"
+    class = "luxR_grid_error"
   )
   expect_error(
     irradiance2lux(c(1, 1, 1), c(500, 510, 525), binwidth = 10,
                    integration = "trapezoid"),
     "must be NULL",
-    class = "lux_spectrum_grid_error"
+    class = "luxR_grid_error"
   )
   expect_error(
     irradiance2lux(c(1, 1, 1), c(500, 510, 520), binwidth = 5),
     "must match",
-    class = "lux_spectrum_grid_error"
+    class = "luxR_grid_error"
   )
 })
 
@@ -167,7 +167,7 @@ test_that("trapezoidal integration validates grid boundaries", {
   )
 
   for (call in invalid_calls) {
-    expect_error(call(), class = "lux_spectrum_validation_error")
+    expect_error(call(), class = "luxR_error")
   }
 })
 
@@ -202,7 +202,7 @@ test_that("irradiance2lux_FUN rejects mismatched internal shapes", {
       integration_weights = c(5, 5)
     ),
     "equal length",
-    class = "lux_spectrum_value_error"
+    class = "luxR_dimension_error"
   )
 })
 
@@ -223,7 +223,7 @@ test_that("irradiance2lux validates numeric spectrum boundaries", {
   )
 
   for (call in invalid_calls) {
-    expect_error(call(), class = "lux_spectrum_validation_error")
+    expect_error(call(), class = "luxR_error")
   }
 })
 
@@ -248,12 +248,12 @@ test_that("photometric integration accepts only irradiance spectra", {
     expect_error(
       irradiance2lux(spectrum),
       "requires spectral irradiance",
-      class = "lux_spectrum_dimension_error"
+      class = "luxR_unit_error"
     )
     expect_error(
       scotopic_lux(spectrum),
       "requires spectral irradiance",
-      class = "lux_spectrum_dimension_error"
+      class = "luxR_unit_error"
     )
   }
 })

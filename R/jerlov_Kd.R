@@ -8,46 +8,28 @@
   metadata <- attributes(tab)[required]
   missing <- required[vapply(metadata, is.null, logical(1))]
   if (length(missing) > 0L) {
-    error <- structure(
-      list(
-        message = paste0(
-          "Bundled dataset `jerlov_types` is missing required metadata: ",
-          paste(missing, collapse = ", "), "."
-        ),
-        call = NULL,
-        dataset = "jerlov_types",
-        source_path = "data/jerlov_types.rda",
-        missing_fields = missing
-      ),
-      class = c("luxR_jerlov_data_error", "error", "condition")
+    .luxr_abort(
+      paste0("Bundled dataset `jerlov_types` is missing required metadata: ",
+             paste(missing, collapse = ", "), "."),
+      "data", dataset = "jerlov_types",
+      source_path = "data/jerlov_types.rda", missing_fields = missing
     )
-    stop(error)
   }
   metadata$package_version <- as.character(utils::packageVersion("luxR"))
   metadata
 }
 
-.stop_jerlov <- function(message, class, field, value = NULL, index = NULL,
+.stop_jerlov <- function(message, kind, field, value = NULL, index = NULL,
                          context = list()) {
-  error <- structure(
-    c(
-      list(
-        message = message,
-        call = NULL,
-        field = field,
-        value = value,
-        index = index
-      ),
-      context
-    ),
-    class = c(class, "luxR_jerlov_error", "error", "condition")
-  )
-  stop(error)
+  .luxr_abort(message, kind, .fields = c(
+    list(field = field, value = value, index = index),
+    context
+  ))
 }
 
 .validate_jerlov_lambda <- function(lambda, context) {
   fail <- function(message, field, value, index, kind) {
-    .stop_jerlov(message, class = "luxR_jerlov_input_error", field = field,
+    .stop_jerlov(message, kind = kind, field = field,
                  value = value, index = index, context = context)
   }
   .check_numeric(lambda, "lambda", fail)
@@ -66,8 +48,8 @@
     ))
   )
   if (length(lambda) != length(values)) {
-    stop("Internal Jerlov domain preparation received misaligned wavelengths ",
-         "and values in `", operation, "`.", call. = FALSE)
+    .luxr_abort(paste0("Internal Jerlov domain preparation received misaligned wavelengths ",
+                       "and values in `", operation, "`."), "internal")
   }
   supported <- .jerlov_dataset_context()$supported_wavelength_range_nm
   input_range <- range(lambda)
@@ -81,7 +63,7 @@
                " nm to the supported Jerlov range ",
                paste(format(supported), collapse = "--"),
                " nm because the ranges do not overlap."),
-        class = "luxR_jerlov_range_error", field = "lambda",
+        kind = "value", field = "lambda",
         value = input_range,
         context = c(.jerlov_dataset_context(), list(
           type = toupper(type), operation = operation,
@@ -141,8 +123,9 @@
 #'   \code{"nearest"}. Interpolation is applied only within the supported
 #'   wavelength range.
 #' @param extrapolation Out-of-range policy. The default \code{"error"}
-#'   raises a \code{luxR_jerlov_range_error}. Set to \code{"constant"} to
-#'   explicitly extend the nearest endpoint value; the choice is recorded in
+#'   raises a \code{luxR_value_error} (see \link{luxR-conditions}). Set to
+#'   \code{"constant"} to explicitly extend the nearest endpoint value; the
+#'   choice is recorded in
 #'   the returned vector's \code{"luxR.jerlov"} attribute.
 #' @return If \code{lambda} is \code{NULL}: a data frame with columns
 #'   \code{type}, \code{lambda}, \code{Kd} and dataset metadata attributes.
@@ -182,7 +165,8 @@ jerlov_Kd <- function(type = "IA", lambda = NULL,
       !nzchar(type)) {
     .stop_jerlov(
       "`type` must be one non-empty, non-missing Jerlov water-type string.",
-      class = "luxR_jerlov_input_error", field = "type", value = type,
+      kind = if (is.null(type) || is.character(type)) "value" else "type",
+      field = "type", value = type,
       context = dataset_context
     )
   }
@@ -192,7 +176,7 @@ jerlov_Kd <- function(type = "IA", lambda = NULL,
     .stop_jerlov(
       paste0("unknown Jerlov type: '", type, "'. Valid types: ",
              paste(sort(unique(jerlov_types$type)), collapse = ", ")),
-      class = "luxR_jerlov_type_error", field = "type", value = type,
+      kind = "value", field = "type", value = type,
       context = dataset_context
     )
   }
@@ -214,7 +198,7 @@ jerlov_Kd <- function(type = "IA", lambda = NULL,
         " nm. Use `extrapolation = \"constant\"` only if endpoint extension ",
         "is an explicit modelling assumption."
       ),
-      class = "luxR_jerlov_range_error", field = "lambda",
+      kind = "value", field = "lambda",
       value = lambda[[i]], index = i,
       context = c(context, list(
         requested_wavelength_range_nm = range(lambda),
@@ -241,7 +225,7 @@ jerlov_Kd <- function(type = "IA", lambda = NULL,
   if (any(!is.finite(out)) || any(out < 0)) {
     .stop_jerlov(
       "Jerlov interpolation produced a non-finite or negative Kd value.",
-      class = "luxR_jerlov_interpolation_error", field = "Kd", value = out,
+      kind = "numerical", field = "Kd", value = out,
       context = context
     )
   }

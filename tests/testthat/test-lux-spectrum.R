@@ -28,7 +28,7 @@ test_that("lux_spectrum: explicit binwidth is preserved", {
 })
 
 test_that("lux_spectrum: a single bin needs an explicit binwidth", {
-  expect_error(lux_spectrum(1, 550), class = "lux_spectrum_value_error")
+  expect_error(lux_spectrum(1, 550), class = "luxR_value_error")
   expect_equal(lux_spectrum(1, 550, binwidth = 5)$binwidth, 5)
 })
 
@@ -43,7 +43,7 @@ test_that("lux_spectrum: error on length mismatch", {
   expect_error(
     lux_spectrum(E, lam[-1]),
     "equal length",
-    class = "lux_spectrum_value_error"
+    class = "luxR_dimension_error"
   )
 })
 
@@ -61,21 +61,21 @@ test_that("lux_spectrum: requires non-empty numeric vectors", {
   expect_error(
     lux_spectrum(numeric(), numeric()),
     "non-empty",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
   expect_error(
     lux_spectrum(character(), numeric()),
     "numeric vector",
-    class = "lux_spectrum_type_error"
+    class = "luxR_type_error"
   )
   for (x in invalid[-c(1, 2)]) {
     expect_error(
       lux_spectrum(x, seq_along(x)),
-      class = "lux_spectrum_type_error"
+      class = "luxR_type_error"
     )
     expect_error(
       lux_spectrum(rep(1, length(x)), x),
-      class = "lux_spectrum_type_error"
+      class = "luxR_type_error"
     )
   }
 })
@@ -84,7 +84,7 @@ test_that("lux_spectrum: error on invalid unit", {
   expect_error(
     lux_spectrum(E, lam, unit = "furlongs"),
     "vocabulary",
-    class = "lux_spectrum_dimension_error"
+    class = "luxR_unit_error"
   )
 })
 
@@ -93,13 +93,13 @@ test_that("lux_spectrum: error on reflectance out of range", {
     lux_spectrum(c(-0.1, rep(0.5, length(lam) - 1)), lam,
                  quantity = "reflectance", unit = "dimensionless"),
     "\\[0, 1\\]",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
   expect_error(
     lux_spectrum(c(1.1, rep(0.5, length(lam) - 1)), lam,
                  quantity = "reflectance", unit = "dimensionless"),
     "\\[0, 1\\]",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
   expect_no_error(
     lux_spectrum(c(0, 1), c(400, 410),
@@ -114,7 +114,7 @@ test_that("lux_spectrum: rejects non-finite wavelengths and values", {
     err_E <- expect_error(
       lux_spectrum(E_bad, lam),
       "finite values",
-      class = "lux_spectrum_value_error"
+      class = "luxR_value_error"
     )
     expect_identical(err_E$field, "E")
     expect_identical(err_E$index, 3L)
@@ -124,7 +124,7 @@ test_that("lux_spectrum: rejects non-finite wavelengths and values", {
     err_lambda <- expect_error(
       lux_spectrum(E, lam_bad),
       "finite values",
-      class = "lux_spectrum_value_error"
+      class = "luxR_value_error"
     )
     expect_identical(err_lambda$field, "lambda")
     expect_identical(err_lambda$index, 3L)
@@ -135,12 +135,12 @@ test_that("lux_spectrum: requires strictly increasing unique wavelengths", {
   expect_error(
     lux_spectrum(1:3, c(400, 390, 410)),
     "strictly increasing",
-    class = "lux_spectrum_grid_error"
+    class = "luxR_grid_error"
   )
   err <- expect_error(
     lux_spectrum(1:3, c(400, 400, 410)),
     "strictly increasing",
-    class = "lux_spectrum_grid_error"
+    class = "luxR_grid_error"
   )
   expect_identical(err$field, "lambda")
   expect_identical(err$index, 2L)
@@ -150,7 +150,7 @@ test_that("lux_spectrum: rejects irregular wavelength grids", {
   err <- expect_error(
     lux_spectrum(1:4, c(400, 410, 425, 435)),
     "regularly spaced",
-    class = "lux_spectrum_grid_error"
+    class = "luxR_grid_error"
   )
   expect_identical(err$field, "lambda")
   expect_match(conditionMessage(err), "Resample raw vectors")
@@ -166,13 +166,13 @@ test_that("lux_spectrum: validates binwidth and grid compatibility", {
   for (binwidth in invalid) {
     expect_error(
       lux_spectrum(E, lam, binwidth = binwidth),
-      class = "lux_spectrum_validation_error"
+      class = "luxR_error"
     )
   }
   expect_error(
     lux_spectrum(E, lam, binwidth = 5),
     "must match",
-    class = "lux_spectrum_grid_error"
+    class = "luxR_grid_error"
   )
   expect_no_error(lux_spectrum(1, 550, binwidth = 5))
 })
@@ -212,7 +212,7 @@ test_that("lux_spectrum: rejects mismatched quantity and unit dimensions", {
     expect_error(
       lux_spectrum(E, lam, quantity = pair[1], unit = pair[2]),
       "different dimensions",
-      class = "lux_spectrum_dimension_error"
+      class = "luxR_unit_error"
     )
   }
 })
@@ -228,7 +228,7 @@ test_that("lux_spectrum: rejects negative physical spectra", {
       lux_spectrum(c(1, -0.1), c(400, 410),
                    quantity = pair[1], unit = pair[2]),
       "non-negative",
-      class = "lux_spectrum_value_error"
+      class = "luxR_value_error"
     )
     expect_identical(err$field, "E")
     expect_identical(err$index, 2L)
@@ -240,28 +240,28 @@ test_that("lux_spectrum: validates quantity, unit, and metadata schemas", {
                         1)) {
     expect_error(
       lux_spectrum(E, lam, quantity = quantity),
-      class = "lux_spectrum_validation_error"
+      class = "luxR_error"
     )
   }
   for (unit in list("", NA_character_, c("W/m2/nm", "mol/m2/s/nm"), 1)) {
     expect_error(
       lux_spectrum(E, lam, unit = unit),
-      class = "lux_spectrum_validation_error"
+      class = "luxR_error"
     )
   }
   expect_error(
     lux_spectrum(E, lam, meta = "source"),
-    class = "lux_spectrum_type_error"
+    class = "luxR_type_error"
   )
   expect_error(
     lux_spectrum(E, lam, meta = list("source")),
     "unique, non-empty names",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
   duplicate_meta <- structure(list("a", "b"), names = c("source", "source"))
   expect_error(
     lux_spectrum(E, lam, meta = duplicate_meta),
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -274,7 +274,7 @@ test_that("lux_spectrum: validation conditions retain supplied context", {
   )
   err <- expect_error(
     lux_spectrum(c(1, NA_real_), c(400, 410), meta = meta),
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
   expect_identical(err$context, meta)
 })
@@ -446,9 +446,9 @@ test_that("lux_spectrum: arithmetic cannot construct negative physical values", 
   a <- lux_spectrum(E, lam)
   b <- lux_spectrum(E * 2, lam)
 
-  expect_error(a - b, "non-negative", class = "lux_spectrum_value_error")
-  expect_error(-a, "non-negative", class = "lux_spectrum_value_error")
-  expect_error(a - 2, "non-negative", class = "lux_spectrum_value_error")
+  expect_error(a - b, "non-negative", class = "luxR_value_error")
+  expect_error(-a, "non-negative", class = "luxR_value_error")
+  expect_error(a - 2, "non-negative", class = "luxR_value_error")
 })
 
 test_that("lux_spectrum: arithmetic errors on mismatched grids", {

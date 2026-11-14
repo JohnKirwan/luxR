@@ -8,36 +8,22 @@
 .POLARIZATION_MODEL_VERSION <- "0.1.0-rayleigh-like"
 
 .polarization_runtime_context <- function(operation, configuration = list()) {
-  random_seed <- if (exists(".Random.seed", envir = .GlobalEnv,
-                            inherits = FALSE)) {
-    get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-  } else {
-    NA_integer_
-  }
   list(
     operation = operation,
     model_version = .POLARIZATION_MODEL_VERSION,
     package_version = .luxr_package_version(),
     code_commit = .luxr_code_commit(),
-    random_seed = random_seed,
     configuration = configuration
   )
 }
 
-.stop_polarization <- function(message, operation,
-                               class = "luxR_polarization_input_error",
+.stop_polarization <- function(message, operation, kind,
                                field = NULL, value = NULL, index = NULL,
                                configuration = list()) {
-  condition <- structure(
-    c(
-      list(message = message, call = NULL, field = field, value = value,
-           index = index),
-      .polarization_runtime_context(operation, configuration)
-    ),
-    class = c(class, "luxR_polarization_error", "luxR_error",
-              "error", "condition")
-  )
-  stop(condition)
+  .luxr_abort(message, kind, .fields = c(
+    list(field = field, value = value, index = index),
+    .polarization_runtime_context(operation, configuration)
+  ))
 }
 
 .validate_polarization_numeric <- function(x, field, operation,
@@ -46,7 +32,7 @@
                                            lower_open = FALSE,
                                            configuration = list()) {
   fail <- function(message, field, value, index, kind) {
-    .stop_polarization(message, operation, field = field, value = value,
+    .stop_polarization(message, operation, kind, field = field, value = value,
                        index = index, configuration = configuration)
   }
   .check_numeric(x, field, fail, scalar = scalar, lower = lower,
@@ -65,7 +51,7 @@
         paste(paste0("`", names(values), "`=", lengths), collapse = ", "),
         "."
       ),
-      operation, class = "luxR_polarization_length_error",
+      operation, kind = "dimension",
       field = incompatible[[1L]], value = lengths,
       configuration = configuration
     )
@@ -106,8 +92,8 @@
 #' @details All inputs must be finite numeric vectors. A Stokes vector is
 #'   physical only when \eqn{I > 0} and
 #'   \eqn{\sqrt{Q^2 + U^2 + V^2} \le I}. Values exceeding this bound by more
-#'   than 64 machine epsilons are rejected with a
-#'   \code{luxR_polarization_physicality_error}. Values within that round-off
+#'   than 64 machine epsilons are rejected with a \code{luxR_value_error}
+#'   (see \link{luxR-conditions}). Values within that round-off
 #'   tolerance are returned as exactly one.
 #' @seealso \code{\link{angle_of_polarization}}, \code{\link{underwater_polarization}}
 #' @examples
@@ -130,7 +116,7 @@ degree_of_polarization <- function(I, Q, U, V = 0) {
       paste0("Stokes parameters are physically invalid at index ", i,
              ": polarized intensity ", format(polarized[[i]]),
              " exceeds I = ", format(x$I[[i]]), "."),
-      operation, class = "luxR_polarization_physicality_error",
+      operation, kind = "value",
       field = "I,Q,U,V",
       value = c(I = x$I[[i]], Q = x$Q[[i]], U = x$U[[i]], V = x$V[[i]]),
       index = i
@@ -237,7 +223,7 @@ scattering_angle <- function(view_zenith, view_azimuth,
     .stop_polarization(
       paste0("Scattering-angle cosine violated [-1, 1] at index ", i,
              "; got ", format(cos_t[[i]]), "."),
-      operation, class = "luxR_polarization_invariant_error",
+      operation, kind = "numerical",
       field = "cos_scattering_angle", value = cos_t[[i]], index = i
     )
   }
@@ -363,7 +349,7 @@ underwater_polarization <- function(view_zenith, view_azimuth = 0,
     .stop_polarization(
       paste0("`dop_asym` must not exceed `dop_max`; got ", dop_asym,
              " > ", dop_max, "."),
-      operation, field = "dop_asym", value = dop_asym,
+      operation, "value", field = "dop_asym", value = dop_asym,
       configuration = configuration
     )
   }
@@ -386,7 +372,7 @@ underwater_polarization <- function(view_zenith, view_azimuth = 0,
     .stop_polarization(
       paste0("Rayleigh-like DoP violated [0, 1] at index ", i,
              "; got ", format(dop[[i]]), "."),
-      operation, class = "luxR_polarization_invariant_error",
+      operation, kind = "numerical",
       field = "dop", value = dop[[i]], index = i,
       configuration = configuration
     )

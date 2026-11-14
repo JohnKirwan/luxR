@@ -34,8 +34,8 @@
 solar_irradiance <- function(condition = "clear_noon") {
   valid <- names(solar_spectra)
   if (!condition %in% valid)
-    stop("unknown condition: '", condition, "'. ",
-         "Valid: ", paste(valid, collapse = ", "))
+    .luxr_abort(paste0("unknown condition: '", condition, "'. ",
+                       "Valid: ", paste(valid, collapse = ", ")), "value")
 
   spectrum <- solar_spectra[[condition]]
   .validate_solar_source_metadata(spectrum, condition)
@@ -93,19 +93,10 @@ solar_irradiance <- function(condition = "clear_noon") {
 }
 
 .stop_solar_source_metadata <- function(condition, field, value, problem) {
-  error <- structure(
-    list(
-      message = paste0(
-        "Bundled dataset `solar_spectra`, source '", condition, "', has ",
-        problem, " for `", field, "`."
-      ),
-      call = NULL,
-      dataset = "solar_spectra",
-      source_condition = condition,
-      field = field,
-      value = value
-    ),
-    class = c("luxR_source_metadata_error", "error", "condition")
+  .luxr_abort(
+    paste0("Bundled dataset `solar_spectra`, source '", condition, "', has ",
+           problem, " for `", field, "`."),
+    "data", dataset = "solar_spectra", source_condition = condition,
+    field = field, value = value
   )
-  stop(error)
 }

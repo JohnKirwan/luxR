@@ -35,13 +35,13 @@
 .validate_propagation_spectrum <- function(x, field, operation,
                                             from, to, Kd_lambda) {
   if (!identical(x$quantity, "irradiance")) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0(
         "`", field, "` must contain spectral irradiance for diffuse ",
         "Beer-Lambert propagation; got quantity '", x$quantity, "'."
       ),
       field = field, value = x$quantity,
-      subclass = "lux_spectrum_quantity_error",
+      kind = "unit",
       context = .propagation_model_context(
         operation, from = from, to = to, Kd_lambda = Kd_lambda
       )
@@ -55,7 +55,7 @@
   invalid <- which(!is.finite(x))
   if (length(invalid) > 0L) {
     i <- invalid[[1L]]
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0(
         "Beer-Lambert propagation produced a non-finite result at output ",
         "index ", i, ". Inverse propagation can overflow or amplify ",
@@ -63,7 +63,7 @@
         "reference spectrum."
       ),
       field = "result", value = x[[i]], index = i,
-      subclass = "lux_spectrum_numerical_error",
+      kind = "numerical",
       context = .propagation_model_context(
         operation, from = from, to = to, Kd_lambda = Kd_lambda
       )
@@ -81,9 +81,9 @@
 
 .validate_propagation_flag <- function(x, field, operation) {
   if (!is.logical(x) || length(x) != 1L || is.na(x)) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`", field, "` must be TRUE or FALSE."),
-      field = field, value = x, subclass = "lux_spectrum_type_error",
+      field = field, value = x, kind = "type",
       context = list(operation = operation)
     )
   }
@@ -114,11 +114,11 @@
   )
 
   if (!reference_medium %in% c("air", "water")) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`reference_medium` must be 'air' or 'water'; got '",
              reference_medium, "'."),
       field = "reference_medium", value = reference_medium,
-      subclass = "lux_spectrum_value_error",
+      kind = "value",
       context = list(operation = operation, source_condition = source_condition,
                      water_type = water_type)
     )
@@ -128,7 +128,7 @@
     target_depth_m < reference_depth_m
   if (any(shallower)) {
     invalid_targets <- target_depth_m[shallower]
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0(
         "Target depth(s) ", paste(format(invalid_targets), collapse = ", "),
         " m are shallower than source '", source_condition,
@@ -137,7 +137,7 @@
         "uploaded source spectra."
       ),
       field = "target_depth_m", value = invalid_targets,
-      subclass = "lux_spectrum_depth_error",
+      kind = "value",
       context = list(
         operation = operation,
         source_condition = source_condition,
@@ -165,11 +165,11 @@
     reference_medium, "reference_medium", list(operation = operation)
   )
   if (!reference_medium %in% c("air", "water")) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("reference_medium must be 'air' or 'water'; got '",
              reference_medium, "'."),
       field = "reference_medium", value = reference_medium,
-      subclass = "lux_spectrum_value_error",
+      kind = "value",
       context = list(operation = operation)
     )
   }
@@ -177,10 +177,10 @@
     refractive_index, "refractive_index", operation, scalar = TRUE
   )
   if (refractive_index <= 1) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       "refractive_index must be greater than 1.",
       field = "refractive_index", value = refractive_index,
-      subclass = "lux_spectrum_value_error",
+      kind = "value",
       context = list(operation = operation)
     )
   }
@@ -189,10 +189,10 @@
       surface_angle, "surface_angle", operation, scalar = TRUE
     )
     if (surface_angle < 0 || surface_angle > 90) {
-      .stop_lux_spectrum_validation(
+      .luxr_abort(
         "surface_angle must be between 0 and 90 degrees.",
         field = "surface_angle", value = surface_angle,
-        subclass = "lux_spectrum_value_error",
+        kind = "value",
         context = list(operation = operation)
       )
     }
@@ -280,11 +280,11 @@ propagate_depth <- function(E_known, Kd, from = 0, to,
     allow_above_surface, "allow_above_surface", operation
   )
   if (!allow_above_surface && (from < 0 || any(to < 0))) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`from` and `to` must contain only non-negative absolute ",
              "depths unless `allow_above_surface = TRUE`."),
       field = c("from", "to"), value = c(from, to),
-      subclass = "lux_spectrum_value_error",
+      kind = "value",
       context = list(operation = operation)
     )
   }
@@ -355,24 +355,24 @@ attenuate_spectrum.numeric <- function(E0_lambda, Kd_lambda, depths,
     depths, "depths", operation, nonnegative = TRUE
   )
   if (length(E0_lambda) != length(Kd_lambda)) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`E0_lambda` and `Kd_lambda` must have equal length; got ",
              length(E0_lambda), " and ", length(Kd_lambda), "."),
       field = c("E0_lambda", "Kd_lambda"),
       value = c(length(E0_lambda), length(Kd_lambda)),
-      subclass = "lux_spectrum_value_error",
+      kind = "dimension",
       context = list(operation = operation)
     )
   }
   if (!is.null(lambda)) {
     .validate_propagation_numeric(lambda, "lambda", operation)
     if (length(lambda) != length(E0_lambda)) {
-      .stop_lux_spectrum_validation(
+      .luxr_abort(
         paste0("`lambda` and `E0_lambda` must have equal length; got ",
                length(lambda), " and ", length(E0_lambda), "."),
         field = c("lambda", "E0_lambda"),
         value = c(length(lambda), length(E0_lambda)),
-        subclass = "lux_spectrum_value_error",
+        kind = "dimension",
         context = list(operation = operation)
       )
     }
@@ -481,33 +481,33 @@ propagate_spectrum.numeric <- function(E_lambda, Kd_lambda, from = 0, to,
     allow_above_surface, "allow_above_surface", operation
   )
   if (length(E_lambda) != length(Kd_lambda)) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`E_lambda` and `Kd_lambda` must have equal length; got ",
              length(E_lambda), " and ", length(Kd_lambda), "."),
       field = c("E_lambda", "Kd_lambda"),
       value = c(length(E_lambda), length(Kd_lambda)),
-      subclass = "lux_spectrum_value_error",
+      kind = "dimension",
       context = list(operation = operation)
     )
   }
   if (!allow_above_surface && (from < 0 || any(to < 0))) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`from` and `to` must contain only non-negative absolute ",
              "depths unless `allow_above_surface = TRUE`."),
       field = c("from", "to"), value = c(from, to),
-      subclass = "lux_spectrum_value_error",
+      kind = "value",
       context = list(operation = operation)
     )
   }
   if (!is.null(lambda)) {
     .validate_propagation_numeric(lambda, "lambda", operation)
     if (length(lambda) != length(E_lambda)) {
-      .stop_lux_spectrum_validation(
+      .luxr_abort(
         paste0("`lambda` and `E_lambda` must have equal length; got ",
                length(lambda), " and ", length(E_lambda), "."),
         field = c("lambda", "E_lambda"),
         value = c(length(lambda), length(E_lambda)),
-        subclass = "lux_spectrum_value_error",
+        kind = "dimension",
         context = list(operation = operation)
       )
     }
@@ -577,11 +577,11 @@ photic_depth <- function(Kd, fraction = 0.01) {
   .check_input(fraction, "fraction", op, lower = 0, lower_open = TRUE)
   if (any(fraction >= 1)) {
     i <- which(fraction >= 1)[1L]
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0(op, ": `fraction` must be below 1; index ", i, " is ",
              format(fraction[i]), "."),
       field = "fraction", value = fraction[i], index = i,
-      subclass = "lux_spectrum_value_error"
+      kind = "value"
     )
   }
   .check_recyclable(Kd, fraction, c("Kd", "fraction"), op)
@@ -625,10 +625,10 @@ fit_Kd <- function(E1, ...) UseMethod("fit_Kd")
 fit_Kd.numeric <- function(E1, z1, E2, z2, ...) {
   op <- "fit_Kd()"
   if (inherits(E2, "lux_spectrum")) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0(op, ": when `E1` is numeric, `E2` must also be numeric. Pass a ",
              "lux_spectrum as `E1` to use the lux_spectrum method."),
-      field = "E2", value = class(E2), subclass = "lux_spectrum_type_error"
+      field = "E2", value = class(E2), kind = "type"
     )
   }
   .check_input(E1, "E1", op, lower = 0, lower_open = TRUE)
@@ -641,12 +641,12 @@ fit_Kd.numeric <- function(E1, z1, E2, z2, ...) {
   .check_recyclable(E1, dz, c("E1", "z2 - z1"), op)
   if (any(dz <= 0)) {
     i <- which(dz <= 0)[1L]
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0(op, ": `z2` must be deeper than `z1`; index ", i, " has z1 = ",
              format(rep_len(z1, length(dz))[i]), ", z2 = ",
              format(rep_len(z2, length(dz))[i]), "."),
       field = c("z1", "z2"), value = dz[i], index = i,
-      subclass = "lux_spectrum_value_error"
+      kind = "value"
     )
   }
   log(E1 / E2) / dz
@@ -656,11 +656,11 @@ fit_Kd.numeric <- function(E1, z1, E2, z2, ...) {
 #' @export
 fit_Kd.lux_spectrum <- function(E1, z1, E2, z2, ...) {
   if (!inherits(E2, "lux_spectrum")) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("fit_Kd(): `E2` must be a lux_spectrum when `E1` is one; got ",
              paste(class(E2), collapse = "/"), ". The unit of a bare numeric ",
              "vector is unknown."),
-      field = "E2", value = E2, subclass = "lux_spectrum_type_error",
+      field = "E2", value = E2, kind = "type",
       context = E1$meta
     )
   }
@@ -670,12 +670,12 @@ fit_Kd.lux_spectrum <- function(E1, z1, E2, z2, ...) {
   l2 <- e2$lambda
   if (length(l1) != length(l2) ||
       max(abs(l1 - l2)) > .grid_tolerance(l1, l2)) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("fit_Kd(): `E1` and `E2` must share one wavelength grid; got ",
              length(l1), " points over ", min(l1), "-", max(l1), " nm and ",
              length(l2), " points over ", min(l2), "-", max(l2),
              " nm. Resample one spectrum explicitly first."),
-      field = "lambda", value = l2, subclass = "lux_spectrum_grid_error",
+      field = "lambda", value = l2, kind = "grid",
       context = E1$meta
     )
   }

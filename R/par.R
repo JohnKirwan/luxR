@@ -114,9 +114,9 @@ par_fraction.numeric <- function(irradiance, lambda, binwidth = NULL,
   irradiance <- .as_basis(irradiance, lambda, photonic, match.arg(basis), op)
   total <- sum(irradiance * .band_widths(lambda, binwidth, operation = op))
   if (total == 0) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0(op, ": total irradiance is zero, so the fraction is undefined."),
-      field = "irradiance", value = 0, subclass = "lux_spectrum_value_error"
+      field = "irradiance", value = 0, kind = "value"
     )
   }
   sum(irradiance * .band_widths(lambda, binwidth, 400, 700, op,
@@ -128,9 +128,9 @@ par_fraction.numeric <- function(irradiance, lambda, binwidth = NULL,
 # weighting by wavelength is enough: the constants h, c and N_A cancel.
 .as_basis <- function(irradiance, lambda, photonic, basis, op) {
   if (!isTRUE(photonic) && !isFALSE(photonic)) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0(op, ": `photonic` must be TRUE or FALSE."),
-      field = "photonic", value = photonic, subclass = "lux_spectrum_type_error"
+      field = "photonic", value = photonic, kind = "type"
     )
   }
   .check_spectral_values(irradiance, lambda, "irradiance", op)

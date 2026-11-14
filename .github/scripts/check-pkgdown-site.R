@@ -81,6 +81,13 @@ is_data <- vapply(
   function(keywords) "datasets" %in% keywords,
   logical(1)
 )
+# Class documentation (e.g. luxR-conditions) describes condition classes,
+# not functions, so it has no exported alias by design.
+is_class_topic <- vapply(
+  topics$keywords,
+  function(keywords) "classes" %in% keywords,
+  logical(1)
+)
 is_package_topic <- topics$name == paste0(pkg$package, "-package")
 has_public_alias <- vapply(
   topics$alias,
@@ -88,7 +95,9 @@ has_public_alias <- vapply(
   logical(1)
 )
 
-orphan_topics <- topics$name[!(is_data | is_package_topic | has_public_alias)]
+orphan_topics <- topics$name[
+  !(is_data | is_class_topic | is_package_topic | has_public_alias)
+]
 if (length(orphan_topics)) {
   fail(
     "Non-internal function documentation has no exported or registered S3 alias.",

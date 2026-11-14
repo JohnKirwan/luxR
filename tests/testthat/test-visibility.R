@@ -81,7 +81,7 @@ test_that("visual_range rejects invalid attenuation and thresholds", {
     function() visual_range(0.1, beam_c = Inf)
   )
   for (call in invalid_calls) {
-    expect_error(call(), class = "lux_detection_error")
+    expect_error(call(), class = "luxR_value_error")
   }
 })
 
@@ -159,28 +159,28 @@ test_that("secchi_depth rejects invalid photonic and basis", {
   lam <- seq(400, 700, by = 10)
   E   <- rep(1, 31)
   expect_error(secchi_depth(rep(0.1, 31), lam, E, photonic = NA),
-               class = "lux_spectrum_type_error")
+               class = "luxR_type_error")
   expect_error(secchi_depth(rep(0.1, 31), lam, E, basis = "quanta"))
   x <- lux_spectrum(E, lam, "irradiance", "W/m2/nm")
   expect_error(secchi_depth(rep(0.1, 31), spectrum = x, photonic = TRUE),
-               class = "lux_spectrum_value_error")
+               class = "luxR_value_error")
 })
 
 test_that("secchi_depth rejects invalid input", {
   lam <- seq(400, 700, by = 10)
   E   <- rep(1, 31)
-  expect_error(secchi_depth(0), class = "lux_spectrum_value_error")
-  expect_error(secchi_depth(NA_real_), class = "lux_spectrum_value_error")
+  expect_error(secchi_depth(0), class = "luxR_value_error")
+  expect_error(secchi_depth(NA_real_), class = "luxR_value_error")
   expect_error(secchi_depth(rep(0.1, 3), lam, E),
-               class = "lux_spectrum_dimension_error")
-  expect_error(secchi_depth(rep(0.1, 31), lam), class = "lux_spectrum_value_error")
+               class = "luxR_dimension_error")
+  expect_error(secchi_depth(rep(0.1, 31), lam), class = "luxR_value_error")
   expect_error(secchi_depth(rep(0.1, 31), lam, rep(0, 31)),
-               class = "lux_spectrum_value_error")
+               class = "luxR_value_error")
   expect_error(secchi_depth(rep(0.1, 31), lam, c(-1, E[-1])),
-               class = "lux_spectrum_value_error")
+               class = "luxR_value_error")
   r <- lux_spectrum(E, lam, "radiance", "W/m2/sr/nm")
   expect_error(secchi_depth(rep(0.1, 31), spectrum = r),
-               class = "lux_spectrum_dimension_error")
+               class = "luxR_unit_error")
   expect_error(secchi_depth(rep(0.1, 31), spectrum = E),
-               class = "lux_spectrum_type_error")
+               class = "luxR_type_error")
 })

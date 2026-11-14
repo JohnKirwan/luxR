@@ -9,34 +9,16 @@
 # radiances wavelength by wavelength and recomputes receptor catches. Neither is
 # an empirically validated organismal detection-range prediction.
 
-.stop_detection <- function(message, class = "lux_detection_input_error", ...) {
-  random_seed <- if (exists(".Random.seed", envir = .GlobalEnv,
-                            inherits = FALSE)) {
-    get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-  } else {
-    NA_integer_
-  }
-  condition <- structure(
-    c(
-      list(
-        message = message,
-        call = NULL,
-        model_version = .luxr_package_version(),
-        code_commit = .luxr_code_commit(),
-        random_seed = random_seed
-      ),
-      list(...)
-    ),
-    class = c(class, "lux_detection_error", "luxR_error", "error", "condition")
-  )
-  stop(condition)
+.stop_detection <- function(message, kind, ...) {
+  .luxr_abort(message, kind, model_version = .luxr_package_version(),
+              code_commit = .luxr_code_commit(), ...)
 }
 
 .validate_detection_numeric <- function(x, field, operation,
                                         scalar = FALSE, positive = FALSE,
                                         nonnegative = FALSE) {
   fail <- function(message, field, value, index, kind) {
-    .stop_detection(message, field = field, value = value, index = index,
+    .stop_detection(message, kind, field = field, value = value, index = index,
                     operation = operation)
   }
   .check_numeric(x, field, fail, scalar = scalar,
@@ -48,7 +30,7 @@
   if (length(lambda) < 2L || any(diff(lambda) <= 0)) {
     .stop_detection(
       "`lambda` must contain at least two strictly increasing wavelengths.",
-      field = "lambda", value = lambda, operation = operation
+      kind = "grid", field = "lambda", value = lambda, operation = operation
     )
   }
   invisible(lambda)
@@ -62,7 +44,7 @@
     .stop_detection(
       paste0("`", field, "` must be less than ", format(upper), "; got ",
              format(x), "."),
-      field = field, value = x, operation = operation
+      kind = "value", field = field, value = x, operation = operation
     )
   }
   invisible(x)
@@ -88,7 +70,7 @@
           " lux_spectrum in ", expected[["unit"]], "; got quantity '",
           x$quantity, "' in ", x$unit, "."
         ),
-        field = what, value = x, operation = "spectral input",
+        kind = "unit", field = what, value = x, operation = "spectral input",
         expected_quantity = expected[["quantity"]],
         expected_unit = expected[["unit"]]
       )
@@ -96,6 +78,7 @@
       .stop_detection(
         paste0("`", what, "` does not cover the requested wavelength grid; ",
                "extrapolation is not allowed."),
+        kind = "grid",
         field = what, value = range(x$lambda), operation = "spectral input"
       )
     values <- if (length(x$lambda) == length(lambda) &&
@@ -109,13 +92,14 @@
       .stop_detection(
         paste0("`", what, "` must be the same length as `lambda` ",
                "(or a lux_spectrum)."),
+        kind = "dimension",
         field = what, value = x, operation = "spectral input"
       )
     values <- x
   } else {
     .stop_detection(
       paste0("`", what, "` must be a numeric vector or a lux_spectrum."),
-      field = what, value = x, operation = "spectral input"
+      kind = "type", field = what, value = x, operation = "spectral input"
     )
   }
   .validate_detection_numeric(values, what, "spectral input", nonnegative = TRUE)
@@ -142,7 +126,7 @@
         "Effective attenuation must be finite and strictly positive; check ",
         "`Kd`, `kd_to_c`, `beam_c`, and `direction`."
       ),
-      field = "effective_attenuation", value = ceff,
+      kind = "value", field = "effective_attenuation", value = ceff,
       operation = "effective attenuation", Kd = Kd, kd_to_c = kd_to_c,
       beam_c = beam_c, direction = direction
     )
@@ -226,6 +210,7 @@ inherent_contrast <- function(object, background, illuminant, lambda,
   if (max(abs(widths - widths[1L])) > .grid_tolerance(widths))
     .stop_detection(
       "Detection calculations require a regularly spaced `lambda` grid.",
+      kind = "grid",
       field = "lambda", value = lambda, operation = "inherent_contrast"
     )
   if (is.null(binwidth)) {
@@ -240,13 +225,14 @@ inherent_contrast <- function(object, background, illuminant, lambda,
   if (any(Ro > 1) || any(Rb > 1))
     .stop_detection(
       "`object` and `background` reflectance must lie in [0, 1].",
-      field = c("object", "background"),
+      kind = "value", field = c("object", "background"),
       value = c(object = max(Ro), background = max(Rb)),
       operation = "inherent_contrast"
     )
   if (!any(E > 0))
     .stop_detection(
       "`illuminant` must contain at least one strictly positive value.",
+      kind = "value",
       field = "illuminant", value = E, operation = "inherent_contrast"
     )
   Lo <- Ro * E                                   # object radiance
@@ -262,7 +248,7 @@ inherent_contrast <- function(object, background, illuminant, lambda,
           "Achromatic modelling requires a finite non-negative object catch ",
           "and a finite strictly positive background catch."
         ),
-        "lux_detection_signal_error", operation = "inherent_contrast",
+        "value", operation = "inherent_contrast",
         object_catch = Bo, background_catch = Bb, species = species,
         receptor = receptor
       )
@@ -272,6 +258,7 @@ inherent_contrast <- function(object, background, illuminant, lambda,
     if (is.null(species))
       .stop_detection(
         "Chromatic contrast requires a `species` (with >= 2 receptors).",
+        kind = "value",
         field = "species", value = species, operation = "inherent_contrast"
       )
     out$chromatic <- colour_jnd(Lo, Lb, lambda = lambda, species = species,
@@ -338,7 +325,7 @@ contrast_at_distance <- function(C0, distance, Kd, kd_to_c = 1.5,
   if (!is.numeric(signal0) || length(signal0) != 1L || !is.finite(signal0))
     .stop_detection(
       "The zero-distance signal must be one finite numeric value.",
-      "lux_detection_signal_error", field = "signal0", value = signal0,
+      "value", field = "signal0", value = signal0,
       operation = "detection_range"
     )
   if (abs(signal0) <= threshold)
@@ -347,7 +334,7 @@ contrast_at_distance <- function(C0, distance, Kd, kd_to_c = 1.5,
   if (!is.finite(value) || value < 0)
     .stop_detection(
       "The scalar threshold calculation produced an invalid range.",
-      "lux_detection_calculation_error", operation = "detection_range",
+      "numerical", operation = "detection_range",
       signal0 = signal0, threshold = threshold, effective_attenuation = ceff,
       calculated_range = value
     )
@@ -377,7 +364,7 @@ contrast_at_distance <- function(C0, distance, Kd, kd_to_c = 1.5,
         object_catch < 0 || background_catch <= 0)
       .stop_detection(
         "Spectral propagation produced invalid achromatic catches.",
-        "lux_detection_signal_error", operation = "spectral_path",
+        "numerical", operation = "spectral_path",
         distance = distance, object_catch = object_catch,
         background_catch = background_catch, species = species,
         receptor = receptor
@@ -388,6 +375,7 @@ contrast_at_distance <- function(C0, distance, Kd, kd_to_c = 1.5,
     if (is.null(species))
       .stop_detection(
         "Chromatic spectral-path modelling requires a `species`.",
+        kind = "value",
         field = "species", value = species, operation = "spectral_path"
       )
     out$chromatic <- colour_jnd(
@@ -405,7 +393,7 @@ contrast_at_distance <- function(C0, distance, Kd, kd_to_c = 1.5,
   if (any(!is.finite(values)))
     .stop_detection(
       "Spectral propagation produced a non-finite detection signal.",
-      "lux_detection_calculation_error", operation = "spectral_path",
+      "numerical", operation = "spectral_path",
       channel = channel, distance = grid[which(!is.finite(values))[1L]],
       signal = values[which(!is.finite(values))[1L]]
     )
@@ -420,7 +408,7 @@ contrast_at_distance <- function(C0, distance, Kd, kd_to_c = 1.5,
   if (!length(transitions))
     .stop_detection(
       "No downward threshold crossing could be bracketed.",
-      "lux_detection_calculation_error", operation = "spectral_path",
+      "numerical", operation = "spectral_path",
       channel = channel, threshold = threshold, max_distance = max_distance,
       search_points = search_points
     )
@@ -544,7 +532,7 @@ detection_range <- function(object, background, illuminant, lambda, Kd,
   if (search_points != as.integer(search_points) || search_points < 3L)
     .stop_detection(
       "`search_points` must be an integer of at least 3.",
-      field = "search_points", value = search_points,
+      kind = "value", field = "search_points", value = search_points,
       operation = "detection_range"
     )
 
@@ -552,7 +540,7 @@ detection_range <- function(object, background, illuminant, lambda, Kd,
     if (!is.numeric(Kd) || length(Kd) != 1L || !is.finite(Kd) || Kd <= 0)
       .stop_detection(
         "`Kd` must be a single positive finite number for the scalar heuristic.",
-        field = "Kd", value = Kd, operation = "detection_range"
+        kind = "value", field = "Kd", value = Kd, operation = "detection_range"
       )
     .validate_detection_numeric(Kd, "Kd", "detection_range",
                                 scalar = TRUE, positive = TRUE)
@@ -566,6 +554,7 @@ detection_range <- function(object, background, illuminant, lambda, Kd,
           "`beam_c` is required for `model = \"spectral_path\"` and must ",
           "contain one value per wavelength."
         ),
+        kind = "value",
         field = "beam_c", value = beam_c, operation = "detection_range"
       )
     .validate_detection_numeric(Kd, "Kd", "detection_range", positive = TRUE)
@@ -574,16 +563,19 @@ detection_range <- function(object, background, illuminant, lambda, Kd,
     if (!(length(Kd) %in% c(1L, length(lambda))))
       .stop_detection(
         "Spectral-path `Kd` must be scalar or the same length as `lambda`.",
+        kind = "dimension",
         field = "Kd", value = Kd, operation = "detection_range"
       )
     if (length(beam_c) != length(lambda))
       .stop_detection(
         "Spectral-path `beam_c` must be the same length as `lambda`.",
+        kind = "dimension",
         field = "beam_c", value = beam_c, operation = "detection_range"
       )
     if (is.null(veiling))
       .stop_detection(
         "`veiling` spectral radiance is required for the spectral-path model.",
+        kind = "value",
         field = "veiling", value = veiling, operation = "detection_range"
       )
   }
@@ -610,6 +602,7 @@ detection_range <- function(object, background, illuminant, lambda, Kd,
     if (!any(Lv > 0))
       .stop_detection(
         "`veiling` must contain at least one strictly positive value.",
+        kind = "value",
         field = "veiling", value = Lv, operation = "detection_range"
       )
     if (is.null(binwidth)) binwidth <- diff(lambda)[1L]

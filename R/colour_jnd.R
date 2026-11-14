@@ -70,7 +70,7 @@ colour_jnd <- function(stim1, stim2, lambda, species,
   channel <- attr(sp_data, "channel")
 
   if (nrow(sp_data) < 2)
-    .stop_species_model(
+    .luxr_abort(
       sprintf(
         paste(
           "At least 2 validated chromatic receptors are required for colour",
@@ -79,7 +79,7 @@ colour_jnd <- function(stim1, stim2, lambda, species,
         nrow(sp_data),
         species
       ),
-      "lux_channel_unavailable_error",
+      "value",
       species = species,
       channel_role = "chromatic",
       channel = channel,
@@ -117,13 +117,13 @@ colour_jnd <- function(stim1, stim2, lambda, species,
         paste0("stim2:", paste(names(q2)[invalid_q2], collapse = ","))
       }
     )
-    .stop_species_model(
+    .luxr_abort(
       paste(
         "Chromatic modelling requires finite, strictly positive quantum catches;",
         paste(details, collapse = "; "),
         "were invalid."
       ),
-      "lux_invalid_catch_error",
+      "value",
       species = species,
       channel_role = "chromatic",
       channel = channel,
@@ -140,9 +140,9 @@ colour_jnd <- function(stim1, stim2, lambda, species,
   recs <- sp_data$receptor
   if (!is.numeric(noise) || length(noise) == 0L ||
       anyNA(noise) || any(!is.finite(noise)) || any(noise <= 0)) {
-    .stop_species_model(
+    .luxr_abort(
       "`noise` must contain finite, strictly positive numeric values.",
-      "lux_invalid_noise_error",
+      "value",
       species = species,
       channel_role = "chromatic",
       channel = channel,
@@ -156,9 +156,9 @@ colour_jnd <- function(stim1, stim2, lambda, species,
     # named vector — align to receptor order
     if (is.null(names(noise)) || anyNA(names(noise)) ||
         any(!nzchar(names(noise))) || anyDuplicated(names(noise))) {
-      .stop_species_model(
+      .luxr_abort(
         "Multi-receptor `noise` must have unique, non-empty receptor names.",
-        "lux_invalid_noise_error",
+        "value",
         species = species,
         channel_role = "chromatic",
         channel = channel,
@@ -169,7 +169,7 @@ colour_jnd <- function(stim1, stim2, lambda, species,
     missing_noise <- setdiff(recs, names(noise))
     extra_noise <- setdiff(names(noise), recs)
     if (length(missing_noise) > 0L || length(extra_noise) > 0L) {
-      .stop_species_model(
+      .luxr_abort(
         paste0(
           "`noise` names must exactly match the selected receptors. Missing: ",
           if (length(missing_noise)) paste(missing_noise, collapse = ", ") else "none",
@@ -177,7 +177,7 @@ colour_jnd <- function(stim1, stim2, lambda, species,
           if (length(extra_noise)) paste(extra_noise, collapse = ", ") else "none",
           "."
         ),
-        "lux_invalid_noise_error",
+        "value",
         species = species,
         channel_role = "chromatic",
         channel = channel,

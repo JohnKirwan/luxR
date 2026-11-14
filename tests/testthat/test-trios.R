@@ -83,7 +83,7 @@ test_that("from_trios requires explicit negative preprocessing", {
   on.exit(unlink(tmp))
   dat <- data.frame(wv = c(400, 450, 500), value = c(-0.5, 1.0, 2.0))
   make_trios_file(list(list(comment = "sand_dark_1", data = dat)), tmp)
-  expect_error(from_trios(tmp), class = "luxR_spectrum_value_error")
+  expect_error(from_trios(tmp), class = "luxR_value_error")
   result <- from_trios(tmp, negative_policy = "zero")[[1L]]
   expect_equal(result$E, c(0, 0.001, 0.002))
   expect_equal(result$meta$preprocessing$method, "zero_floor")
@@ -96,7 +96,7 @@ test_that("read_trios rejects malformed rows instead of skipping them", {
   lines <- c("Comment\tbroken", rep("header_line", 29),
              "1\t400", "[END]")
   writeLines(lines, tmp)
-  error <- expect_error(read_trios(tmp), class = "luxR_spectrum_schema_error")
+  error <- expect_error(read_trios(tmp), class = "luxR_format_error")
   expect_identical(error$line, 31L)
   expect_identical(error$spectrum, "broken")
   expect_match(error$source_checksum_md5, "^[0-9a-f]{32}$")
@@ -109,6 +109,8 @@ test_that("read_trios rejects empty and unterminated blocks", {
   writeLines(c("Comment\tempty", rep("header_line", 29), "[END]"), empty)
   writeLines(c("Comment\topen", rep("header_line", 29), "1\t400\t2"),
              unterminated)
-  expect_error(read_trios(empty), class = "luxR_spectrum_schema_error")
-  expect_error(read_trios(unterminated), class = "luxR_spectrum_format_error")
+  err <- expect_error(read_trios(empty), class = "luxR_format_error")
+  expect_identical(err$field, "data")
+  err <- expect_error(read_trios(unterminated), class = "luxR_format_error")
+  expect_identical(err$field, "[END]")
 })

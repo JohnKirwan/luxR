@@ -47,10 +47,10 @@ beam_attenuation <- function(absorption, scattering) {
 #' @export
 single_scattering_albedo <- function(absorption, scattering) {
   if (any(absorption < 0, na.rm = TRUE) || any(scattering < 0, na.rm = TRUE))
-    stop("`absorption` and `scattering` must be >= 0.")
+    .luxr_abort("`absorption` and `scattering` must be >= 0.", "value")
   cc <- absorption + scattering
   if (any(cc <= 0, na.rm = TRUE))
-    stop("absorption + scattering must be > 0.")
+    .luxr_abort("absorption + scattering must be > 0.", "value")
   scattering / cc
 }
 
@@ -76,9 +76,9 @@ single_scattering_albedo <- function(absorption, scattering) {
 #' @export
 transmittance <- function(coefficient, path_length) {
   if (any(coefficient < 0, na.rm = TRUE))
-    stop("`coefficient` must be >= 0.")
+    .luxr_abort("`coefficient` must be >= 0.", "value")
   if (any(path_length < 0, na.rm = TRUE))
-    stop("`path_length` must be >= 0.")
+    .luxr_abort("`path_length` must be >= 0.", "value")
   exp(-coefficient * path_length)
 }
 
@@ -105,7 +105,7 @@ transmittance <- function(coefficient, path_length) {
 absorbance <- function(transmittance, base = c("e", "10")) {
   base <- match.arg(base)
   if (any(transmittance <= 0 | transmittance > 1, na.rm = TRUE))
-    stop("`transmittance` must be in (0, 1].")
+    .luxr_abort("`transmittance` must be in (0, 1].", "value")
   if (base == "e") -log(transmittance) else -log10(transmittance)
 }
 
@@ -129,7 +129,7 @@ absorbance <- function(transmittance, base = c("e", "10")) {
 #' @export
 snells_window <- function(n = 1.333) {
   if (any(n <= 1, na.rm = TRUE))
-    stop("`n` (refractive index relative to air) must be > 1.")
+    .luxr_abort("`n` (refractive index relative to air) must be > 1.", "value")
   asin(1 / n) * 180 / pi
 }
 
@@ -166,9 +166,9 @@ fresnel_reflectance <- function(angle = 0, n = 1.333,
   from      <- match.arg(from)
   component <- match.arg(component)
   if (length(n) != 1L || n <= 1)
-    stop("`n` (refractive index relative to air) must be a single value > 1.")
+    .luxr_abort("`n` (refractive index relative to air) must be a single value > 1.", "value")
   if (any(angle < 0 | angle > 90, na.rm = TRUE))
-    stop("`angle` must be in [0, 90] degrees.")
+    .luxr_abort("`angle` must be in [0, 90] degrees.", "value")
 
   n1 <- if (from == "air") 1 else n
   n2 <- if (from == "air") n else 1
@@ -223,7 +223,7 @@ surface_transmittance <- function(angle = NULL, n = 1.333,
   source <- match.arg(source)
   if (source == "direct") {
     if (is.null(angle))
-      stop("`angle` is required for source = 'direct'.")
+      .luxr_abort("`angle` is required for source = 'direct'.", "value")
     return(1 - fresnel_reflectance(angle, n = n, from = "air"))
   }
   # diffuse: cosine-weighted hemispherical average of (1 - R(theta)),

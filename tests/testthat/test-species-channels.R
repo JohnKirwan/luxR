@@ -98,7 +98,7 @@ test_that("human receptor roles and default chromatic channel are explicit", {
   expect_error(
     luxR:::.default_channel_receptors("Homo sapiens", "achromatic"),
     "No adaptation-specific photopic or scotopic default",
-    class = "lux_channel_unavailable_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -121,7 +121,7 @@ test_that("incomplete species do not acquire an implicit colour channel", {
   expect_error(
     luxR:::.default_channel_receptors("Callorhinchus milii", "chromatic"),
     "no unique default chromatic channel",
-    class = "lux_channel_unavailable_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -131,7 +131,7 @@ test_that("species data validation rejects dangling channel memberships", {
   expect_error(
     luxR:::.validate_species_model_data(channels = invalid_channels),
     "unknown species/receptor pair",
-    class = "lux_species_data_error"
+    class = "luxR_data_error"
   )
 })
 
@@ -141,21 +141,21 @@ test_that("species data validation rejects empty datasets", {
       sensitivities = species_sensitivities[0, , drop = FALSE]
     ),
     "non-empty data frame",
-    class = "lux_species_data_error"
+    class = "luxR_data_error"
   )
   expect_error(
     luxR:::.validate_species_model_data(
       channels = species_channels[0, , drop = FALSE]
     ),
     "non-empty data frame",
-    class = "lux_species_data_error"
+    class = "luxR_data_error"
   )
   expect_error(
     luxR:::.validate_species_model_data(
       support = species_channel_support[0, , drop = FALSE]
     ),
     "non-empty data frame",
-    class = "lux_species_data_error"
+    class = "luxR_data_error"
   )
 })
 
@@ -168,6 +168,6 @@ test_that("support declarations cannot disagree with configured defaults", {
   expect_error(
     luxR:::.validate_species_model_data(support = invalid_support),
     "exactly match configured default channels",
-    class = "lux_species_data_error"
+    class = "luxR_data_error"
   )
 })

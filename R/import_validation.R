@@ -29,21 +29,15 @@
   )
 }
 
-.stop_spectrum_import <- function(message, context,
-                                  class = "luxR_spectrum_import_error",
+.stop_spectrum_import <- function(message, context, kind,
                                   field = NULL, value = NULL,
                                   row = NULL, line = NULL,
                                   spectrum = NULL) {
-  condition <- structure(
-    c(
-      list(message = message, call = NULL, field = field, value = value,
-           row = row, line = line, spectrum = spectrum),
-      context
-    ),
-    class = unique(c(class, "luxR_spectrum_import_error", "luxR_error",
-                     "error", "condition"))
-  )
-  stop(condition)
+  .luxr_abort(message, kind, import = TRUE, .fields = c(
+    list(field = field, value = value, row = row, line = line,
+         spectrum = spectrum),
+    context
+  ))
 }
 
 .validate_import_path <- function(path, format, operation,
@@ -53,31 +47,31 @@
       !nzchar(path)) {
     .stop_spectrum_import(
       "`path` must be one non-empty, non-missing string.", context,
-      class = "luxR_spectrum_schema_error", field = "path", value = path
+      kind = if (is.null(path) || is.character(path)) "value" else "type",
+      field = "path", value = path
     )
   }
   if (!file.exists(path)) {
     .stop_spectrum_import(
       paste0("File does not exist: ", path), context,
-      class = "luxR_spectrum_format_error", field = "path", value = path
+      kind = "value", field = "path", value = path
     )
   }
   info <- file.info(path)
   if (is.na(info$isdir) || info$isdir) {
     .stop_spectrum_import(
       paste0("`path` must identify a readable file: ", path), context,
-      class = "luxR_spectrum_format_error", field = "path", value = path
+      kind = "value", field = "path", value = path
     )
   }
   context
 }
 
-.validate_import_string <- function(x, field, context,
-                                    class = "luxR_spectrum_calibration_error") {
+.validate_import_string <- function(x, field, context) {
   if (!is.character(x) || length(x) != 1L || is.na(x) || !nzchar(trimws(x))) {
     .stop_spectrum_import(
       paste0("`", field, "` must be one non-empty, non-missing string."),
-      context, class = class,
+      context, kind = if (is.null(x) || is.character(x)) "value" else "type",
       field = field, value = x
     )
   }
@@ -90,7 +84,7 @@
   if (!nzchar(token)) {
     .stop_spectrum_import(
       paste0("Empty numeric field `", field, "` at source line ", line, "."),
-      context, class = "luxR_spectrum_schema_error", field = field,
+      context, kind = "format", field = field,
       value = token, row = row, line = line, spectrum = spectrum
     )
   }
@@ -103,7 +97,7 @@
     .stop_spectrum_import(
       paste0("Invalid numeric value for `", field, "` at source line ",
              line, ": '", token, "'."),
-      context, class = "luxR_spectrum_value_error", field = field,
+      context, kind = "value", field = field,
       value = token, row = row, line = line, spectrum = spectrum
     )
   }
@@ -120,7 +114,7 @@
       paste0("Wavelengths must be strictly increasing and unique; row ", i,
              " is ", format(lambda[[i]]), " nm after ",
              format(lambda[[i - 1L]]), " nm."),
-      context, class = "luxR_spectrum_schema_error", field = "wavelength",
+      context, kind = "grid", field = "wavelength",
       value = lambda[[i]], row = i, line = source_line, spectrum = spectrum
     )
   }
@@ -132,11 +126,12 @@
   tryCatch(
     lux_spectrum(E = E, lambda = lambda, quantity = quantity, unit = unit,
                  meta = meta),
-    lux_spectrum_validation_error = function(e) {
+    luxR_error = function(e) {
+      if (inherits(e, "luxR_internal_error")) stop(e)
       .stop_spectrum_import(
         paste0("Imported spectrum violates the declared physical contract: ",
                conditionMessage(e)),
-        context, class = "luxR_spectrum_value_error", field = e$field,
+        context, kind = .luxr_error_kind(e), field = e$field,
         value = e$value, row = e$index
       )
     }

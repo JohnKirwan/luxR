@@ -66,10 +66,10 @@ resample_spectrum.lux_spectrum <- function(x, lambda, from = NULL,
   method  <- match.arg(method)
   E_new   <- .interp(x$E, x$lambda, lambda, method, rule)
   if (length(lambda) < 2L) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("resample_spectrum(): a lux_spectrum needs at least two target ",
              "wavelengths to define its bin width; got ", length(lambda), "."),
-      field = "lambda", value = lambda, subclass = "lux_spectrum_value_error",
+      field = "lambda", value = lambda, kind = "value",
       context = x$meta
     )
   }
@@ -83,7 +83,7 @@ resample_spectrum.numeric <- function(x, lambda, from = NULL,
                                        method = c("linear", "cubic"),
                                        rule   = 1) {
   if (is.null(from))
-    stop("'from' (source wavelength grid) is required when 'x' is numeric.")
+    .luxr_abort("'from' (source wavelength grid) is required when 'x' is numeric.", "value")
   method <- match.arg(method)
   out        <- .interp(x, from, lambda, method, rule)
   names(out) <- as.character(lambda)
@@ -92,9 +92,9 @@ resample_spectrum.numeric <- function(x, lambda, from = NULL,
 
 .interp <- function(y, x_from, x_to, method, rule) {
   if (!is.numeric(rule) || length(rule) != 1L || !rule %in% c(1, 2)) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       "`rule` must be 1 (NA outside the source range) or 2 (boundary value).",
-      field = "rule", value = rule, subclass = "lux_spectrum_value_error"
+      field = "rule", value = rule, kind = "value"
     )
   }
   # approx() and spline() drop non-finite points silently, which would narrow
@@ -104,16 +104,16 @@ resample_spectrum.numeric <- function(x, lambda, from = NULL,
   .check_numeric(x_from, "from", fail)
   .check_numeric(x_to, "lambda", fail)
   if (length(y) != length(x_from)) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`x` has length ", length(y), " but its source wavelength grid ",
              "has length ", length(x_from), "."),
-      field = "x", value = length(y), subclass = "lux_spectrum_dimension_error"
+      field = "x", value = length(y), kind = "dimension"
     )
   }
   if (length(x_from) < 2L) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       "Interpolation needs at least two source wavelengths.",
-      field = "from", value = x_from, subclass = "lux_spectrum_value_error"
+      field = "from", value = x_from, kind = "value"
     )
   }
   if (method == "linear") {

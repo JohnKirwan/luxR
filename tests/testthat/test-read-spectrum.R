@@ -57,7 +57,7 @@ test_that("read_spectrum requires explicit interpolation for irregular grids", {
       calibration = "lightr fixture"
     ),
     "regularly spaced",
-    class = "luxR_spectrum_value_error"
+    class = "luxR_grid_error"
   )
 
   x <- read_spectrum(
@@ -78,7 +78,7 @@ test_that("known extensions reject contradictory measurement declarations", {
       range = c(300, 700)
     ),
     "identifies a reflectance measurement",
-    class = "luxR_spectrum_dimension_error"
+    class = "luxR_unit_error"
   )
 })
 
@@ -90,7 +90,7 @@ test_that("measurement and value scale combinations are validated", {
       range = c(300, 700)
     ),
     "incompatible",
-    class = "luxR_spectrum_dimension_error"
+    class = "luxR_unit_error"
   )
 })
 
@@ -107,7 +107,7 @@ test_that("unsupported physical kinds remain inspectable instrument records", {
       calibration = "lightr fixture"
     ),
     "cannot be represented",
-    class = "luxR_spectrum_dimension_error"
+    class = "luxR_unit_error"
   )
 })
 
@@ -122,7 +122,7 @@ test_that("negative processed values require an explicit recorded policy", {
   expect_error(
     do.call(read_spectrum, args),
     "negative value",
-    class = "luxR_spectrum_value_error"
+    class = "luxR_value_error"
   )
 
   args$negative_policy <- "zero"
@@ -159,7 +159,7 @@ test_that("parser arguments cannot override luxR import controls", {
       range = c(300, 700), parser_args = list(interpolate = TRUE)
     ),
     "cannot override",
-    class = "luxR_spectrum_schema_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -170,14 +170,14 @@ test_that("policy and range schemas fail with typed errors", {
       f, measurement = "reflectance", value_scale = "percent",
       range = matrix(c(300, 700), nrow = 1L)
     ),
-    class = "luxR_spectrum_schema_error"
+    class = "luxR_value_error"
   )
   expect_error(
     read_instrument_spectrum(
       f, measurement = "reflectance", value_scale = "percent",
       range = c(300, 700), warning_policy = "ignore"
     ),
-    class = "luxR_spectrum_schema_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -188,7 +188,7 @@ test_that("lightr parser warnings fail by default", {
       f, measurement = "raw", value_scale = "raw", range = c(300, 700)
     ),
     "parser warning",
-    class = "luxR_spectrum_format_error"
+    class = "luxR_format_error"
   )
 })
 
@@ -199,7 +199,7 @@ test_that("read_spectrum validates required declarations and paths", {
   f <- lightr_file("compare", "OceanInsight", "BB_PF21_4.txt")
   expect_error(
     read_spectrum(f),
-    class = "luxR_spectrum_schema_error"
+    class = "luxR_value_error"
   )
   expect_error(
     read_spectrum(
@@ -207,7 +207,7 @@ test_that("read_spectrum validates required declarations and paths", {
       quantity = "reflectance", unit = "dimensionless",
       calibration = "fixture"
     ),
-    class = "luxR_spectrum_schema_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -221,6 +221,6 @@ test_that("files without extensions fail with structured context", {
       tmp, measurement = "raw", value_scale = "raw", range = c(300, 700)
     ),
     "extension",
-    class = "luxR_spectrum_format_error"
+    class = "luxR_format_error"
   )
 })

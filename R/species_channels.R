@@ -4,22 +4,14 @@
   "chromatic", "achromatic", "irradiance", "polarization", "fluorescence"
 )
 
-.stop_species_model <- function(message, class, ...) {
-  condition <- structure(
-    c(list(message = message, call = NULL), list(...)),
-    class = c(class, "lux_species_model_error", "luxR_error", "error", "condition")
-  )
-  stop(condition)
-}
-
 .validate_species_model_data <- function(
     sensitivities = species_sensitivities,
     channels = species_channels,
     support = species_channel_support) {
   if (!is.data.frame(sensitivities) || nrow(sensitivities) == 0L) {
-    .stop_species_model(
+    .luxr_abort(
       "`species_sensitivities` must be a non-empty data frame.",
-      "lux_species_data_error",
+      "data",
       dataset = "species_sensitivities"
     )
   }
@@ -27,12 +19,12 @@
     "species", "receptor", "lambda_max", "chromophore", "channel_role", "source"
   )
   if (!identical(names(sensitivities), sensitivity_columns)) {
-    .stop_species_model(
+    .luxr_abort(
       paste(
         "`species_sensitivities` has an invalid schema; expected columns:",
         paste(sensitivity_columns, collapse = ", ")
       ),
-      "lux_species_data_error",
+      "data",
       dataset = "species_sensitivities",
       expected_columns = sensitivity_columns,
       actual_columns = names(sensitivities)
@@ -44,12 +36,12 @@
     !is.character(value) || anyNA(value) || any(!nzchar(trimws(value)))
   }, logical(1))
   if (any(bad_text)) {
-    .stop_species_model(
+    .luxr_abort(
       paste(
         "`species_sensitivities` contains invalid text fields:",
         paste(text_columns[bad_text], collapse = ", ")
       ),
-      "lux_species_data_error",
+      "data",
       dataset = "species_sensitivities",
       invalid_fields = text_columns[bad_text]
     )
@@ -58,25 +50,25 @@
       anyNA(sensitivities$lambda_max) ||
       any(!is.finite(sensitivities$lambda_max)) ||
       any(sensitivities$lambda_max <= 0)) {
-    .stop_species_model(
+    .luxr_abort(
       "`species_sensitivities$lambda_max` must be finite and strictly positive.",
-      "lux_species_data_error",
+      "data",
       dataset = "species_sensitivities",
       field = "lambda_max"
     )
   }
   if (any(!sensitivities$chromophore %in% c("A1", "A2"))) {
-    .stop_species_model(
+    .luxr_abort(
       "`species_sensitivities$chromophore` contains an unsupported value.",
-      "lux_species_data_error",
+      "data",
       dataset = "species_sensitivities",
       field = "chromophore"
     )
   }
   if (any(!sensitivities$channel_role %in% .CHANNEL_ROLE_VOCABULARY)) {
-    .stop_species_model(
+    .luxr_abort(
       "`species_sensitivities$channel_role` contains an unsupported value.",
-      "lux_species_data_error",
+      "data",
       dataset = "species_sensitivities",
       field = "channel_role"
     )
@@ -85,18 +77,18 @@
     sensitivities$species, sensitivities$receptor, sep = "\r"
   )
   if (anyDuplicated(sensitivity_key)) {
-    .stop_species_model(
+    .luxr_abort(
       "`species_sensitivities` contains a duplicated species/receptor pair.",
-      "lux_species_data_error",
+      "data",
       dataset = "species_sensitivities",
       key = c("species", "receptor")
     )
   }
 
   if (!is.data.frame(channels) || nrow(channels) == 0L) {
-    .stop_species_model(
+    .luxr_abort(
       "`species_channels` must be a non-empty data frame.",
-      "lux_species_data_error",
+      "data",
       dataset = "species_channels"
     )
   }
@@ -105,12 +97,12 @@
     "source"
   )
   if (!identical(names(channels), channel_columns)) {
-    .stop_species_model(
+    .luxr_abort(
       paste(
         "`species_channels` has an invalid schema; expected columns:",
         paste(channel_columns, collapse = ", ")
       ),
-      "lux_species_data_error",
+      "data",
       dataset = "species_channels",
       expected_columns = channel_columns,
       actual_columns = names(channels)
@@ -124,20 +116,20 @@
     !is.character(value) || anyNA(value) || any(!nzchar(trimws(value)))
   }, logical(1))
   if (any(bad_channel_text)) {
-    .stop_species_model(
+    .luxr_abort(
       paste(
         "`species_channels` contains invalid text fields:",
         paste(channel_text_columns[bad_channel_text], collapse = ", ")
       ),
-      "lux_species_data_error",
+      "data",
       dataset = "species_channels",
       invalid_fields = channel_text_columns[bad_channel_text]
     )
   }
   if (any(!channels$channel_role %in% .CHANNEL_ROLE_VOCABULARY)) {
-    .stop_species_model(
+    .luxr_abort(
       "`species_channels$channel_role` contains an unsupported value.",
-      "lux_species_data_error",
+      "data",
       dataset = "species_channels",
       field = "channel_role"
     )
@@ -146,17 +138,17 @@
       anyNA(channels$weight) ||
       any(!is.finite(channels$weight)) ||
       any(channels$weight <= 0)) {
-    .stop_species_model(
+    .luxr_abort(
       "`species_channels$weight` must be finite and strictly positive.",
-      "lux_species_data_error",
+      "data",
       dataset = "species_channels",
       field = "weight"
     )
   }
   if (!is.logical(channels$is_default) || anyNA(channels$is_default)) {
-    .stop_species_model(
+    .luxr_abort(
       "`species_channels$is_default` must be non-missing logical data.",
-      "lux_species_data_error",
+      "data",
       dataset = "species_channels",
       field = "is_default"
     )
@@ -169,18 +161,18 @@
     sep = "\r"
   )
   if (anyDuplicated(channel_key)) {
-    .stop_species_model(
+    .luxr_abort(
       "`species_channels` contains a duplicated channel membership.",
-      "lux_species_data_error",
+      "data",
       dataset = "species_channels",
       key = c("species", "channel", "channel_role", "receptor")
     )
   }
   membership_key <- paste(channels$species, channels$receptor, sep = "\r")
   if (any(!membership_key %in% sensitivity_key)) {
-    .stop_species_model(
+    .luxr_abort(
       "`species_channels` references an unknown species/receptor pair.",
-      "lux_species_data_error",
+      "data",
       dataset = "species_channels",
       key = c("species", "receptor")
     )
@@ -195,9 +187,9 @@
     function(value) length(unique(value)) == 1L
   )
   if (any(!default_consistency)) {
-    .stop_species_model(
+    .luxr_abort(
       "Every member of a channel must have the same `is_default` value.",
-      "lux_species_data_error",
+      "data",
       dataset = "species_channels",
       field = "is_default"
     )
@@ -211,18 +203,18 @@
     default_channels$species, default_channels$channel_role, sep = "\r"
   )
   if (anyDuplicated(default_key)) {
-    .stop_species_model(
+    .luxr_abort(
       "A species may have only one default channel for each role.",
-      "lux_species_data_error",
+      "data",
       dataset = "species_channels",
       key = c("species", "channel_role")
     )
   }
 
   if (!is.data.frame(support) || nrow(support) == 0L) {
-    .stop_species_model(
+    .luxr_abort(
       "`species_channel_support` must be a non-empty data frame.",
-      "lux_species_data_error",
+      "data",
       dataset = "species_channel_support"
     )
   }
@@ -230,12 +222,12 @@
     "species", "channel_role", "status", "reason", "source"
   )
   if (!identical(names(support), support_columns)) {
-    .stop_species_model(
+    .luxr_abort(
       paste(
         "`species_channel_support` has an invalid schema; expected columns:",
         paste(support_columns, collapse = ", ")
       ),
-      "lux_species_data_error",
+      "data",
       dataset = "species_channel_support",
       expected_columns = support_columns,
       actual_columns = names(support)
@@ -246,12 +238,12 @@
     !is.character(value) || anyNA(value) || any(!nzchar(trimws(value)))
   }, logical(1))
   if (any(bad_support_text)) {
-    .stop_species_model(
+    .luxr_abort(
       paste(
         "`species_channel_support` contains invalid text fields:",
         paste(support_columns[bad_support_text], collapse = ", ")
       ),
-      "lux_species_data_error",
+      "data",
       dataset = "species_channel_support",
       invalid_fields = support_columns[bad_support_text]
     )
@@ -259,17 +251,17 @@
   model_roles <- c("chromatic", "achromatic")
   if (any(!support$channel_role %in% model_roles) ||
       any(!support$status %in% c("supported", "unavailable"))) {
-    .stop_species_model(
+    .luxr_abort(
       "`species_channel_support` contains an unsupported role or status.",
-      "lux_species_data_error",
+      "data",
       dataset = "species_channel_support"
     )
   }
   support_key <- paste(support$species, support$channel_role, sep = "\r")
   if (anyDuplicated(support_key)) {
-    .stop_species_model(
+    .luxr_abort(
       "`species_channel_support` contains a duplicated species/role decision.",
-      "lux_species_data_error",
+      "data",
       dataset = "species_channel_support",
       key = c("species", "channel_role")
     )
@@ -278,23 +270,23 @@
     unique(sensitivities$species), model_roles, paste, sep = "\r"
   ))
   if (!setequal(support_key, expected_support_key)) {
-    .stop_species_model(
+    .luxr_abort(
       paste(
         "`species_channel_support` must cover every bundled species for both",
         "chromatic and achromatic roles."
       ),
-      "lux_species_data_error",
+      "data",
       dataset = "species_channel_support"
     )
   }
   supported_key <- support_key[support$status == "supported"]
   if (!setequal(supported_key, default_key)) {
-    .stop_species_model(
+    .luxr_abort(
       paste(
         "Supported species/role decisions must exactly match configured",
         "default channels."
       ),
-      "lux_species_data_error",
+      "data",
       dataset = "species_channel_support"
     )
   }
@@ -305,21 +297,21 @@
 .default_channel_receptors <- function(species, channel_role, receptor = NULL) {
   if (!is.character(species) || length(species) != 1L ||
       is.na(species) || !nzchar(trimws(species))) {
-    .stop_species_model(
+    .luxr_abort(
       "`species` must be one non-empty character value.",
-      "lux_unknown_species_error",
+      "value",
       species = species,
       channel_role = channel_role
     )
   }
   if (!is.character(channel_role) || length(channel_role) != 1L ||
       is.na(channel_role) || !channel_role %in% .CHANNEL_ROLE_VOCABULARY) {
-    .stop_species_model(
+    .luxr_abort(
       paste(
         "`channel_role` must be one of:",
         paste(.CHANNEL_ROLE_VOCABULARY, collapse = ", ")
       ),
-      "lux_channel_unavailable_error",
+      "value",
       species = species,
       channel_role = channel_role
     )
@@ -333,9 +325,9 @@
     drop = FALSE
   ]
   if (nrow(species_rows) == 0L) {
-    .stop_species_model(
+    .luxr_abort(
       sprintf("Unknown species '%s'.", species),
-      "lux_unknown_species_error",
+      "value",
       species = species,
       channel_role = channel_role
     )
@@ -357,14 +349,14 @@
       drop = FALSE
     ]
     reason <- if (nrow(decision) == 1L) decision$reason else "No support decision."
-    .stop_species_model(
+    .luxr_abort(
       sprintf(
         "Species '%s' has no unique default %s channel: %s",
         species,
         channel_role,
         reason
       ),
-      "lux_channel_unavailable_error",
+      "value",
       species = species,
       channel_role = channel_role,
       available_channels = unique(
@@ -381,9 +373,9 @@
     if (!is.character(receptor) || length(receptor) == 0L ||
         anyNA(receptor) || any(!nzchar(trimws(receptor))) ||
         anyDuplicated(receptor)) {
-      .stop_species_model(
+      .luxr_abort(
         "`receptor` must contain unique, non-empty receptor names.",
-        "lux_invalid_receptor_error",
+        "value",
         species = species,
         channel_role = channel_role,
         channel = channel_names,
@@ -392,7 +384,7 @@
     }
     invalid <- receptor[!receptor %in% configured_receptors]
     if (length(invalid) > 0L) {
-      .stop_species_model(
+      .luxr_abort(
         sprintf(
           "Unsupported %s receptor(s) for species '%s': %s. Valid receptors: %s.",
           channel_role,
@@ -400,7 +392,7 @@
           paste(invalid, collapse = ", "),
           paste(configured_receptors, collapse = ", ")
         ),
-        "lux_invalid_receptor_error",
+        "value",
         species = species,
         channel_role = channel_role,
         channel = channel_names,

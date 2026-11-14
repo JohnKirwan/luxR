@@ -106,7 +106,7 @@ test_that("jerlov_Kd fails outside its supported range by default", {
     error <- expect_error(
       jerlov_Kd("IA", wavelength),
       "support wavelengths from 350 to 700",
-      class = "luxR_jerlov_range_error"
+      class = "luxR_value_error"
     )
     expect_identical(error$field, "lambda")
     expect_identical(error$value, wavelength)
@@ -120,7 +120,7 @@ test_that("jerlov_Kd identifies the first invalid wavelength", {
   error <- expect_error(
     jerlov_Kd("II", c(400, 701, 300)),
     "lambda\\[2\\].*701",
-    class = "luxR_jerlov_range_error"
+    class = "luxR_value_error"
   )
   expect_identical(error$index, 2L)
   expect_identical(error$requested_wavelength_range_nm, c(300, 701))
@@ -130,15 +130,17 @@ test_that("jerlov_Kd identifies the first invalid wavelength", {
 })
 
 test_that("jerlov_Kd validates type and wavelength inputs", {
-  expect_error(jerlov_Kd(c("IA", "II")), class = "luxR_jerlov_input_error")
-  expect_error(jerlov_Kd(1), class = "luxR_jerlov_input_error")
-  expect_error(jerlov_Kd("IA", numeric()), class = "luxR_jerlov_input_error")
-  expect_error(jerlov_Kd("IA", "500"), class = "luxR_jerlov_input_error")
+  err <- expect_error(jerlov_Kd(c("IA", "II")), class = "luxR_value_error")
+  expect_identical(err$field, "type")
+  expect_error(jerlov_Kd(1), class = "luxR_type_error")
+  err <- expect_error(jerlov_Kd("IA", numeric()), class = "luxR_value_error")
+  expect_identical(err$field, "lambda")
+  expect_error(jerlov_Kd("IA", "500"), class = "luxR_type_error")
   for (value in c(NA_real_, NaN, Inf, -Inf)) {
     expect_error(
       jerlov_Kd("IA", value),
       "finite values",
-      class = "luxR_jerlov_input_error"
+      class = "luxR_value_error"
     )
   }
 })
@@ -199,4 +201,16 @@ test_that("clearest-water Kd sits in the accepted clear-ocean range", {
                               jerlov_types$lambda <= 490]
   expect_true(all(blue_I >= 0.005 & blue_I <= 0.035),
               info = "type I blue Kd outside clearest-water range")
+})
+
+test_that("jerlov_Kd reports an unknown type as a value error", {
+  err <- expect_error(jerlov_Kd("ZZ", 500), "unknown Jerlov type",
+                      class = "luxR_value_error")
+  expect_identical(err$field, "type")
+})
+
+test_that("missing Jerlov dataset metadata is a data error", {
+  err <- expect_error(luxR:::.jerlov_dataset_context(data.frame()),
+                      class = "luxR_data_error")
+  expect_identical(err$dataset, "jerlov_types")
 })

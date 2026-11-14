@@ -9,10 +9,10 @@
 # analysis.
 
 .need_photobiology <- function() {
-  if (!requireNamespace("photobiology", quietly = TRUE))
-    stop("This function bridges luxR into the 'photobiology' package, which ",
-         "is not installed.\nInstall it with ",
-         "install.packages(\"photobiology\").", call. = FALSE)
+  .require_suggested("photobiology", paste0(
+    "This function bridges luxR into the 'photobiology' package, which ",
+    "is not installed.\nInstall it with ",
+    "install.packages(\"photobiology\")."))
 }
 
 # Every .UNIT_QUANTITIES entry whose quantity is "irradiance", mapped onto the
@@ -95,15 +95,14 @@ as_source_spct.lux_spectrum <- function(x, strict.range = TRUE, ...) {
       reflectance = "Use as_reflector_spct() for reflectance.",
       paste0("Supported units: ",
              paste(names(.PHOTOBIOLOGY_SOURCE_UNITS), collapse = ", "), "."))
-    stop("as_source_spct() requires an irradiance lux_spectrum; got ",
-         x$quantity, " [", x$unit, "].\n", hint, call. = FALSE)
+    .luxr_abort(paste0("as_source_spct() requires an irradiance lux_spectrum; got ",
+                       x$quantity, " [", x$unit, "].\n", hint), "unit")
   }
   map <- .PHOTOBIOLOGY_SOURCE_UNITS[[x$unit]]
   if (is.null(map))
-    stop("Unit '", x$unit, "' has no photobiology source_spct mapping.\n",
-         "Supported: ",
-         paste(names(.PHOTOBIOLOGY_SOURCE_UNITS), collapse = ", "), ".",
-         call. = FALSE)
+    .luxr_abort(paste0("Unit '", x$unit, "' has no photobiology source_spct mapping.\n",
+                       "Supported: ",
+                       paste(names(.PHOTOBIOLOGY_SOURCE_UNITS), collapse = ", "), "."), "internal")
   provenance <- .photobiology_provenance(x)
   args <- list(w.length = x$lambda, time.unit = "second",
                strict.range = strict.range, comment = provenance)
@@ -119,8 +118,8 @@ as_source_spct.list <- function(x, ...) {
   .need_photobiology()
   if (length(x) == 0 ||
       !all(vapply(x, inherits, logical(1), "lux_spectrum")))
-    stop("as_source_spct() requires a non-empty list of lux_spectrum objects.",
-         call. = FALSE)
+    .luxr_abort("as_source_spct() requires a non-empty list of lux_spectrum objects.",
+                if (length(x) == 0) "value" else "type")
   nms <- names(x)
   if (is.null(nms)) nms <- rep("", length(x))
   blank <- !nzchar(nms)
@@ -168,20 +167,18 @@ as_reflector_spct.lux_spectrum <- function(x, Rfr.type = NULL,
     } else {
       "Only reflectance can be represented as a reflector_spct."
     }
-    stop("as_reflector_spct() requires a reflectance lux_spectrum; got ",
-         x$quantity, " [", x$unit, "].\n", hint, call. = FALSE)
+    .luxr_abort(paste0("as_reflector_spct() requires a reflectance lux_spectrum; got ",
+                       x$quantity, " [", x$unit, "].\n", hint), "unit")
   }
   if (is.null(Rfr.type)) Rfr.type <- x$meta$Rfr_type
   if (is.null(Rfr.type))
-    stop("`Rfr.type` is required: photobiology records whether a reflectance ",
-         "is \"total\" or \"specular\", and luxR will not guess.\n",
-         "Pass Rfr.type =, or record meta$Rfr_type on the spectrum.",
-         call. = FALSE)
+    .luxr_abort(paste0("`Rfr.type` is required: photobiology records whether a reflectance ",
+                       "is \"total\" or \"specular\", and luxR will not guess.\n",
+                       "Pass Rfr.type =, or record meta$Rfr_type on the spectrum."), "value")
   if (!(is.character(Rfr.type) && length(Rfr.type) == 1L &&
         Rfr.type %in% c("total", "specular")))
-    stop("`Rfr.type` must be a single string, either \"total\" or ",
-         "\"specular\"; got ", paste(format(Rfr.type), collapse = ", "), ".",
-         call. = FALSE)
+    .luxr_abort(paste0("`Rfr.type` must be a single string, either \"total\" or ",
+                       "\"specular\"; got ", paste(format(Rfr.type), collapse = ", "), "."), "value")
   provenance <- .photobiology_provenance(x)
   out <- photobiology::reflector_spct(
     w.length = x$lambda, Rfr = x$E, Rfr.type = Rfr.type,
@@ -197,8 +194,9 @@ as_reflector_spct.list <- function(x, ...) {
   .need_photobiology()
   if (length(x) == 0 ||
       !all(vapply(x, inherits, logical(1), "lux_spectrum")))
-    stop("as_reflector_spct() requires a non-empty list of lux_spectrum ",
-         "objects.", call. = FALSE)
+    .luxr_abort(paste0("as_reflector_spct() requires a non-empty list of lux_spectrum ",
+                       "objects."),
+                if (length(x) == 0) "value" else "type")
   nms <- names(x)
   if (is.null(nms)) nms <- rep("", length(x))
   blank <- !nzchar(nms)

@@ -66,66 +66,58 @@ irradiance2lux <- function(irradiance, ...) UseMethod("irradiance2lux")
 #' @rdname irradiance2lux
 #' @export
 irradiance2lux.default <- function(irradiance, ...) {
-  .stop_lux_spectrum_validation(
+  .luxr_abort(
     paste0("`irradiance` must be a numeric vector or lux_spectrum; got ",
            paste(class(irradiance), collapse = "/"), "."),
     field = "irradiance", value = irradiance,
-    subclass = "lux_spectrum_type_error"
+    kind = "type"
   )
-}
-
-.stop_LEF_validation <- function(message, field, value = NULL) {
-  condition <- structure(
-    list(message = message, call = NULL, field = field, value = value),
-    class = c("lux_lef_validation_error", "error", "condition")
-  )
-  stop(condition)
 }
 
 .validate_LEF <- function(LEF) {
   if (!is.data.frame(LEF)) {
-    .stop_LEF_validation(
+    .luxr_abort(
       "`LEF` must be a data frame with numeric `lambda` and `W` columns.",
-      field = "LEF", value = LEF
+      kind = "type", field = "LEF", value = LEF
     )
   }
   missing_columns <- setdiff(c("lambda", "W"), names(LEF))
   if (length(missing_columns) > 0L) {
-    .stop_LEF_validation(
+    .luxr_abort(
       paste0("`LEF` is missing required column(s): ",
              paste(missing_columns, collapse = ", "), "."),
-      field = "LEF", value = names(LEF)
+      kind = "value", field = "LEF", value = names(LEF)
     )
   }
   if (nrow(LEF) < 2L) {
-    .stop_LEF_validation(
+    .luxr_abort(
       "`LEF` must contain at least two rows for interpolation.",
-      field = "LEF", value = LEF
+      kind = "dimension", field = "LEF", value = LEF
     )
   }
   for (field in c("lambda", "W")) {
     values <- LEF[[field]]
     if (!is.numeric(values) || is.complex(values) || is.object(values) ||
         !is.null(dim(values))) {
-      .stop_LEF_validation(
+      .luxr_abort(
         paste0("`LEF$", field, "` must be a numeric vector."),
-        field = paste0("LEF$", field), value = values
+        kind = "type", field = paste0("LEF$", field), value = values
       )
     }
     invalid <- which(!is.finite(values))
     if (length(invalid) > 0L) {
       i <- invalid[1L]
-      .stop_LEF_validation(
+      .luxr_abort(
         paste0("`LEF$", field, "` must contain only finite values; index ",
                i, " is ", format(values[i]), "."),
-        field = paste0("LEF$", field), value = values[i]
+        kind = "value", field = paste0("LEF$", field), value = values[i]
       )
     }
   }
   if (any(diff(LEF$lambda) <= 0)) {
-    .stop_LEF_validation(
+    .luxr_abort(
       "`LEF$lambda` must be strictly increasing and unique.",
-      field = "LEF$lambda", value = LEF$lambda
+      kind = "grid", field = "LEF$lambda", value = LEF$lambda
     )
   }
   invisible(LEF)
@@ -144,13 +136,13 @@ irradiance2lux.default <- function(irradiance, ...) {
   )
 
   if (single_bin_without_width) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0(
         "`binwidth` is required for a single-bin numeric spectrum because ",
         "it cannot be inferred from one wavelength."
       ),
       field = "binwidth", value = binwidth,
-      subclass = "lux_spectrum_grid_error"
+      kind = "grid"
     )
   }
   validated$binwidth
@@ -162,32 +154,32 @@ irradiance2lux.default <- function(irradiance, ...) {
   .check_numeric(lambda, "lambda", fail)
 
   if (length(irradiance) != length(lambda)) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`irradiance` and `lambda` must have equal length; got ",
              length(irradiance), " and ", length(lambda), "."),
       field = c("irradiance", "lambda"),
       value = c(length(irradiance), length(lambda)),
-      subclass = "lux_spectrum_value_error"
+      kind = "dimension"
     )
   }
 
   if (length(lambda) < 2L) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       "Trapezoidal integration requires at least two wavelengths.",
       field = "lambda", value = lambda,
-      subclass = "lux_spectrum_grid_error"
+      kind = "grid"
     )
   }
 
   decreasing <- which(diff(lambda) <= 0)
   if (length(decreasing) > 0L) {
     i <- decreasing[1L] + 1L
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`lambda` must be strictly increasing and unique; index ", i,
              " has value ", format(lambda[i]), " after ",
              format(lambda[i - 1L]), "."),
       field = "lambda", value = lambda[i], index = i,
-      subclass = "lux_spectrum_grid_error"
+      kind = "grid"
     )
   }
 
@@ -203,12 +195,12 @@ irradiance2lux.default <- function(irradiance, ...) {
 
   .validate_trapezoid_input(irradiance, lambda)
   if (!is.null(binwidth)) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`binwidth` must be NULL for trapezoidal integration; ",
              "weights are determined by `lambda`."),
       field = c("binwidth", "integration"),
       value = c(binwidth, integration),
-      subclass = "lux_spectrum_grid_error"
+      kind = "grid"
     )
   }
 

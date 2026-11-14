@@ -226,10 +226,10 @@ test_that("from_ocean_optics: stores date in meta", {
 
 test_that("from_ocean_optics: requires physical and calibration declarations", {
   expect_error(from_ocean_optics(get_oo_fixture()),
-               class = "luxR_spectrum_calibration_error")
+               class = "luxR_value_error")
   expect_error(
     from_ocean_optics(get_oo_fixture(), "irradiance", "W/m2/nm", ""),
-    class = "luxR_spectrum_calibration_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -244,7 +244,7 @@ test_that("from_ocean_optics: preserves declared unit and provenance", {
 
 test_that("from_ocean_optics: errors when file not found", {
   expect_error(from_ocean_optics("nonexistent.txt"), "[Nn]ot exist",
-               class = "luxR_spectrum_format_error")
+               class = "luxR_value_error")
 })
 
 test_that("read_ocean_optics preserves raw negative instrument signal", {
@@ -257,7 +257,7 @@ test_that("read_ocean_optics preserves raw negative instrument signal", {
   expect_equal(raw$signal[[3L]], -0.0036)
   expect_error(
     from_ocean_optics(path, "irradiance", "W/m2/nm", "test calibration"),
-    class = "luxR_spectrum_value_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -268,7 +268,7 @@ test_that("read_ocean_optics rejects malformed rows with source context", {
   on.exit(unlink(path))
   writeLines(input, path)
   error <- expect_error(read_ocean_optics(path),
-                        class = "luxR_spectrum_value_error")
+                        class = "luxR_value_error")
   expect_identical(error$line, 12L)
   expect_identical(error$field, "signal")
   expect_match(error$source_checksum_md5, "^[0-9a-f]{32}$")
@@ -276,7 +276,38 @@ test_that("read_ocean_optics rejects malformed rows with source context", {
                     "configuration") %in% names(error)))
   declared_error <- expect_error(
     from_ocean_optics(path, "irradiance", "W/m2/nm", "CAL-ROW-TEST"),
-    class = "luxR_spectrum_value_error"
+    class = "luxR_value_error"
   )
   expect_identical(declared_error$configuration$calibration, "CAL-ROW-TEST")
+})
+
+test_that("an imported irregular grid keeps its kind and the import marker", {
+  input <- readLines(get_oo_fixture())
+  input[[13L]] <- "520.000000\t0.003600"
+  path <- tempfile(fileext = ".txt")
+  on.exit(unlink(path))
+  writeLines(input, path)
+  err <- tryCatch(
+    from_ocean_optics(path, "irradiance", "W/m2/nm", "test calibration"),
+    error = identity
+  )
+  expect_s3_class(err, "luxR_grid_error")
+  expect_s3_class(err, "luxR_import_error")
+  expect_identical(err$field, "lambda")
+})
+
+test_that("from_ocean_optics enriches file errors with calibration context", {
+  input <- readLines(get_oo_fixture())
+  input <- input[-10L]
+  path <- tempfile(fileext = ".txt")
+  on.exit(unlink(path))
+  writeLines(input, path)
+  err <- tryCatch(
+    from_ocean_optics(path, "irradiance", "W/m2/nm", "CAL-ENRICH"),
+    error = identity
+  )
+  expect_s3_class(err, "luxR_format_error")
+  expect_s3_class(err, "luxR_import_error")
+  expect_identical(err$configuration$calibration, "CAL-ENRICH")
+  expect_identical(err$operation, "from_ocean_optics")
 })

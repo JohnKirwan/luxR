@@ -7,10 +7,9 @@
 # is a genuine, validated rspec and luxR wraps none of pavo's analysis itself.
 
 .need_pavo <- function() {
-  if (!requireNamespace("pavo", quietly = TRUE))
-    stop("This function bridges luxR into the 'pavo' package, which is not ",
-         "installed.\nInstall it with install.packages(\"pavo\").",
-         call. = FALSE)
+  .require_suggested("pavo", paste0(
+    "This function bridges luxR into the 'pavo' package, which is not ",
+    "installed.\nInstall it with install.packages(\"pavo\")."))
 }
 
 #' Convert luxR spectra to a pavo \code{rspec} object
@@ -67,7 +66,8 @@ as_rspec.list <- function(x, ...) {
   .need_pavo()
   if (length(x) == 0 ||
       !all(vapply(x, inherits, logical(1), "lux_spectrum")))
-    stop("as_rspec() requires a non-empty list of lux_spectrum objects.")
+    .luxr_abort("as_rspec() requires a non-empty list of lux_spectrum objects.",
+                if (length(x) == 0) "value" else "type")
   nms <- names(x)
   if (is.null(nms)) nms <- rep("", length(x))
   blank <- !nzchar(nms)
