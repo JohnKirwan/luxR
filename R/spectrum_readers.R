@@ -127,6 +127,11 @@ from_trios <- function(path, negative_policy = c("error", "zero")) {
 #' values, including negatives, are preserved without clipping.
 #'
 #' @param path Path to the Ocean Optics \code{.txt} file.
+#' @param check_pixels If \code{TRUE} (default), error when the header's
+#'   declared pixel count differs from the number of spectral rows. Set
+#'   \code{FALSE} only for spliced or multi-spectrometer exports, whose header
+#'   gives one detector's pixel count; the choice is recorded in the import
+#'   provenance.
 #' @return A data frame containing \code{lambda} and \code{signal}. Parsed header
 #'   and import provenance are attached as \code{"luxR.header"} and
 #'   \code{"luxR.import"} attributes.
@@ -136,15 +141,17 @@ from_trios <- function(path, negative_policy = c("error", "zero")) {
 #' writeLines(c("Spectrometer: USB2E0034", "Integration Time (usec): 10000",
 #'              "Number of Pixels in Spectrum: 3", ">>>>>Begin Spectral Data<<<<<",
 #'              "400.0\t0.0012", "450.0\t0.0024", "500.0\t0.0036"), f)
-#' read_ocean_optics(f)$data
+#' read_ocean_optics(f)
 #' unlink(f)
 #' @export
-read_ocean_optics <- function(path) {
+read_ocean_optics <- function(path, check_pixels = TRUE) {
   context <- .validate_import_path(
     path, format = "Ocean Optics", operation = "read_ocean_optics",
     configuration = list(physical_interpretation = "none",
-                         negative_policy = "preserve")
+                         negative_policy = "preserve",
+                         check_pixels = check_pixels)
   )
+  .validate_import_flag(check_pixels, "check_pixels", context)
   input <- readLines(path, warn = FALSE)
   begin <- grep("^>>>>>Begin (Processed )?Spectral Data<<<<<$", input)
   if (length(begin) != 1L) {
@@ -175,30 +182,24 @@ read_ocean_optics <- function(path) {
 
   header <- list()
   header_lines <- if (begin > 1L) input[seq_len(begin - 1L)] else character()
+  header_value <- function(line, label) {
+    trimws(sub(paste0("^", label, ":[[:space:]]*"), "", line))
+  }
   for (i in seq_along(header_lines)) {
     line <- header_lines[[i]]
-    if (grepl("^Spectrometer:", line))
-      header$instrument <- trimws(sub("^Spectrometer:[[:space:]]*", "", line))
-    if (grepl("^Integration Time \\(usec\\):", line)) {
-      token <- trimws(sub("^Integration Time \\(usec\\):[[:space:]]*", "", line))
-      header$integration_time_us <- .parse_import_number(
-        token, "integration_time_us", context, line = i
+    if (grepl("^Spectrometers?:", line))
+      header$instrument <- header_value(line, "Spectrometers?")
+    if (grepl("^Integration Time \\((usec|sec)\\):", line)) {
+      header$integration_time_us <- .parse_oo_integration_time(
+        line, header$instrument, context, i
       )
-      if (header$integration_time_us <= 0) {
-        .stop_spectrum_import(
-          paste0("Integration time must be positive; got ", token, "."),
-          context, kind = "value",
-          field = "integration_time_us", value = header$integration_time_us,
-          line = i
-        )
-      }
     }
     if (grepl("^Date:", line))
-      header$date <- trimws(sub("^Date:[[:space:]]*", "", line))
-    if (grepl("^Number of Pixels in Spectrum:", line)) {
-      token <- trimws(sub("^Number of Pixels in Spectrum:[[:space:]]*", "", line))
+      header$date <- header_value(line, "Date")
+    if (grepl("^Number of Pixels in (Processed )?Spectrum:", line)) {
       header$declared_pixels <- .parse_import_number(
-        token, "declared_pixels", context, line = i
+        header_value(line, "Number of Pixels in (Processed )?Spectrum"),
+        "declared_pixels", context, line = i
       )
     }
   }
@@ -230,12 +231,14 @@ read_ocean_optics <- function(path) {
   }, numeric(2L)))
   .validate_import_grid(parsed[, "lambda"], context,
                         seq.int(begin + 1L, data_end))
-  if (!is.null(header$declared_pixels) &&
+  if (check_pixels && !is.null(header$declared_pixels) &&
       (header$declared_pixels != nrow(parsed) ||
        header$declared_pixels != as.integer(header$declared_pixels))) {
     .stop_spectrum_import(
       paste0("Header declares ", format(header$declared_pixels),
-             " pixels but ", nrow(parsed), " spectral rows were parsed."),
+             " pixels but ", nrow(parsed), " spectral rows were parsed. ",
+             "Spliced or multi-spectrometer exports list more rows than one ",
+             "detector has pixels; pass `check_pixels = FALSE` to read one."),
       context, kind = "format",
       field = "declared_pixels", value = header$declared_pixels
     )
@@ -255,6 +258,7 @@ read_ocean_optics <- function(path) {
 #' @param path Path to the Ocean Optics text file.
 #' @param quantity Explicit physical quantity represented by the values.
 #' @param unit Explicit unit compatible with \code{quantity}.
+#' @inheritParams read_ocean_optics
 #' @param calibration Non-empty calibration identifier or description.
 #' @return A validated \code{lux_spectrum} with import provenance in metadata.
 #' @seealso \code{\link{read_ocean_optics}}, \code{\link{from_trios}},
@@ -271,21 +275,24 @@ read_ocean_optics <- function(path) {
 #' unlink(f)
 #' @export
 from_ocean_optics <- function(path, quantity = NULL, unit = NULL,
-                              calibration = NULL) {
+                              calibration = NULL, check_pixels = TRUE) {
   context <- .validate_import_path(
     path, format = "Ocean Optics", operation = "from_ocean_optics",
     configuration = list(quantity = quantity, unit = unit,
                          calibration = calibration,
-                         negative_policy = "error")
+                         negative_policy = "error",
+                         check_pixels = check_pixels)
   )
   quantity <- .validate_import_string(quantity, "quantity", context)
   unit <- .validate_import_string(unit, "unit", context)
   calibration <- .validate_import_string(calibration, "calibration", context)
+  .validate_import_flag(check_pixels, "check_pixels", context)
   context$configuration <- list(quantity = quantity, unit = unit,
                                 calibration = calibration,
-                                negative_policy = "error")
+                                negative_policy = "error",
+                                check_pixels = check_pixels)
   raw <- tryCatch(
-    read_ocean_optics(path),
+    read_ocean_optics(path, check_pixels = check_pixels),
     luxR_import_error = function(e) {
       for (name in names(context)) e[[name]] <- context[[name]]
       stop(e)
@@ -301,4 +308,38 @@ from_ocean_optics <- function(path, quantity = NULL, unit = NULL,
     ),
     context = context
   )
+}
+
+# Integration time from an Ocean Optics header line, in microseconds.
+# OceanView writes "(sec)"; SpectraSuite writes "(usec)" and may append the
+# spectrometer serial in parentheses, which must match the "Spectrometer(s):"
+# line read before it.
+.parse_oo_integration_time <- function(line, instrument, context, i) {
+  unit <- sub("^Integration Time \\((usec|sec)\\):.*$", "\\1", line)
+  token <- trimws(sub("^Integration Time \\((usec|sec)\\):", "", line))
+  suffixed <- "^([^[:space:]]+)[[:space:]]+\\(([^()]+)\\)$"
+  if (grepl(suffixed, token)) {
+    serial <- sub(suffixed, "\\2", token)
+    if (is.null(instrument) || !identical(serial, instrument)) {
+      .stop_spectrum_import(
+        paste0("Integration time at header line ", i, " names spectrometer '",
+               serial, "' but the header's spectrometer is ",
+               if (is.null(instrument)) "not given before it"
+               else paste0("'", instrument, "'"), "."),
+        context, kind = "format", field = "integration_time_us",
+        value = token, line = i
+      )
+    }
+    token <- sub(suffixed, "\\1", token)
+  }
+  value <- .parse_import_number(token, "integration_time_us", context,
+                                line = i)
+  if (value <= 0) {
+    .stop_spectrum_import(
+      paste0("Integration time must be positive; got ", token, "."),
+      context, kind = "value", field = "integration_time_us",
+      value = value, line = i
+    )
+  }
+  if (unit == "sec") value * 1e6 else value
 }

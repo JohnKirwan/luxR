@@ -15,7 +15,8 @@ as_rspec(x, ...)
 \arguments{
 \item{x}{A \code{\link{lux_spectrum}}, or a (named) list of them — for
 example the output of \code{\link{from_trios}}. List elements are
-interpolated onto the first spectrum's wavelength grid before merging.}
+must share one wavelength grid (use \code{\link{resample_spectrum}}
+first); differing grids are an error, never silently extrapolated.}
 
 \item{...}{Passed to \code{pavo::as.rspec()} (e.g. \code{lim}, \code{interp}).}
 

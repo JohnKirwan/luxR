@@ -20,6 +20,7 @@
 # mol/m2/s/nm, which fixes the factors below.
 .PHOTOBIOLOGY_SOURCE_UNITS <- list(
   "W/m2/nm"      = list(column = "s.e.irrad", factor = 1),
+  "uW/cm2/nm"    = list(column = "s.e.irrad", factor = 1e-2),
   "mol/m2/s/nm"  = list(column = "s.q.irrad", factor = 1),
   "mmol/m2/s/nm" = list(column = "s.q.irrad", factor = 1e-3),
   "umol/m2/s/nm" = list(column = "s.q.irrad", factor = 1e-6)

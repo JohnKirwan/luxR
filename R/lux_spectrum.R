@@ -4,12 +4,13 @@
 # converts a value to that family's base unit (W or mol).
 .UNITS <- data.frame(
   unit = c("W/m2/nm", "umol/m2/s/nm", "mmol/m2/s/nm", "mol/m2/s/nm",
-           "W/m2/sr/nm", "mW/m2/sr/nm", "umol/m2/s/sr/nm",
+           "uW/cm2/nm", "W/m2/sr/nm", "mW/m2/sr/nm", "umol/m2/s/sr/nm",
            "mmol/m2/s/sr/nm", "mol/m2/s/sr/nm", "dimensionless"),
-  quantity = c(rep("irradiance", 4L), rep("radiance", 5L), "reflectance"),
-  basis = c("energy", rep("photon", 3L), "energy", "energy",
+  quantity = c(rep("irradiance", 5L), rep("radiance", 5L), "reflectance"),
+  basis = c("energy", rep("photon", 3L), "energy", "energy", "energy",
             rep("photon", 3L), NA),
-  scale = c(1, 1e-6, 1e-3, 1, 1, 1e-3, 1e-6, 1e-3, 1, NA),
+  # uW/cm2 = 1e-6 W / 1e-4 m2 = 1e-2 W/m2 (Ocean Optics irradiance unit).
+  scale = c(1, 1e-6, 1e-3, 1, 1e-2, 1, 1e-3, 1e-6, 1e-3, 1, NA),
   stringsAsFactors = FALSE
 )
 
@@ -53,7 +54,8 @@
 #'   spacing.
 #' @param meta     Named list of free-form metadata (depth, instrument, etc.).
 #' @return An S3 object of class \code{"lux_spectrum"}.
-#' @details Valid unit strings: \code{"W/m2/nm"}, \code{"W/m2/sr/nm"},
+#' @details Valid unit strings: \code{"W/m2/nm"}, \code{"uW/cm2/nm"},
+#'   \code{"W/m2/sr/nm"},
 #'   \code{"mW/m2/sr/nm"}, \code{"umol/m2/s/nm"}, \code{"mmol/m2/s/nm"},
 #'   \code{"mol/m2/s/nm"}, \code{"umol/m2/s/sr/nm"},
 #'   \code{"mmol/m2/s/sr/nm"}, \code{"mol/m2/s/sr/nm"},
@@ -353,8 +355,8 @@ as.data.frame.lux_spectrum <- function(x, ...) {
 #' Convert a lux_spectrum to a different unit
 #'
 #' Converts the spectral values in a \code{lux_spectrum} between energy and
-#' photon-flux units, or between mW and W for radiance spectra. Supported
-#' conversions: \code{"W/m2/nm"} \eqn{\leftrightarrow}
+#' photon-flux units, or between scaled energy units. Supported
+#' conversions: \code{"W/m2/nm"} / \code{"uW/cm2/nm"} \eqn{\leftrightarrow}
 #' \code{"umol/m2/s/nm"} / \code{"mmol/m2/s/nm"} / \code{"mol/m2/s/nm"},
 #' and the corresponding \code{"/sr"} photonic units. Energy radiance units
 #' \code{"W/m2/sr/nm"} and \code{"mW/m2/sr/nm"} are also interchangeable.

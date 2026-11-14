@@ -4,10 +4,16 @@
 \alias{read_ocean_optics}
 \title{Strictly parse an Ocean Optics / Ocean Insight spectrum file}
 \usage{
-read_ocean_optics(path)
+read_ocean_optics(path, check_pixels = TRUE)
 }
 \arguments{
 \item{path}{Path to the Ocean Optics \code{.txt} file.}
+
+\item{check_pixels}{If \code{TRUE} (default), error when the header's
+declared pixel count differs from the number of spectral rows. Set
+\code{FALSE} only for spliced or multi-spectrometer exports, whose header
+gives one detector's pixel count; the choice is recorded in the import
+provenance.}
 }
 \value{
 A data frame containing \code{lambda} and \code{signal}. Parsed header
@@ -25,6 +31,6 @@ f <- tempfile(fileext = ".txt")
 writeLines(c("Spectrometer: USB2E0034", "Integration Time (usec): 10000",
              "Number of Pixels in Spectrum: 3", ">>>>>Begin Spectral Data<<<<<",
              "400.0\t0.0012", "450.0\t0.0024", "500.0\t0.0036"), f)
-read_ocean_optics(f)$data
+read_ocean_optics(f)
 unlink(f)
 }

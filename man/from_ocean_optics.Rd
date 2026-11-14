@@ -4,7 +4,13 @@
 \alias{from_ocean_optics}
 \title{Read a calibrated Ocean Optics spectrum as a lux_spectrum}
 \usage{
-from_ocean_optics(path, quantity = NULL, unit = NULL, calibration = NULL)
+from_ocean_optics(
+  path,
+  quantity = NULL,
+  unit = NULL,
+  calibration = NULL,
+  check_pixels = TRUE
+)
 }
 \arguments{
 \item{path}{Path to the Ocean Optics text file.}
@@ -14,6 +20,12 @@ from_ocean_optics(path, quantity = NULL, unit = NULL, calibration = NULL)
 \item{unit}{Explicit unit compatible with \code{quantity}.}
 
 \item{calibration}{Non-empty calibration identifier or description.}
+
+\item{check_pixels}{If \code{TRUE} (default), error when the header's
+declared pixel count differs from the number of spectral rows. Set
+\code{FALSE} only for spliced or multi-spectrometer exports, whose header
+gives one detector's pixel count; the choice is recorded in the import
+provenance.}
 }
 \value{
 A validated \code{lux_spectrum} with import provenance in metadata.

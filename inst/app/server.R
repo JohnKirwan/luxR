@@ -453,7 +453,8 @@ function(input, output, session) {
     irr_w <- W2photon(src$irradiance, src$lambda)
     irr_n <- irr_w / max(irr_w, na.rm = TRUE)
 
-    irr_at_s <- approx(src$lambda, irr_n, xout = lambda_s, rule = 2)$y
+    # NA outside the light's measured range: lines() leaves a gap there.
+    irr_at_s <- approx(src$lambda, irr_n, xout = lambda_s, rule = 1)$y
 
     op <- par(mar = c(4, 4, 3, 4))
     on.exit(par(op), add = TRUE)

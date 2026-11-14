@@ -52,3 +52,11 @@ test_that("as_lux_spectrum.rspec selects a named column and sets meta$source", {
   expect_equal(y$E, b$E, tolerance = 1e-8)
   expect_equal(y$meta$source, "sand")
 })
+
+test_that("as_rspec() rejects a list whose wavelength grids differ", {
+  skip_if_not_installed("pavo")
+  a <- lux_spectrum(rep(1, 301), 400:700, "irradiance", "W/m2/nm")
+  b <- lux_spectrum(rep(1, 251), 450:700, "irradiance", "W/m2/nm")
+  expect_error(as_rspec(list(a = a, b = b)), "resample_spectrum",
+               class = "luxR_value_error")
+})

@@ -78,6 +78,16 @@
   trimws(x)
 }
 
+.validate_import_flag <- function(x, field, context) {
+  if (!is.logical(x) || length(x) != 1L || is.na(x)) {
+    .stop_spectrum_import(
+      paste0("`", field, "` must be TRUE or FALSE."),
+      context, kind = "type", field = field, value = x
+    )
+  }
+  invisible(x)
+}
+
 .parse_import_number <- function(token, field, context, row = NULL,
                                  line = NULL, spectrum = NULL) {
   token <- trimws(token)

@@ -1,6 +1,9 @@
 # luxR 0.1.1
 
 ## Breaking changes
+- `as_rspec()` on a list of spectra now requires one shared wavelength grid
+  and raises a `luxR_value_error` otherwise; use `resample_spectrum()` first.
+  It previously extended shorter spectra by repeating their end values.
 - Achromatic contrast and receptor catches no longer depend on how far the
   wavelength grid extends. Previously they summed over whatever grid was
   supplied, so the same object gave a species-free Weber contrast of -0.19 on
@@ -135,6 +138,9 @@
   of a photon-unit integral. Non-irradiance spectra are rejected.
 - Unit conversion is driven by one internal unit table and one pair of
   physical constants.
+- New irradiance unit `"uW/cm2/nm"` (1e-2 W m^-2 nm^-1), the unit Ocean
+  Optics software writes for absolute irradiance. `read_spectrum()`,
+  `from_ocean_optics()`, `convert_unit()` and `as_source_spct()` accept it.
 ## Numerical correctness
 These fixes change returned numbers or turn silent results into errors.
 
@@ -173,6 +179,17 @@ These fixes change returned numbers or turn silent results into errors.
   wavelength grid, which were previously dropped.
 
 ## Bug fixes
+- `read_ocean_optics()` and `from_ocean_optics()` now read SpectraSuite
+  processed exports: the `Spectrometers:` line, an integration time with a
+  `(serial)` suffix (which must name that spectrometer) and the `Number of
+  Pixels in Processed Spectrum:` count, which was previously not checked.
+  OceanView's `Integration Time (sec):` is parsed and converted to
+  microseconds; it was previously dropped. A new `check_pixels` argument
+  (default `TRUE`) lets spliced or multi-spectrometer exports, whose header
+  gives one detector's pixel count, be read on explicit request; the choice
+  is recorded in the import provenance.
+- The Shiny app's spectral-sensitivity plot no longer extends the light
+  spectrum beyond its measured range; the curve stops at the data.
 - Functions that use bundled datasets (`jerlov_Kd()`, `irradiance2lux()`,
   `colour_jnd()`, `solar_irradiance()` and others) now work when called as
   `luxR::fn()` without attaching the package. Previously they failed with
