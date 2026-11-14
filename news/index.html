@@ -93,6 +93,11 @@ Previously A2 used wrong α constants and the A1 β-band, which made A2 narrower
 <code><a href="../reference/band_irradiance.html">band_irradiance()</a></code> on a <code>lux_spectrum</code> gives a clear error when <code>lambda</code> or <code>binwidth</code> is supplied (both come from the object); <code>binwidth</code> used to fail with “matched by multiple actual arguments”.</li>
 </ul></div>
 <div class="section level3">
+<h3 id="performance-0-1-1">Performance<a class="anchor" aria-label="anchor" href="#performance-0-1-1"></a></h3>
+<ul><li>
+<code>detection_range(model = "spectral_path")</code> and <code><a href="../reference/detectability.html">detectability()</a></code> build the receptor templates once per call instead of once per distance evaluated, and with <code>channel = "both"</code> each threshold search computes only its own channel. A 1001-point search for both channels takes about 5 s instead of about 32 s; results are unchanged.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="unit-handling-0-1-1">Unit handling<a class="anchor" aria-label="anchor" href="#unit-handling-0-1-1"></a></h3>
 <ul><li><p><code><a href="../reference/par_irradiance.html">par_irradiance()</a></code> now rejects radiance and reflectance <code>lux_spectrum</code> objects with a <code>luxR_unit_error</code>. Photon-radiance spectra were previously integrated as if they were W m^-2 nm^-1.</p></li>
 <li><p><code><a href="../reference/band_irradiance.html">band_irradiance()</a></code> converts a photon-unit <code>lux_spectrum</code> to W m^-2 nm^-1 before integrating, as documented. <code>photonic = TRUE</code> no longer applies the photon conversion twice, and <code>photonic = FALSE</code> now returns W m^-2 instead of a photon-unit integral. Non-irradiance spectra are rejected.</p></li>
