@@ -122,8 +122,48 @@ test_that("secchi_depth weights the half-width edge bins by their overlap", {
   Kd[c(1, length(lam))] <- 1
   w <- rep(10, length(lam))
   w[c(1, length(lam))] <- 5
-  expect_equal(secchi_depth(Kd, lam, rep(1, length(lam))),
+  expect_equal(secchi_depth(Kd, lam, rep(1, length(lam)), basis = "energy"),
                1.7 / (sum(Kd * w) / sum(w)))
+})
+
+test_that("secchi_depth weights by photons by default", {
+  lam <- seq(400, 700, by = 10)
+  Kd  <- 0.05 + (lam - 400) / 1000
+  E   <- rep(1, length(lam))              # flat energy spectrum
+  w   <- rep(10, length(lam))
+  w[c(1, length(lam))] <- 5
+  photon <- 1.7 / (sum(Kd * lam * w) / sum(lam * w))
+  energy <- 1.7 / (sum(Kd * w) / sum(w))
+  expect_equal(secchi_depth(Kd, lam, E), photon)
+  expect_equal(secchi_depth(Kd, lam, E, basis = "energy"), energy)
+  # Photon-unit input: flat photon flux is used as given for photons and
+  # divided by lambda for energy.
+  expect_equal(secchi_depth(Kd, lam, E, photonic = TRUE), energy)
+  expect_equal(secchi_depth(Kd, lam, E, photonic = TRUE, basis = "energy"),
+               1.7 / (sum(Kd * w / lam) / sum(w / lam)))
+})
+
+test_that("secchi_depth gives the same answer for any lux_spectrum unit and basis", {
+  x  <- from_naples("0m")
+  Kd <- rep(0.1, length(x$lambda)) + x$lambda / 1e4
+  w  <- convert_unit(x, "W/m2/nm")
+  for (b in c("photon", "energy")) {
+    expect_equal(secchi_depth(Kd, spectrum = x, basis = b),
+                 secchi_depth(Kd, spectrum = w, basis = b))
+  }
+  expect_equal(secchi_depth(Kd, spectrum = w),
+               secchi_depth(Kd, w$lambda, w$E))
+})
+
+test_that("secchi_depth rejects invalid photonic and basis", {
+  lam <- seq(400, 700, by = 10)
+  E   <- rep(1, 31)
+  expect_error(secchi_depth(rep(0.1, 31), lam, E, photonic = NA),
+               class = "lux_spectrum_type_error")
+  expect_error(secchi_depth(rep(0.1, 31), lam, E, basis = "quanta"))
+  x <- lux_spectrum(E, lam, "irradiance", "W/m2/nm")
+  expect_error(secchi_depth(rep(0.1, 31), spectrum = x, photonic = TRUE),
+               class = "lux_spectrum_value_error")
 })
 
 test_that("secchi_depth rejects invalid input", {
@@ -143,11 +183,4 @@ test_that("secchi_depth rejects invalid input", {
                class = "lux_spectrum_dimension_error")
   expect_error(secchi_depth(rep(0.1, 31), spectrum = E),
                class = "lux_spectrum_type_error")
-})
-
-test_that("secchi_depth gives the same answer for any lux_spectrum unit", {
-  x  <- from_naples("0m")
-  Kd <- rep(0.1, length(x$lambda)) + x$lambda / 1e4
-  expect_equal(secchi_depth(Kd, spectrum = x),
-               secchi_depth(Kd, spectrum = convert_unit(x, "W/m2/nm")))
 })

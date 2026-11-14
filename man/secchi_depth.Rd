@@ -4,7 +4,14 @@
 \alias{secchi_depth}
 \title{Secchi depth from diffuse attenuation coefficient(s).}
 \usage{
-secchi_depth(Kd, lambda = NULL, irradiance = NULL, spectrum = NULL)
+secchi_depth(
+  Kd,
+  lambda = NULL,
+  irradiance = NULL,
+  spectrum = NULL,
+  photonic = FALSE,
+  basis = c("photon", "energy")
+)
 }
 \arguments{
 \item{Kd}{Diffuse attenuation coefficient(s) in 1/m, all positive.}
@@ -16,7 +23,15 @@ secchi_depth(Kd, lambda = NULL, irradiance = NULL, spectrum = NULL)
 
 \item{spectrum}{Optional \code{lux_spectrum}; when supplied its \code{E}
 and \code{lambda} slots replace the \code{irradiance} and \code{lambda}
-arguments.}
+arguments. Its unit is read from the object; setting \code{photonic}
+as well is an error.}
+
+\item{photonic}{Logical. \code{FALSE} (default): numeric
+\code{irradiance} is in energy units (e.g. W m\eqn{^{-2}}
+nm\eqn{^{-1}}). \code{TRUE}: it is a photon or molar flux per nm.}
+
+\item{basis}{\code{"photon"} (default) or \code{"energy"}: what
+weights Kd.}
 }
 \value{
 Secchi depth in metres.
@@ -28,10 +43,12 @@ is supplied the function first computes an irradiance-weighted mean Kd
 across 400–700 nm before applying the approximation.
 }
 \details{
+By default Kd is weighted by photon flux, because vision responds to
+photons absorbed. Use \code{basis = "energy"} to weight by radiant energy;
+this gives more weight to short wavelengths.
+
 Each sample is a bin centred on its wavelength on a regular grid; a bin
 straddling 400 or 700 nm is weighted by its part inside the window.
-Numeric irradiance is used as given; a \code{lux_spectrum} is converted to
-W m\eqn{^{-2}} nm\eqn{^{-1}} first.
 }
 \examples{
 secchi_depth(jerlov_Kd("IA", lambda = 490))
