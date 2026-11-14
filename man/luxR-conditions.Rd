@@ -61,3 +61,4 @@ tryCatch(
   luxR_error = function(e) class(e)[1]
 )
 }
+\keyword{classes}

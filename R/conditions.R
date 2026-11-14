@@ -45,6 +45,7 @@
 #'   luxR_dimension_error luxR_grid_error luxR_unit_error
 #'   luxR_numerical_error luxR_format_error luxR_data_error
 #'   luxR_dependency_error luxR_internal_error
+#' @keywords classes
 #' @examples
 #' tryCatch(
 #'   lux_spectrum(1:3, c(400, 410, 405), "irradiance", "W/m2/nm"),
