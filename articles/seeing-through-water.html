@@ -195,13 +195,13 @@ than the <code>Kd * kd_to_c</code> proxy.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></code></pre></div>
 <p><img src="seeing-through-water_files/figure-html/detect-plot-1.png" class="r-plt" alt="" width="672"></p>
 <p>Under this heuristic the two channels behave very differently. The
-brightness (achromatic) difference stays above threshold for several
-metres, while the colour signal — only just above 1 JND at zero distance
-— washes out almost immediately as veiling light floods in. Detecting an
-object by its colour underwater is demanding: it needs both photons and
-inherent contrast to spare. Looking <strong>up</strong> (against the
-brighter surface) extends the range, because the contrast-attenuation
-coefficient becomes <code>c - Kd</code>:</p>
+brightness (achromatic) difference stays above threshold for about 7.9
+m, while the colour signal — 2.1 JND at zero distance — is lost after
+about 2.3 m as veiling light floods in. Detecting an object by its
+colour underwater is demanding: it needs both photons and inherent
+contrast to spare. Looking <strong>up</strong> (against the brighter
+surface) extends the range, because the contrast-attenuation coefficient
+becomes <code>c - Kd</code>:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/detection_range.html">detection_range</a></span><span class="op">(</span><span class="va">red</span>, <span class="va">grey</span>, <span class="va">E_10m</span>, <span class="va">lam</span>, Kd <span class="op">=</span> <span class="va">Kd_ref</span>, beam_c <span class="op">=</span> <span class="va">c_beam</span>,</span>
 <span>                species <span class="op">=</span> <span class="va">viewer</span>, channel <span class="op">=</span> <span class="st">"achromatic"</span>,</span>

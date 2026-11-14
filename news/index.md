@@ -242,6 +242,12 @@
   [`solar_irradiance()`](https://johnkirwan.github.io/luxR/reference/solar_irradiance.md)
   and others) now work when called as `luxR::fn()` without attaching the
   package. Previously they failed with “object not found”.
+- The `code_commit` recorded in import, propagation, polarization and
+  detectability provenance no longer comes from the `GITHUB_SHA`
+  environment variable, which in a user’s own CI run named the user’s
+  repository commit. It is now read from the installed package
+  (`RemoteSha` or `GithubSHA1`, set by r-universe, pak and remotes) and
+  is `NA` for CRAN or local source installs.
 
 ### Package identity
 
