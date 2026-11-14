@@ -55,6 +55,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       _R_CHECK_CRAN_INCOMING_: true
       _R_CHECK_CRAN_INCOMING_REMOTE_: true
+      _R_CHECK_CRAN_INCOMING_USE_ASPELL_: true
     steps:
       - uses: actions/checkout@v4
       - uses: r-lib/actions/setup-pandoc@v2
