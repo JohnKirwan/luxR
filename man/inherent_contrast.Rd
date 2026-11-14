@@ -13,7 +13,8 @@ inherent_contrast(
   receptor = NULL,
   noise = 0.05,
   channel = c("both", "achromatic", "chromatic"),
-  binwidth = NULL
+  binwidth = NULL,
+  band = c(300, 700)
 )
 }
 \arguments{
@@ -31,8 +32,8 @@ wavelength grid in nm.}
 \item{species}{Species name in \code{species_sensitivities}. Required for the
 chromatic channel. For the achromatic channel, a species must have a cited
 default in \code{\link{species_channels}}. If \code{NULL}, achromatic
-brightness is explicitly treated as total photon radiance without a species
-visual model.}
+brightness is photon radiance over 400--700 nm (PAR) without a species
+visual model; the \code{lambda} bins must cover 400--700 nm.}
 
 \item{receptor}{Receptor class(es) to include. Default \code{NULL} uses the
 complete validated default for each requested species channel. An explicit
@@ -45,6 +46,15 @@ to \code{\link{colour_jnd}}. Default 0.05.}
 \code{"chromatic"}.}
 
 \item{binwidth}{Bin width in nm; inferred from \code{lambda} if \code{NULL}.}
+
+\item{band}{Visual band \code{c(lower, upper)} in nm over which receptor
+quantum catches are integrated. Default \code{c(300, 700)}. A fixed band
+makes the result independent of how far the \code{lambda} grid extends;
+the grid's bins must cover it (a typed \code{luxR_grid_error} otherwise),
+and bins straddling an edge count only their in-band width. Narrow it
+explicitly when the light field is shorter, e.g. \code{c(350, 700)} for a
+Jerlov-propagated spectrum; catch below the band is then excluded.
+Used only with a \code{species}; see \code{\link{colour_jnd}}.}
 }
 \value{
 A list with elements \code{achromatic} (Weber contrast) and

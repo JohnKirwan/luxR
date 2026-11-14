@@ -643,3 +643,15 @@ test_that("broken app metadata raises internal errors", {
   expect_error(luxR:::.depth_download_df(summary, meta()), "misaligned",
                class = "luxR_internal_error")
 })
+
+test_that("app narrows the visual band to the light field and says so", {
+  # Deliberate fallback: Jerlov light fields start at 350 nm, so the app
+  # integrates catches over the light field's range and labels the band.
+  jerlov <- seq(350, 700, by = 5)
+  expect_equal(luxR:::.app_visual_band(jerlov), c(350, 700))
+  expect_match(luxR:::.app_band_label(jerlov), "350-700 nm .*excludes the UV")
+
+  solar <- seq(300, 800, by = 10)
+  expect_equal(luxR:::.app_visual_band(solar), c(300, 700))
+  expect_false(grepl("excludes", luxR:::.app_band_label(solar)))
+})

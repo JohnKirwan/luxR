@@ -480,6 +480,33 @@ quantum_catch <- function(irradiance, lambda, S,
   if (total) sum(Q) else Q
 }
 
+# Quantum catch of each receptor row (`lambda_max`, `chromophore`) for a
+# W/m2/nm spectrum, integrated over the caller's visual `band` (nm). A fixed
+# band keeps the result independent of how far the grid extends (the
+# Govardovskii beta band never reaches zero in the UV). The grid must cover
+# the band; bins straddling an edge count only their in-band width.
+.receptor_catches <- function(L, lambda, rows, binwidth, band, operation) {
+  .check_band(band, operation)
+  binwidth <- .grid_binwidth(lambda, binwidth, operation)
+  w <- .band_widths(lambda, binwidth, band[1L], band[2L], operation)
+  vapply(seq_len(nrow(rows)), function(i) {
+    S <- govardovskii_template(lambda, rows$lambda_max[i], rows$chromophore[i])
+    Q <- quantum_catch(L, lambda, S, input_unit = "W/m2/nm", total = FALSE,
+                       binwidth = binwidth)
+    sum(Q / binwidth * w)
+  }, numeric(1))
+}
+
+.check_band <- function(band, operation) {
+  .check_input(band, "band", operation, lower = 0, lower_open = TRUE)
+  if (length(band) != 2L)
+    .input_fail(operation)(
+      paste0("`band` must be c(lower, upper) in nm; got length ",
+             length(band), "."),
+      "band", band, NULL, "dimension"
+    )
+}
+
 .validate_quantum_sensitivity <- function(S) {
   if (!is.data.frame(S)) {
     .luxr_abort(

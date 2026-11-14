@@ -203,7 +203,9 @@ zebrafish (*Danio rerio*) S-, M- and L-cone sensitivities with a Weber fraction 
 receptor sets to colour channels.
 
 `colour_jnd()` takes numeric radiance vectors (W m⁻² nm⁻¹), so we extract `$E`
-and `$lambda` from the `lux_spectrum` objects.
+and `$lambda` from the `lux_spectrum` objects. Receptor catches integrate over a
+fixed visual band, 300–700 nm by default; the Jerlov light field starts at
+350 nm, so we state that narrower band explicitly.
 
 ```{r colour-jnd}
 depths     <- c(0, 5, 10, 20, 50)
@@ -219,7 +221,8 @@ jnd_vals <- sapply(depth_keys, function(d) {
     species  = "Danio rerio",
     receptor = c("S-cone", "M-cone", "L-cone"),
     noise    = 0.05,
-    binwidth = r1$binwidth
+    binwidth = r1$binwidth,
+    band     = c(350, 700)
   )
 })
 
@@ -268,12 +271,14 @@ conventions are matched:
   illuminant proportional to wavelength;
 * luxR's per-receptor noise is the Weber fraction directly; reproduce that with
   equal cone ratios (`n = 1`), so `e_i = weber`;
-* use raw quantum catches: `vismodel(qcatch = "Qi", vonkries = FALSE, relative = FALSE)`.
+* use raw quantum catches: `vismodel(qcatch = "Qi", vonkries = FALSE, relative = FALSE)`;
+* pavo sums over every grid point, so give luxR a band covering the whole of
+  each 1 nm bin from 300 to 700 nm (`band = c(299.5, 700.5)`).
 
 ```{r pavo-validation, eval = requireNamespace("pavo", quietly = TRUE)}
 library(pavo)
 
-lam <- 300:750
+lam <- 300:700
 s1  <- approx(solar_spectra$clear_noon$wavelength,
               solar_spectra$clear_noon$irradiance, lam, rule = 2)$y
 s2  <- approx(solar_spectra$underwater_10m$wavelength,
@@ -305,7 +310,8 @@ species <- c("Homo sapiens", "Apis mellifera", "Danio rerio")
 cmp <- data.frame(
   species = species,
   luxR    = sapply(species, function(sp)
-              colour_jnd(s1, s2, lambda = lam, species = sp, noise = w)),
+              colour_jnd(s1, s2, lambda = lam, species = sp, noise = w,
+                         band = c(299.5, 700.5))),
   pavo    = sapply(species, function(sp) suppressMessages(pavo_dS(sp)))
 )
 cmp$abs_diff <- abs(cmp$luxR - cmp$pavo)

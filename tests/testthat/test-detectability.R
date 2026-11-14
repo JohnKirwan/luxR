@@ -344,7 +344,7 @@ test_that("spectral chromatic catches are recomputed rather than scaling JND", {
   propagated <- luxR:::.spectral_signals(
     distance, red * sp$irradiance, grey * sp$irradiance,
     grey * sp$irradiance, lam, c_lambda, "Danio rerio", NULL, 0.05,
-    "chromatic", diff(lam)[1]
+    "chromatic", diff(lam)[1], c(300, 700)
   )$chromatic
   expect_false(isTRUE(all.equal(propagated, initial * exp(-0.2 * distance),
                                 tolerance = 1e-6)))
@@ -415,4 +415,52 @@ test_that("beam_c overrides the Kd*kd_to_c proxy across the detection family", {
   d <- detectability(black, grey, sp$irradiance, lam, Kd = Kd,
                      beam_c = c_meas, channel = "achromatic")
   expect_equal(d$range$achromatic, -log(0.02) / c_meas, tolerance = 1e-8)
+})
+
+# ---- integration band ---------------------------------------------------
+
+grid_case <- function(keep) {
+  sp  <- solar_irradiance("clear_noon")
+  lam <- sp$wavelength[keep(sp$wavelength)]
+  list(lam = lam, E = sp$irradiance[keep(sp$wavelength)],
+       red = 0.2 + 0.25 * exp(-((lam - 625) / 35)^2),
+       grey = rep(0.3, length(lam)))
+}
+achromatic_on <- function(keep, species = NULL) {
+  g <- grid_case(keep)
+  inherent_contrast(g$red, g$grey, g$E, g$lam, species = species,
+                    channel = "achromatic")$achromatic
+}
+
+test_that("species-free achromatic contrast integrates photons over 400-700 nm", {
+  full <- achromatic_on(function(l) l > 0)
+  par  <- achromatic_on(function(l) l >= 400 & l <= 700)
+  expect_equal(full, par, tolerance = 1e-12)
+
+  g <- grid_case(function(l) l > 0)
+  w <- pmax(0, pmin(700, g$lam + 5) - pmax(400, g$lam - 5))
+  B <- function(R) sum(W2photon(R * g$E, g$lam) * w)
+  expect_equal(full, B(g$red) / B(g$grey) - 1, tolerance = 1e-12)
+
+  expect_error(achromatic_on(function(l) l <= 600),
+               "do not cover the band 400-700 nm",
+               class = "luxR_grid_error")
+})
+
+test_that("species achromatic contrast integrates over the 300-700 nm visual band", {
+  full <- achromatic_on(function(l) l > 0, "Danio rerio")
+  vis  <- achromatic_on(function(l) l <= 700, "Danio rerio")
+  expect_equal(full, vis, tolerance = 1e-12)
+  expect_error(achromatic_on(function(l) l >= 400, "Danio rerio"),
+               "do not cover the band 300-700 nm",
+               class = "luxR_grid_error")
+})
+
+test_that("band is validated even without a species model", {
+  g <- grid_case(function(l) l > 0)
+  expect_error(
+    inherent_contrast(g$red, g$grey, g$E, g$lam, channel = "achromatic",
+                      band = 300),
+    "must be c\\(lower, upper\\)", class = "luxR_dimension_error"
+  )
 })

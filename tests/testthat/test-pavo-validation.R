@@ -47,6 +47,11 @@ make_stimuli <- function(lam) {
   list(s1 = s1, s2 = s2)
 }
 
+# colour_jnd() integrates over its 300-700 nm band, clipping the edge bins of
+# a 1 nm grid to their in-band width. Catches are linear in the stimulus, so
+# weighting the stimulus the same way makes the comparator integrate that band.
+in_band <- function(s, lam) s * pmax(0, pmin(700, lam + 0.5) - pmax(300, lam - 0.5))
+
 test_that("colour_jnd matches pavo coldist across receptor counts", {
   skip_if_not_installed("pavo")
   lam <- 300:750
@@ -54,7 +59,7 @@ test_that("colour_jnd matches pavo coldist across receptor counts", {
   w   <- 0.05
   for (sp in c("Homo sapiens", "Apis mellifera", "Danio rerio")) {
     dl <- colour_jnd(st$s1, st$s2, lambda = lam, species = sp, noise = w)
-    dp <- suppressMessages(pavo_dS(st$s1, st$s2, lam, sp, w))
+    dp <- suppressMessages(pavo_dS(in_band(st$s1, lam), in_band(st$s2, lam), lam, sp, w))
     expect_equal(dl, dp, tolerance = 1e-4,
                  info = paste("species:", sp))
   }
@@ -66,7 +71,7 @@ test_that("colour_jnd matches pavo under a different Weber fraction", {
   st  <- make_stimuli(lam)
   w   <- 0.02
   dl <- colour_jnd(st$s1, st$s2, lambda = lam, species = "Homo sapiens", noise = w)
-  dp <- suppressMessages(pavo_dS(st$s1, st$s2, lam, "Homo sapiens", w))
+  dp <- suppressMessages(pavo_dS(in_band(st$s1, lam), in_band(st$s2, lam), lam, "Homo sapiens", w))
   expect_equal(dl, dp, tolerance = 1e-4)
 })
 
@@ -125,11 +130,12 @@ test_that("spectral-path chromatic signal benchmarks against pavo", {
     receptor = NULL,
     noise = benchmark_config$receptor_noise,
     channel = "chromatic",
-    binwidth = 1
+    binwidth = 1,
+    band = c(300, 700)
   )$chromatic
   pavo_ds <- suppressMessages(
     pavo_dS(
-      object_seen, background_seen, lam, benchmark_config$species,
+      in_band(object_seen, lam), in_band(background_seen, lam), lam, benchmark_config$species,
       benchmark_config$receptor_noise
     )
   )
