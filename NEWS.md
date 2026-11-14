@@ -11,6 +11,7 @@
     `convert_unit(lux_spectrum(E, lambda, "irradiance", unit), to)$E` for
     molar units.
   - `ft2m()` and `m2ft()`; multiply or divide by 0.3048.
+  - `wavelength_in_medium()`; divide by the refractive index, `lambda / n`.
 - `irradiance2lux(photonic = TRUE)` now requires `molar_unit` to be one
   non-missing string and raises a `luxR_type_error` otherwise. An `NA` value
   was previously treated as raw photon counts without notice.

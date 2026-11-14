@@ -37,8 +37,6 @@ test_that("lux_spectrum.R: subsetting, arithmetic and conversion are typed", {
 })
 
 test_that("converters.R errors are typed", {
-  expect_error(wavelength_in_medium(500, n = 0.5), "`n` must be >= 1",
-               class = "luxR_value_error")
   expect_error(reflectance_to_radiance(c(0.5, 0.5), 1, 500),
                "same length", class = "luxR_dimension_error")
   expect_error(reflectance_to_radiance(1.5, 1, 500), "\\[0, 1\\]",

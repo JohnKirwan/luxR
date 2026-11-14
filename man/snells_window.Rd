@@ -27,5 +27,5 @@ snells_window()        # ~48.6 degrees
 Johnsen S (2012) The Optics of Life. Princeton University Press, ch. 5.
 }
 \seealso{
-\code{\link{fresnel_reflectance}}, \code{\link{wavelength_in_medium}}
+\code{\link{fresnel_reflectance}}
 }

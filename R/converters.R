@@ -28,25 +28,6 @@ photon2W <- function(n, lambda) n * .HC_J_NM / lambda
 W2photon <- function(W, lambda) W * lambda / .HC_J_NM
 
 
-#' Wavelength of light inside an optical medium.
-#'
-#' Returns the in-medium wavelength after accounting for the refractive index.
-#' Frequency (and photon energy) are unchanged; only the spatial period shortens.
-#'
-#' @param lambda Wavelength in vacuum or air (nm, or any consistent unit).
-#'   Vectorised.
-#' @param n Refractive index of the medium (dimensionless). Must be >= 1.
-#' @return Wavelength in the medium, in the same unit as \code{lambda}.
-#' @examples
-#' wavelength_in_medium(500, n = 1.336)  # seawater: ~374 nm in medium
-#' wavelength_in_medium(c(400, 500, 600), n = 1.5)
-#' @export
-wavelength_in_medium <- function(lambda, n) {
-  if (any(n < 1)) .luxr_abort("`n` must be >= 1 (refractive index of vacuum = 1).", "value")
-  lambda / n
-}
-
-
 #' Compute scotopic illuminance (V'(lambda) weighting).
 #'
 #' Drop-in replacement for \code{\link{irradiance2lux}} using the CIE 1951

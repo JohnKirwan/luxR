@@ -123,7 +123,7 @@ absorbance <- function(transmittance, base = c("e", "10")) {
 #' @return Half-angle of Snell's window, in degrees.
 #' @references
 #'   Johnsen S (2012) The Optics of Life. Princeton University Press, ch. 5.
-#' @seealso \code{\link{fresnel_reflectance}}, \code{\link{wavelength_in_medium}}
+#' @seealso \code{\link{fresnel_reflectance}}
 #' @examples
 #' snells_window()        # ~48.6 degrees
 #' @export

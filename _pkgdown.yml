@@ -43,7 +43,6 @@ reference:
       - photon2W
       - W2photon
       - reflectance_to_radiance
-      - wavelength_in_medium
 
   - title: "Photometric quantities"
     desc: "Compute illuminance and PAR from spectral irradiance."
