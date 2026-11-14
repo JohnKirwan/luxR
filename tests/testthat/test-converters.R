@@ -241,7 +241,7 @@ test_that("broadband2spectrum requires an explicit out-of-range policy", {
     broadband2spectrum(
       500, unit = "W", spectrum = spectrum, water_type = "IA", depth = 10
     ),
-    class = "luxR_jerlov_range_error"
+    class = "luxR_value_error"
   )
 
   trimmed <- broadband2spectrum(

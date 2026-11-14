@@ -99,7 +99,7 @@ test_that("fit_Kd rejects non-positive irradiance", {
 test_that("light_at_depth fails on unsupported source wavelengths by default", {
   expect_error(
     light_at_depth("clear_noon", "IA", depth = 5),
-    class = "luxR_jerlov_range_error"
+    class = "luxR_value_error"
   )
 })
 

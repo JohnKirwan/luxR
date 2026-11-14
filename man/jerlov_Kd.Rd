@@ -25,8 +25,9 @@ One of \code{"linear"} (default), \code{"spline"}, or
 wavelength range.}
 
 \item{extrapolation}{Out-of-range policy. The default \code{"error"}
-raises a \code{luxR_jerlov_range_error}. Set to \code{"constant"} to
-explicitly extend the nearest endpoint value; the choice is recorded in
+raises a \code{luxR_value_error} (see \link{luxR-conditions}). Set to
+\code{"constant"} to explicitly extend the nearest endpoint value; the
+choice is recorded in
 the returned vector's \code{"luxR.jerlov"} attribute.}
 }
 \value{
