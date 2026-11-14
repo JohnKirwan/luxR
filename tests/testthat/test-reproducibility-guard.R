@@ -24,18 +24,22 @@ test_that("no pinned MD5 or SHA literals live in package functions or constants"
                                 paste(offenders, collapse = ", ")))
 })
 
-test_that(".luxr_code_commit resolves from GITHUB_SHA and falls back to NA", {
-  skip_if(!is.null(utils::packageDescription("luxR")[["GithubSHA1"]]),
-          "package installed with a pinned GithubSHA1")
+test_that(".luxr_code_commit reads only the installed DESCRIPTION", {
+  sha <- strrep("a1", 20)
+  commit <- function(...) luxR:::.luxr_code_commit(list(...))
 
+  expect_identical(commit(RemoteSha = sha), sha)
+  expect_identical(commit(GithubSHA1 = sha), sha)
+  expect_identical(commit(RemoteSha = sha, GithubSHA1 = strrep("b2", 20)), sha)
+  # CRAN installs via pak record the version string as RemoteSha.
+  expect_identical(commit(RemoteSha = "0.1.0"), NA_character_)
+  expect_identical(commit(), NA_character_)
+  expect_identical(luxR:::.luxr_code_commit(NA), NA_character_)
+
+  # An ambient GITHUB_SHA belongs to the caller's repository, not luxR.
   old <- Sys.getenv("GITHUB_SHA", unset = NA_character_)
-  on.exit({
-    if (is.na(old)) Sys.unsetenv("GITHUB_SHA") else Sys.setenv(GITHUB_SHA = old)
-  }, add = TRUE)
-
-  Sys.setenv(GITHUB_SHA = "sentinel-commit-value")
-  expect_identical(luxR:::.luxr_code_commit(), "sentinel-commit-value")
-
-  Sys.unsetenv("GITHUB_SHA")
-  expect_identical(luxR:::.luxr_code_commit(), NA_character_)
+  on.exit(if (is.na(old)) Sys.unsetenv("GITHUB_SHA")
+          else Sys.setenv(GITHUB_SHA = old), add = TRUE)
+  Sys.setenv(GITHUB_SHA = sha)
+  expect_identical(commit(), NA_character_)
 })
