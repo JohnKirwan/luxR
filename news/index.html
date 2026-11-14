@@ -104,6 +104,8 @@ Previously A2 used wrong α constants and the A1 β-band, which made A2 narrower
 <h3 id="bug-fixes-0-1-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-1"></a></h3>
 <ul><li>Functions that use bundled datasets (<code><a href="../reference/jerlov_Kd.html">jerlov_Kd()</a></code>, <code><a href="../reference/irradiance2lux.html">irradiance2lux()</a></code>, <code><a href="../reference/colour_jnd.html">colour_jnd()</a></code>, <code><a href="../reference/solar_irradiance.html">solar_irradiance()</a></code> and others) now work when called as <code>luxR::fn()</code> without attaching the package. Previously they failed with “object not found”.</li>
 <li>The <code>code_commit</code> recorded in import, propagation, polarization and detectability provenance no longer comes from the <code>GITHUB_SHA</code> environment variable, which in a user’s own CI run named the user’s repository commit. It is now read from the installed package (<code>RemoteSha</code> or <code>GithubSHA1</code>, set by r-universe, pak and remotes) and is <code>NA</code> for CRAN or local source installs.</li>
+<li>
+<code>citation("luxR")</code> now takes its version and year from DESCRIPTION. It previously failed when the package was not installed and gave the current year rather than the release year.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="package-identity-0-1-1">Package identity<a class="anchor" aria-label="anchor" href="#package-identity-0-1-1"></a></h3>

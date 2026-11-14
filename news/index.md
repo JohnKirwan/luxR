@@ -248,6 +248,9 @@
   repository commit. It is now read from the installed package
   (`RemoteSha` or `GithubSHA1`, set by r-universe, pak and remotes) and
   is `NA` for CRAN or local source installs.
+- `citation("luxR")` now takes its version and year from DESCRIPTION. It
+  previously failed when the package was not installed and gave the
+  current year rather than the release year.
 
 ### Package identity
 

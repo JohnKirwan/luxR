@@ -411,7 +411,7 @@ knitr::kable(cmp, digits = c(0, 6, 6, 14),
 
 |                | Species        |  luxR ΔS |  pavo ΔS | \|difference\| |
 |:---------------|:---------------|---------:|---------:|---------------:|
-| Homo sapiens   | Homo sapiens   | 1.777255 | 1.777255 |        1.0e-14 |
+| Homo sapiens   | Homo sapiens   | 1.777255 | 1.777255 |        3.0e-14 |
 | Apis mellifera | Apis mellifera | 0.942980 | 0.942980 |        1.7e-13 |
 | Danio rerio    | Danio rerio    | 2.417910 | 2.417910 |        0.0e+00 |
 
