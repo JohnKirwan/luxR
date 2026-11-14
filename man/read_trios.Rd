@@ -26,3 +26,13 @@ sr\eqn{^{-1}}). Radiance values are converted to W m\eqn{^{-2}} nm\eqn{^{-1}}
 sr\eqn{^{-1}}. Negative instrument values are preserved; no clipping or
 other preprocessing is performed by this low-level reader.
 }
+\examples{
+# A synthetic one-scan TriOS file (radiance in mW/m2/sr/nm):
+f <- tempfile(fileext = ".dat")
+writeLines(c("Comment\tscan_1", rep("header_line", 29),
+             paste(1:31, seq(400, 700, by = 10), seq(1, 4, length.out = 31),
+                   sep = "\t"),
+             "[END]"), f)
+head(read_trios(f))
+unlink(f)
+}

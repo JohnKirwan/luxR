@@ -33,8 +33,8 @@
 #' @seealso \code{\link{species_sensitivity_matrix}} for the \code{C} matrix;
 #'   \code{\link{as_rspec}} for the pavo equivalent; \code{colourvision::RNLmodel}
 #' @examples
-#' \dontrun{
-#'   I  <- as_colourvision(from_solar("clear_noon"), name = "I")
+#' if (requireNamespace("colourvision", quietly = TRUE)) {
+#'   I <- as_colourvision(from_solar("clear_noon"), name = "I")
 #' }
 #' @export
 as_colourvision <- function(x, ...) UseMethod("as_colourvision")
@@ -128,9 +128,8 @@ as_colourvision.list <- function(x, ...) {
 #' @seealso \code{\link{as_colourvision}}, \code{\link{colour_jnd}},
 #'   \code{colourvision::RNLmodel}
 #' @examples
-#' \dontrun{
-#'   C <- species_sensitivity_matrix("Apis mellifera")
-#' }
+#' C <- species_sensitivity_matrix("Apis mellifera")
+#' head(C)
 #' @export
 species_sensitivity_matrix <- function(species,
                                        lambda   = seq(300, 700, 1),

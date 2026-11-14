@@ -136,6 +136,14 @@
 #'   values, declarations, instrument metadata, notices, and reproducibility
 #'   context.
 #' @seealso \code{\link{read_spectrum}}, \code{\link{as_lux_spectrum}}
+#' @examples
+#' # An irradiance file from an Ocean Optics Jaz, shipped with lightr:
+#' f <- system.file("testdata", "irrad.JazIrrad", package = "lightr")
+#' if (requireNamespace("lightr", quietly = TRUE) && nzchar(f)) {
+#'   x <- read_instrument_spectrum(f, measurement = "irradiance",
+#'                                 value_scale = "absolute", range = c(400, 700))
+#'   head(x$value)
+#' }
 #' @export
 read_instrument_spectrum <- function(
     path, measurement = NULL, value_scale = NULL, range = NULL,

@@ -15,6 +15,15 @@
 #'     \item{lambda}{Numeric. Wavelength in nm.}
 #'     \item{radiance}{Numeric. Spectral radiance in W m\eqn{^{-2}} nm\eqn{^{-1}} sr\eqn{^{-1}}.}
 #'   }
+#' @examples
+#' # A synthetic one-scan TriOS file (radiance in mW/m2/sr/nm):
+#' f <- tempfile(fileext = ".dat")
+#' writeLines(c("Comment\tscan_1", rep("header_line", 29),
+#'              paste(1:31, seq(400, 700, by = 10), seq(1, 4, length.out = 31),
+#'                    sep = "\t"),
+#'              "[END]"), f)
+#' head(read_trios(f))
+#' unlink(f)
 #' @export
 read_trios <- function(path) {
   context <- .validate_import_path(

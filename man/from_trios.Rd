@@ -20,6 +20,18 @@ instrument values. Construction of non-negative physical radiance spectra
 therefore either fails (the default) or requires an explicit, recorded
 zero-floor preprocessing policy.
 }
+\examples{
+# A synthetic one-scan TriOS file (radiance in mW/m2/sr/nm):
+f <- tempfile(fileext = ".dat")
+writeLines(c("Comment\tscan_1", rep("header_line", 29),
+             paste(1:31, seq(400, 700, by = 10), seq(1, 4, length.out = 31),
+                   sep = "\t"),
+             "[END]"), f)
+s <- from_trios(f)
+names(s)
+s$scan_1$unit
+unlink(f)
+}
 \seealso{
 \code{\link{read_trios}}, \code{\link{read_spectrum}}
 }

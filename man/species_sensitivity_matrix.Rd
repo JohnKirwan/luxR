@@ -47,9 +47,8 @@ reproduces luxR's photon catch; the proportionality constant cancels in the
 log RNL model. Use \code{weight = "energy"} for the raw sensitivities.
 }
 \examples{
-\dontrun{
-  C <- species_sensitivity_matrix("Apis mellifera")
-}
+C <- species_sensitivity_matrix("Apis mellifera")
+head(C)
 }
 \seealso{
 \code{\link{as_colourvision}}, \code{\link{colour_jnd}},

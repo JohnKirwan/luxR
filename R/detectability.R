@@ -675,7 +675,7 @@ detection_range <- function(object, background, illuminant, lambda, Kd,
 #' d <- detectability(red, grey, sp$irradiance, lam,
 #'                    Kd = jerlov_Kd("IA", lambda = 490), species = "Danio rerio")
 #' d
-#' \dontrun{plot(d)}
+#' plot(d)
 #' @export
 detectability <- function(object, background, illuminant, lambda, Kd,
                           kd_to_c = 1.5, species = NULL, receptor = NULL,

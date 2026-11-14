@@ -455,7 +455,8 @@ function(input, output, session) {
 
     irr_at_s <- approx(src$lambda, irr_n, xout = lambda_s, rule = 2)$y
 
-    par(mar = c(4, 4, 3, 4))
+    op <- par(mar = c(4, 4, 3, 4))
+    on.exit(par(op), add = TRUE)
     plot(lambda_s, eff_n, type = "l", col = "darkorange", lwd = 2,
          ylim = c(0, 1.05),
          xlab = "Wavelength (nm)", ylab = "Normalised sensitivity / irradiance",

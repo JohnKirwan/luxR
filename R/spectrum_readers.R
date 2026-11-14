@@ -64,6 +64,17 @@ from_solar <- function(condition = "clear_noon") {
 #' @param negative_policy Either \code{"error"} (default) or \code{"zero"}.
 #' @return A named list of radiance \code{lux_spectrum} objects.
 #' @seealso \code{\link{read_trios}}, \code{\link{read_spectrum}}
+#' @examples
+#' # A synthetic one-scan TriOS file (radiance in mW/m2/sr/nm):
+#' f <- tempfile(fileext = ".dat")
+#' writeLines(c("Comment\tscan_1", rep("header_line", 29),
+#'              paste(1:31, seq(400, 700, by = 10), seq(1, 4, length.out = 31),
+#'                    sep = "\t"),
+#'              "[END]"), f)
+#' s <- from_trios(f)
+#' names(s)
+#' s$scan_1$unit
+#' unlink(f)
 #' @export
 from_trios <- function(path, negative_policy = c("error", "zero")) {
   negative_policy <- match.arg(negative_policy)
@@ -119,6 +130,14 @@ from_trios <- function(path, negative_policy = c("error", "zero")) {
 #' @return A data frame containing \code{lambda} and \code{signal}. Parsed header
 #'   and import provenance are attached as \code{"luxR.header"} and
 #'   \code{"luxR.import"} attributes.
+#' @examples
+#' # A synthetic three-pixel Ocean Optics text export:
+#' f <- tempfile(fileext = ".txt")
+#' writeLines(c("Spectrometer: USB2E0034", "Integration Time (usec): 10000",
+#'              "Number of Pixels in Spectrum: 3", ">>>>>Begin Spectral Data<<<<<",
+#'              "400.0\t0.0012", "450.0\t0.0024", "500.0\t0.0036"), f)
+#' read_ocean_optics(f)$data
+#' unlink(f)
 #' @export
 read_ocean_optics <- function(path) {
   context <- .validate_import_path(
@@ -240,6 +259,16 @@ read_ocean_optics <- function(path) {
 #' @return A validated \code{lux_spectrum} with import provenance in metadata.
 #' @seealso \code{\link{read_ocean_optics}}, \code{\link{from_trios}},
 #'   \code{\link{read_spectrum}}
+#' @examples
+#' # A synthetic three-pixel Ocean Optics text export:
+#' f <- tempfile(fileext = ".txt")
+#' writeLines(c("Spectrometer: USB2E0034", "Integration Time (usec): 10000",
+#'              "Number of Pixels in Spectrum: 3", ">>>>>Begin Spectral Data<<<<<",
+#'              "400.0\t0.0012", "450.0\t0.0024", "500.0\t0.0036"), f)
+#' x <- from_ocean_optics(f, quantity = "irradiance", unit = "W/m2/nm",
+#'                        calibration = "example")
+#' x$E
+#' unlink(f)
 #' @export
 from_ocean_optics <- function(path, quantity = NULL, unit = NULL,
                               calibration = NULL) {

@@ -43,7 +43,7 @@ Radiance is refused, because \code{source_spct} has no per-steradian term.
 \pkg{photobiology} is an optional (\code{Suggests}) dependency.
 }
 \examples{
-\dontrun{
+if (requireNamespace("photobiology", quietly = TRUE)) {
   # The downwelling light field at 15 m, as a photobiology source_spct:
   # Jerlov Kd data cover 350-700 nm, so trim before propagating.
   surface <- from_solar("clear_noon")[350, 700]

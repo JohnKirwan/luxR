@@ -39,8 +39,10 @@ package's ecosystem. Record it once in the spectrum's
 \code{meta$Rfr_type} to have it picked up automatically.
 }
 \examples{
-\dontrun{
-  r <- as_reflector_spct(my_reflectance, Rfr.type = "total")
+if (requireNamespace("photobiology", quietly = TRUE)) {
+  refl <- lux_spectrum(E = seq(0.1, 0.6, length.out = 301), lambda = 400:700,
+                       quantity = "reflectance", unit = "dimensionless")
+  r <- as_reflector_spct(refl, Rfr.type = "total")
 }
 }
 \seealso{
