@@ -17,3 +17,4 @@
 ^dev$
 ^connect$
 ^data-raw$
+^cran-comments\.md$
