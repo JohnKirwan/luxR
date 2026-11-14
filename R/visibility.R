@@ -7,10 +7,12 @@
 #' is supplied the function first computes an irradiance-weighted mean Kd
 #' across 400–700 nm before applying the approximation.
 #'
+#' By default Kd is weighted by photon flux, because vision responds to
+#' photons absorbed. Use \code{basis = "energy"} to weight by radiant energy;
+#' this gives more weight to short wavelengths.
+#'
 #' Each sample is a bin centred on its wavelength on a regular grid; a bin
 #' straddling 400 or 700 nm is weighted by its part inside the window.
-#' Numeric irradiance is used as given; a \code{lux_spectrum} is converted to
-#' W m\eqn{^{-2}} nm\eqn{^{-1}} first.
 #'
 #' @param Kd         Diffuse attenuation coefficient(s) in 1/m, all positive.
 #' @param lambda     Optional wavelength vector (nm) matching \code{Kd}.
@@ -18,7 +20,13 @@
 #'   \code{lambda}; supply with \code{lambda}.
 #' @param spectrum   Optional \code{lux_spectrum}; when supplied its \code{E}
 #'   and \code{lambda} slots replace the \code{irradiance} and \code{lambda}
-#'   arguments.
+#'   arguments. Its unit is read from the object; setting \code{photonic}
+#'   as well is an error.
+#' @param photonic   Logical. \code{FALSE} (default): numeric
+#'   \code{irradiance} is in energy units (e.g. W m\eqn{^{-2}}
+#'   nm\eqn{^{-1}}). \code{TRUE}: it is a photon or molar flux per nm.
+#' @param basis      \code{"photon"} (default) or \code{"energy"}: what
+#'   weights Kd.
 #' @return Secchi depth in metres.
 #' @references
 #'   Tyler JE (1968) Limnol. Oceanogr. 13:1-6.
@@ -29,8 +37,10 @@
 #' secchi_depth(jerlov_Kd("IA", lambda = 490))
 #' @export
 secchi_depth <- function(Kd, lambda = NULL, irradiance = NULL,
-                          spectrum = NULL) {
+                          spectrum = NULL, photonic = FALSE,
+                          basis = c("photon", "energy")) {
   op <- "secchi_depth()"
+  basis <- match.arg(basis)
   .check_input(Kd, "Kd", op, lower = 0, lower_open = TRUE)
   Kd <- as.vector(Kd)
   binwidth <- NULL
@@ -55,6 +65,14 @@ secchi_depth <- function(Kd, lambda = NULL, irradiance = NULL,
     lambda <- x$lambda
     irradiance <- x$E
     binwidth <- x$binwidth
+    if (!isFALSE(photonic)) {
+      .stop_lux_spectrum_validation(
+        paste0(op, ": `photonic` applies to numeric `irradiance`; a ",
+               "lux_spectrum records its own unit."),
+        field = "photonic", value = photonic,
+        subclass = "lux_spectrum_value_error"
+      )
+    }
   }
   if (is.null(lambda) != is.null(irradiance)) {
     .stop_lux_spectrum_validation(
@@ -65,8 +83,7 @@ secchi_depth <- function(Kd, lambda = NULL, irradiance = NULL,
   if (is.null(lambda)) return(1.7 / Kd)
 
   .check_spectral_values(Kd, lambda, "Kd", op)
-  .check_spectral_values(irradiance, lambda, "irradiance", op)
-  .check_input(irradiance, "irradiance", op, lower = 0)
+  irradiance <- .as_basis(irradiance, lambda, photonic, basis, op)
   weight <- irradiance * .band_widths(lambda, binwidth, 400, 700, op,
                                       cover = FALSE)
   if (sum(weight) == 0) {

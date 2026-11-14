@@ -36,6 +36,10 @@
   finite, `lambda` and `irradiance` come together and match `Kd` in length,
   irradiance is non-negative with some in the window, and only irradiance
   spectra are accepted.
+- `secchi_depth()` now weights Kd by photon flux by default, because vision
+  is photon-based. `basis = "energy"` gives the previous energy weighting.
+  Numeric irradiance states its unit with `photonic`, as in `par_fraction()`.
+  Setting `photonic` together with `spectrum` is an error.
 - `photic_depth()`, `weber_contrast()`, `beam_attenuation()` and the numeric
   `fit_Kd()` validate their input and raise typed `lux_spectrum_*_error`s:
   non-finite (including `NA`) or out-of-range values, `fraction >= 1`,

@@ -111,18 +111,7 @@ par_fraction.numeric <- function(irradiance, lambda, binwidth = NULL,
                                  photonic = FALSE,
                                  basis = c("photon", "energy"), ...) {
   op <- "par_fraction()"
-  basis <- match.arg(basis)
-  if (!isTRUE(photonic) && !isFALSE(photonic)) {
-    .stop_lux_spectrum_validation(
-      paste0(op, ": `photonic` must be TRUE or FALSE."),
-      field = "photonic", value = photonic, subclass = "lux_spectrum_type_error"
-    )
-  }
-  .check_spectral_values(irradiance, lambda, "irradiance", op)
-  .check_input(irradiance, "irradiance", op, lower = 0)
-  # Wavelength weighting converts between bases; the constants cancel.
-  if (basis == "photon" && !photonic) irradiance <- irradiance * lambda
-  if (basis == "energy" && photonic)  irradiance <- irradiance / lambda
+  irradiance <- .as_basis(irradiance, lambda, photonic, match.arg(basis), op)
   total <- sum(irradiance * .band_widths(lambda, binwidth, operation = op))
   if (total == 0) {
     .stop_lux_spectrum_validation(
@@ -132,6 +121,23 @@ par_fraction.numeric <- function(irradiance, lambda, binwidth = NULL,
   }
   sum(irradiance * .band_widths(lambda, binwidth, 400, 700, op,
                                 cover = FALSE)) / total
+}
+
+# Validate non-negative spectral irradiance and rescale it to the photon or
+# energy basis. Only ratios of weighted sums are taken downstream, so
+# weighting by wavelength is enough: the constants h, c and N_A cancel.
+.as_basis <- function(irradiance, lambda, photonic, basis, op) {
+  if (!isTRUE(photonic) && !isFALSE(photonic)) {
+    .stop_lux_spectrum_validation(
+      paste0(op, ": `photonic` must be TRUE or FALSE."),
+      field = "photonic", value = photonic, subclass = "lux_spectrum_type_error"
+    )
+  }
+  .check_spectral_values(irradiance, lambda, "irradiance", op)
+  .check_input(irradiance, "irradiance", op, lower = 0)
+  if (basis == "photon" && !photonic) irradiance <- irradiance * lambda
+  if (basis == "energy" && photonic)  irradiance <- irradiance / lambda
+  irradiance
 }
 
 #' @rdname par_fraction
