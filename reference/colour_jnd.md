@@ -16,7 +16,8 @@ colour_jnd(
   species,
   receptor = NULL,
   noise = 0.05,
-  binwidth = NULL
+  binwidth = NULL,
+  band = c(300, 700)
 )
 ```
 
@@ -53,6 +54,16 @@ colour_jnd(
 
   Wavelength bin width in nm. Inferred from `lambda` spacing if `NULL`
   (default). The grid must be regularly spaced.
+
+- band:
+
+  Visual band `c(lower, upper)` in nm over which receptor quantum
+  catches are integrated. Default `c(300, 700)`. A fixed band makes the
+  result independent of how far the `lambda` grid extends; the grid's
+  bins must cover it (a typed `luxR_grid_error` otherwise), and bins
+  straddling an edge count only their in-band width. Narrow it
+  explicitly when the light field is shorter, e.g. `c(350, 700)` for a
+  Jerlov-propagated spectrum; catch below the band is then excluded.
 
 ## Value
 
@@ -94,10 +105,10 @@ sp2 <- solar_irradiance("underwater_10m")
 colour_jnd(sp1$irradiance, sp2$irradiance,
            lambda = sp1$wavelength, species = "Homo sapiens",
            receptor = c("L-cone", "M-cone", "S-cone"))
-#> [1] 1.774973
+#> [1] 1.771804
 
 # Zebrafish tetrachromat (all cones)
 colour_jnd(sp1$irradiance, sp2$irradiance,
            lambda = sp1$wavelength, species = "Danio rerio")
-#> [1] 2.415897
+#> [1] 2.410774
 ```

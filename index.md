@@ -69,7 +69,8 @@ colour_jnd(
   stim2    = reflectance_to_radiance(red_R,  specs[["0"]])$E,
   lambda   = lam,
   species  = "Danio rerio",
-  receptor = c("S-cone", "M-cone", "L-cone")
+  receptor = c("S-cone", "M-cone", "L-cone"),
+  band     = c(350, 700)  # catches integrate over 300-700 nm unless narrowed
 )
 ```
 

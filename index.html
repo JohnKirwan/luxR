@@ -112,7 +112,8 @@
 <span>  stim2    <span class="op">=</span> <span class="fu"><a href="reference/reflectance_to_radiance.html">reflectance_to_radiance</a></span><span class="op">(</span><span class="va">red_R</span>,  <span class="va">specs</span><span class="op">[[</span><span class="st">"0"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">$</span><span class="va">E</span>,</span>
 <span>  lambda   <span class="op">=</span> <span class="va">lam</span>,</span>
 <span>  species  <span class="op">=</span> <span class="st">"Danio rerio"</span>,</span>
-<span>  receptor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S-cone"</span>, <span class="st">"M-cone"</span>, <span class="st">"L-cone"</span><span class="op">)</span></span>
+<span>  receptor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S-cone"</span>, <span class="st">"M-cone"</span>, <span class="st">"L-cone"</span><span class="op">)</span>,</span>
+<span>  band     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">350</span>, <span class="fl">700</span><span class="op">)</span>  <span class="co"># catches integrate over 300-700 nm unless narrowed</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Default colour models use only cited chromatic receptor combinations from <code>species_channels</code>. Rods, melanopsin channels, and incomplete receptor sets are not silently treated as additional colour channels.</p>
 </div>

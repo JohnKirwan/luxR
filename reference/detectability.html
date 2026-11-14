@@ -68,7 +68,8 @@ lux_detection object with print and plot methods."><meta property="og:image" con
 <span>  max_distance <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  search_points <span class="op">=</span> <span class="fl">1001L</span>,</span>
 <span>  geometry <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lambertian"</span>, <span class="st">"scalar"</span>, <span class="st">"collimated"</span>, <span class="st">"custom"</span><span class="op">)</span>,</span>
-<span>  solid_angle <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  solid_angle <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  band <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">300</span>, <span class="fl">700</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -109,8 +110,8 @@ is supplied.</p></dd>
 <dd><p>Species name in <code>species_sensitivities</code>. Required for the
 chromatic channel. For the achromatic channel, a species must have a cited
 default in <code><a href="species_channels.html">species_channels</a></code>. If <code>NULL</code>, achromatic
-brightness is explicitly treated as total photon radiance without a species
-visual model.</p></dd>
+brightness is photon radiance over 400–700 nm (PAR) without a species
+visual model; the <code>lambda</code> bins must cover 400–700 nm.</p></dd>
 
 
 <dt id="arg-receptor">receptor<a class="anchor" aria-label="anchor" href="#arg-receptor"></a></dt>
@@ -190,6 +191,17 @@ model: <code>"lambertian"</code> (default), <code>"scalar"</code>,
 <dd><p>Solid angle in steradians when
 <code>geometry = "custom"</code>.</p></dd>
 
+
+<dt id="arg-band">band<a class="anchor" aria-label="anchor" href="#arg-band"></a></dt>
+<dd><p>Visual band <code>c(lower, upper)</code> in nm over which receptor
+quantum catches are integrated. Default <code>c(300, 700)</code>. A fixed band
+makes the result independent of how far the <code>lambda</code> grid extends;
+the grid's bins must cover it (a typed <code>luxR_grid_error</code> otherwise),
+and bins straddling an edge count only their in-band width. Narrow it
+explicitly when the light field is shorter, e.g. <code>c(350, 700)</code> for a
+Jerlov-propagated spectrum; catch below the band is then excluded.
+Used only with a <code>species</code>; see <code><a href="colour_jnd.html">colour_jnd</a></code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -220,8 +232,8 @@ model: <code>"lambertian"</code> (default), <code>"scalar"</code>,
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;lux_detection&gt; horizontal viewing, Danio rerio </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   model: scalar contrast/JND heuristic scenario estimate </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   validation: not empirically validated as an actual detection range</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   achromatic: C0 = -0.160 (Weber)   -&gt; estimate 64.10 m  (thr 0.020; crossed)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   chromatic : dS = 3.992 JND        -&gt; estimate 42.73 m  (thr 1.00 JND; crossed)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   achromatic: C0 = -0.160 (Weber)   -&gt; estimate 64.09 m  (thr 0.020; crossed)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   chromatic : dS = 3.994 JND        -&gt; estimate 42.74 m  (thr 1.00 JND; crossed)</span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="co"># \dontrun{}</span></span></span>
 </code></pre></div>
     </div>

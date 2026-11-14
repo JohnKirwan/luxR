@@ -105,20 +105,27 @@ grey background under the 10 m light field.
 returns both an achromatic (brightness) Weber contrast and a chromatic
 distance (ΔS, in JNDs) for the viewer’s receptors.
 
+Receptor catches integrate over a fixed visual band, 300–700 nm by
+default, so a result does not depend on how far the wavelength grid
+happens to extend. The Jerlov light field starts at 350 nm, so we state
+the narrower band explicitly: the UV cone’s catch below 350 nm is then
+knowingly left out, not silently lost.
+
 ``` r
 
 grey <- rep(0.30, length(lam))
 red  <- 0.20 + 0.25 * exp(-((lam - 625) / 35)^2)
+band <- c(350, 700)                       # the Jerlov light field's range
 
-ic <- inherent_contrast(red, grey, E_10m, lam, species = viewer)
+ic <- inherent_contrast(red, grey, E_10m, lam, species = viewer, band = band)
 ic
 ```
 
     ## $achromatic
-    ## [1] -0.2469029
+    ## [1] -0.2467601
     ## 
     ## $chromatic
-    ## [1] 2.098941
+    ## [1] 2.1022
 
 The default scenario assumes both scalar contrasts decay with distance
 as veiling light replaces the object (`C(r) = C0 * exp(-c r)`). This is
@@ -135,7 +142,7 @@ c_beam <- beam_attenuation(absorption = 0.20, scattering = 0.12)   # 1/m
 Kd_ref <- jerlov_Kd("II", lambda = 490)
 
 d <- detectability(red, grey, E_10m, lam, Kd = Kd_ref,
-                   beam_c = c_beam, species = viewer)
+                   beam_c = c_beam, species = viewer, band = band)
 d
 ```
 
@@ -143,7 +150,7 @@ d
     ##   model: scalar contrast/JND heuristic scenario estimate 
     ##   validation: not empirically validated as an actual detection range
     ##   achromatic: C0 = -0.247 (Weber)   -> estimate 7.85 m  (thr 0.020; crossed)
-    ##   chromatic : dS = 2.099 JND        -> estimate 2.32 m  (thr 1.00 JND; crossed)
+    ##   chromatic : dS = 2.102 JND        -> estimate 2.32 m  (thr 1.00 JND; crossed)
 
 ``` r
 
@@ -165,10 +172,10 @@ becomes `c - Kd`:
 
 detection_range(red, grey, E_10m, lam, Kd = Kd_ref, beam_c = c_beam,
                 species = viewer, channel = "achromatic",
-                direction = "up")$achromatic
+                direction = "up", band = band)$achromatic
 ```
 
-    ## [1] 9.412969
+    ## [1] 9.410803
 
 For chromatic work, prefer the wavelength-resolved path model. It
 requires an explicit beam-attenuation spectrum and veiling radiance
@@ -187,6 +194,7 @@ d_spectral <- detectability(
   Kd = Kd_lambda,
   beam_c = c_lambda,
   species = viewer,
+  band = band,
   model = "spectral_path",
   veiling = veil,
   max_distance = 50,
@@ -198,8 +206,8 @@ d_spectral
     ## <lux_detection> horizontal viewing, Danio rerio 
     ##   model: spectral-path scenario estimate 
     ##   validation: not empirically validated as an actual detection range
-    ##   achromatic: C0 = -0.247 (Weber)   -> estimate 27.52 m  (thr 0.020; crossed)
-    ##   chromatic : dS = 2.099 JND        -> estimate 14.38 m  (thr 1.00 JND; crossed)
+    ##   achromatic: C0 = -0.247 (Weber)   -> estimate 27.54 m  (thr 0.020; crossed)
+    ##   chromatic : dS = 2.102 JND        -> estimate 14.18 m  (thr 1.00 JND; crossed)
 
 This remains a scenario estimate: the spectral calculation improves the
 path physics and receptor calculation, but it does not add target size,

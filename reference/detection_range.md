@@ -35,7 +35,8 @@ detection_range(
   max_distance = 1000,
   search_points = 1001L,
   geometry = c("lambertian", "scalar", "collimated", "custom"),
-  solid_angle = NULL
+  solid_angle = NULL,
+  band = c(300, 700)
 )
 ```
 
@@ -75,8 +76,9 @@ detection_range(
   channel. For the achromatic channel, a species must have a cited
   default in
   [`species_channels`](https://johnkirwan.github.io/luxR/reference/species_channels.md).
-  If `NULL`, achromatic brightness is explicitly treated as total photon
-  radiance without a species visual model.
+  If `NULL`, achromatic brightness is photon radiance over 400–700 nm
+  (PAR) without a species visual model; the `lambda` bins must cover
+  400–700 nm.
 
 - receptor:
 
@@ -150,6 +152,18 @@ detection_range(
 
   Solid angle in steradians when `geometry = "custom"`.
 
+- band:
+
+  Visual band `c(lower, upper)` in nm over which receptor quantum
+  catches are integrated. Default `c(300, 700)`. A fixed band makes the
+  result independent of how far the `lambda` grid extends; the grid's
+  bins must cover it (a typed `luxR_grid_error` otherwise), and bins
+  straddling an edge count only their in-band width. Narrow it
+  explicitly when the light field is shorter, e.g. `c(350, 700)` for a
+  Jerlov-propagated spectrum; catch below the band is then excluded.
+  Used only with a `species`; see
+  [`colour_jnd`](https://johnkirwan.github.io/luxR/reference/colour_jnd.md).
+
 ## Value
 
 A list with elements `achromatic` and `chromatic` giving scenario
@@ -196,10 +210,10 @@ red  <- 0.2 + 0.25 * exp(-((lam - 625) / 35)^2)
 Kd   <- jerlov_Kd("IA", lambda = 490)
 detection_range(red, grey, sp$irradiance, lam, Kd = Kd, species = "Danio rerio")
 #> $achromatic
-#> [1] 64.10393
+#> [1] 64.08686
 #> 
 #> $chromatic
-#> [1] 42.72878
+#> [1] 42.74283
 #> 
 #> attr(,"status")
 #> achromatic  chromatic 

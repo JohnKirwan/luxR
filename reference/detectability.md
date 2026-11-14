@@ -31,7 +31,8 @@ detectability(
   max_distance = 1000,
   search_points = 1001L,
   geometry = c("lambertian", "scalar", "collimated", "custom"),
-  solid_angle = NULL
+  solid_angle = NULL,
+  band = c(300, 700)
 )
 ```
 
@@ -71,8 +72,9 @@ detectability(
   channel. For the achromatic channel, a species must have a cited
   default in
   [`species_channels`](https://johnkirwan.github.io/luxR/reference/species_channels.md).
-  If `NULL`, achromatic brightness is explicitly treated as total photon
-  radiance without a species visual model.
+  If `NULL`, achromatic brightness is photon radiance over 400–700 nm
+  (PAR) without a species visual model; the `lambda` bins must cover
+  400–700 nm.
 
 - receptor:
 
@@ -151,6 +153,18 @@ detectability(
 
   Solid angle in steradians when `geometry = "custom"`.
 
+- band:
+
+  Visual band `c(lower, upper)` in nm over which receptor quantum
+  catches are integrated. Default `c(300, 700)`. A fixed band makes the
+  result independent of how far the `lambda` grid extends; the grid's
+  bins must cover it (a typed `luxR_grid_error` otherwise), and bins
+  straddling an edge count only their in-band width. Narrow it
+  explicitly when the light field is shorter, e.g. `c(350, 700)` for a
+  Jerlov-propagated spectrum; catch below the band is then excluded.
+  Used only with a `species`; see
+  [`colour_jnd`](https://johnkirwan.github.io/luxR/reference/colour_jnd.md).
+
 ## Value
 
 An object of class `lux_detection`: a list with `inherent`
@@ -181,7 +195,7 @@ d
 #> <lux_detection> horizontal viewing, Danio rerio 
 #>   model: scalar contrast/JND heuristic scenario estimate 
 #>   validation: not empirically validated as an actual detection range
-#>   achromatic: C0 = -0.160 (Weber)   -> estimate 64.10 m  (thr 0.020; crossed)
-#>   chromatic : dS = 3.992 JND        -> estimate 42.73 m  (thr 1.00 JND; crossed)
+#>   achromatic: C0 = -0.160 (Weber)   -> estimate 64.09 m  (thr 0.020; crossed)
+#>   chromatic : dS = 3.994 JND        -> estimate 42.74 m  (thr 1.00 JND; crossed)
 if (FALSE) plot(d) # \dontrun{}
 ```

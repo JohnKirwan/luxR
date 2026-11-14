@@ -103,7 +103,7 @@ nm⁻¹), an illuminance (lux), or a scotopic illuminance.</p>
 <span><span class="co">##    import: 5952acfab4a04ea1b02eb085e6a768d5</span></span>
 <span><span class="co">##    import: naples-legacy-v1</span></span>
 <span><span class="co">##    import: 0.1.1</span></span>
-<span><span class="co">##    import: 3ec3d85329d9e69b9b0531fbe8d127a1604968cc</span></span>
+<span><span class="co">##    import: a7dffefc0dafceb3a9ce8a8e0a46a8cca8efd67c</span></span>
 <span><span class="co">##    import: parse canonical processed snapshot; validate schema grid and non-negative irradiance</span></span></code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">unit_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -394,7 +394,9 @@ rods, irradiance detectors, or incomplete receptor sets to colour
 channels.</p>
 <p><code><a href="../reference/colour_jnd.html">colour_jnd()</a></code> takes numeric radiance vectors (W m⁻²
 nm⁻¹), so we extract <code>$E</code> and <code>$lambda</code> from the
-<code>lux_spectrum</code> objects.</p>
+<code>lux_spectrum</code> objects. Receptor catches integrate over a
+fixed visual band, 300–700 nm by default; the Jerlov light field starts
+at 350 nm, so we state that narrower band explicitly.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">depths</span>     <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5</span>, <span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">50</span><span class="op">)</span></span>
 <span><span class="va">depth_keys</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">depths</span><span class="op">)</span></span>
@@ -409,7 +411,8 @@ nm⁻¹), so we extract <code>$E</code> and <code>$lambda</code> from the
 <span>    species  <span class="op">=</span> <span class="st">"Danio rerio"</span>,</span>
 <span>    receptor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S-cone"</span>, <span class="st">"M-cone"</span>, <span class="st">"L-cone"</span><span class="op">)</span>,</span>
 <span>    noise    <span class="op">=</span> <span class="fl">0.05</span>,</span>
-<span>    binwidth <span class="op">=</span> <span class="va">r1</span><span class="op">$</span><span class="va">binwidth</span></span>
+<span>    binwidth <span class="op">=</span> <span class="va">r1</span><span class="op">$</span><span class="va">binwidth</span>,</span>
+<span>    band     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">350</span>, <span class="fl">700</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span></span>
@@ -494,12 +497,15 @@ proportional to wavelength;</li>
 that with equal cone ratios (<code>n = 1</code>), so
 <code>e_i = weber</code>;</li>
 <li>use raw quantum catches:
-<code>vismodel(qcatch = "Qi", vonkries = FALSE, relative = FALSE)</code>.</li>
+<code>vismodel(qcatch = "Qi", vonkries = FALSE, relative = FALSE)</code>;</li>
+<li>pavo sums over every grid point, so give luxR a band covering the
+whole of each 1 nm bin from 300 to 700 nm
+(<code>band = c(299.5, 700.5)</code>).</li>
 </ul>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pavo.colrverse.com" class="external-link">pavo</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">lam</span> <span class="op">&lt;-</span> <span class="fl">300</span><span class="op">:</span><span class="fl">750</span></span>
+<span><span class="va">lam</span> <span class="op">&lt;-</span> <span class="fl">300</span><span class="op">:</span><span class="fl">700</span></span>
 <span><span class="va">s1</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/approxfun.html" class="external-link">approx</a></span><span class="op">(</span><span class="va">solar_spectra</span><span class="op">$</span><span class="va">clear_noon</span><span class="op">$</span><span class="va">wavelength</span>,</span>
 <span>              <span class="va">solar_spectra</span><span class="op">$</span><span class="va">clear_noon</span><span class="op">$</span><span class="va">irradiance</span>, <span class="va">lam</span>, rule <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">$</span><span class="va">y</span></span>
 <span><span class="va">s2</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/approxfun.html" class="external-link">approx</a></span><span class="op">(</span><span class="va">solar_spectra</span><span class="op">$</span><span class="va">underwater_10m</span><span class="op">$</span><span class="va">wavelength</span>,</span>
@@ -531,7 +537,8 @@ that with equal cone ratios (<code>n = 1</code>), so
 <span><span class="va">cmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  species <span class="op">=</span> <span class="va">species</span>,</span>
 <span>  luxR    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">species</span>, <span class="kw">function</span><span class="op">(</span><span class="va">sp</span><span class="op">)</span></span>
-<span>              <span class="fu"><a href="../reference/colour_jnd.html">colour_jnd</a></span><span class="op">(</span><span class="va">s1</span>, <span class="va">s2</span>, lambda <span class="op">=</span> <span class="va">lam</span>, species <span class="op">=</span> <span class="va">sp</span>, noise <span class="op">=</span> <span class="va">w</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>              <span class="fu"><a href="../reference/colour_jnd.html">colour_jnd</a></span><span class="op">(</span><span class="va">s1</span>, <span class="va">s2</span>, lambda <span class="op">=</span> <span class="va">lam</span>, species <span class="op">=</span> <span class="va">sp</span>, noise <span class="op">=</span> <span class="va">w</span>,</span>
+<span>                         band <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">299.5</span>, <span class="fl">700.5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  pavo    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">species</span>, <span class="kw">function</span><span class="op">(</span><span class="va">sp</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressMessages</a></span><span class="op">(</span><span class="fu">pavo_dS</span><span class="op">(</span><span class="va">sp</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">cmp</span><span class="op">$</span><span class="va">abs_diff</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">cmp</span><span class="op">$</span><span class="va">luxR</span> <span class="op">-</span> <span class="va">cmp</span><span class="op">$</span><span class="va">pavo</span><span class="op">)</span></span>
@@ -556,23 +563,23 @@ that with equal cone ratios (<code>n = 1</code>), so
 <tr class="odd">
 <td align="left">Homo sapiens</td>
 <td align="left">Homo sapiens</td>
-<td align="right">1.780130</td>
-<td align="right">1.780130</td>
-<td align="right">3e-14</td>
+<td align="right">1.777255</td>
+<td align="right">1.777255</td>
+<td align="right">3.0e-14</td>
 </tr>
 <tr class="even">
 <td align="left">Apis mellifera</td>
 <td align="left">Apis mellifera</td>
-<td align="right">0.943538</td>
-<td align="right">0.943538</td>
-<td align="right">4e-14</td>
+<td align="right">0.942980</td>
+<td align="right">0.942980</td>
+<td align="right">1.7e-13</td>
 </tr>
 <tr class="odd">
 <td align="left">Danio rerio</td>
 <td align="left">Danio rerio</td>
-<td align="right">2.422568</td>
-<td align="right">2.422568</td>
-<td align="right">1e-14</td>
+<td align="right">2.417910</td>
+<td align="right">2.417910</td>
+<td align="right">0.0e+00</td>
 </tr>
 </tbody>
 </table>

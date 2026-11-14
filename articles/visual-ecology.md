@@ -48,7 +48,7 @@ x0m_W
     ##    import: 5952acfab4a04ea1b02eb085e6a768d5
     ##    import: naples-legacy-v1
     ##    import: 0.1.1
-    ##    import: 3ec3d85329d9e69b9b0531fbe8d127a1604968cc
+    ##    import: a7dffefc0dafceb3a9ce8a8e0a46a8cca8efd67c
     ##    import: parse canonical processed snapshot; validate schema grid and non-negative irradiance
 
 ``` r
@@ -271,7 +271,9 @@ incomplete receptor sets to colour channels.
 
 [`colour_jnd()`](https://johnkirwan.github.io/luxR/reference/colour_jnd.md)
 takes numeric radiance vectors (W m⁻² nm⁻¹), so we extract `$E` and
-`$lambda` from the `lux_spectrum` objects.
+`$lambda` from the `lux_spectrum` objects. Receptor catches integrate
+over a fixed visual band, 300–700 nm by default; the Jerlov light field
+starts at 350 nm, so we state that narrower band explicitly.
 
 ``` r
 
@@ -288,7 +290,8 @@ jnd_vals <- sapply(depth_keys, function(d) {
     species  = "Danio rerio",
     receptor = c("S-cone", "M-cone", "L-cone"),
     noise    = 0.05,
-    binwidth = r1$binwidth
+    binwidth = r1$binwidth,
+    band     = c(350, 700)
   )
 })
 
@@ -357,13 +360,15 @@ matched:
 - luxR’s per-receptor noise is the Weber fraction directly; reproduce
   that with equal cone ratios (`n = 1`), so `e_i = weber`;
 - use raw quantum catches:
-  `vismodel(qcatch = "Qi", vonkries = FALSE, relative = FALSE)`.
+  `vismodel(qcatch = "Qi", vonkries = FALSE, relative = FALSE)`;
+- pavo sums over every grid point, so give luxR a band covering the
+  whole of each 1 nm bin from 300 to 700 nm (`band = c(299.5, 700.5)`).
 
 ``` r
 
 library(pavo)
 
-lam <- 300:750
+lam <- 300:700
 s1  <- approx(solar_spectra$clear_noon$wavelength,
               solar_spectra$clear_noon$irradiance, lam, rule = 2)$y
 s2  <- approx(solar_spectra$underwater_10m$wavelength,
@@ -395,7 +400,8 @@ species <- c("Homo sapiens", "Apis mellifera", "Danio rerio")
 cmp <- data.frame(
   species = species,
   luxR    = sapply(species, function(sp)
-              colour_jnd(s1, s2, lambda = lam, species = sp, noise = w)),
+              colour_jnd(s1, s2, lambda = lam, species = sp, noise = w,
+                         band = c(299.5, 700.5))),
   pavo    = sapply(species, function(sp) suppressMessages(pavo_dS(sp)))
 )
 cmp$abs_diff <- abs(cmp$luxR - cmp$pavo)
@@ -405,9 +411,9 @@ knitr::kable(cmp, digits = c(0, 6, 6, 14),
 
 |                | Species        |  luxR ΔS |  pavo ΔS | \|difference\| |
 |:---------------|:---------------|---------:|---------:|---------------:|
-| Homo sapiens   | Homo sapiens   | 1.780130 | 1.780130 |          3e-14 |
-| Apis mellifera | Apis mellifera | 0.943538 | 0.943538 |          4e-14 |
-| Danio rerio    | Danio rerio    | 2.422568 | 2.422568 |          1e-14 |
+| Homo sapiens   | Homo sapiens   | 1.777255 | 1.777255 |        3.0e-14 |
+| Apis mellifera | Apis mellifera | 0.942980 | 0.942980 |        1.7e-13 |
+| Danio rerio    | Danio rerio    | 2.417910 | 2.417910 |        0.0e+00 |
 
 The agreement is a useful regression guard as well as a check on
 correctness: `tests/testthat/test-pavo-validation.R` asserts it

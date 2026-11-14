@@ -154,17 +154,23 @@ flat grey background under the 10 m light field.
 <code><a href="../reference/inherent_contrast.html">inherent_contrast()</a></code> returns both an achromatic (brightness)
 Weber contrast and a chromatic distance (ΔS, in JNDs) for the viewer’s
 receptors.</p>
+<p>Receptor catches integrate over a fixed visual band, 300–700 nm by
+default, so a result does not depend on how far the wavelength grid
+happens to extend. The Jerlov light field starts at 350 nm, so we state
+the narrower band explicitly: the UV cone’s catch below 350 nm is then
+knowingly left out, not silently lost.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grey</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.30</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">lam</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">red</span>  <span class="op">&lt;-</span> <span class="fl">0.20</span> <span class="op">+</span> <span class="fl">0.25</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="op">(</span><span class="va">lam</span> <span class="op">-</span> <span class="fl">625</span><span class="op">)</span> <span class="op">/</span> <span class="fl">35</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">band</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">350</span>, <span class="fl">700</span><span class="op">)</span>                       <span class="co"># the Jerlov light field's range</span></span>
 <span></span>
-<span><span class="va">ic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/inherent_contrast.html">inherent_contrast</a></span><span class="op">(</span><span class="va">red</span>, <span class="va">grey</span>, <span class="va">E_10m</span>, <span class="va">lam</span>, species <span class="op">=</span> <span class="va">viewer</span><span class="op">)</span></span>
+<span><span class="va">ic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/inherent_contrast.html">inherent_contrast</a></span><span class="op">(</span><span class="va">red</span>, <span class="va">grey</span>, <span class="va">E_10m</span>, <span class="va">lam</span>, species <span class="op">=</span> <span class="va">viewer</span>, band <span class="op">=</span> <span class="va">band</span><span class="op">)</span></span>
 <span><span class="va">ic</span></span></code></pre></div>
 <pre><code><span><span class="co">## $achromatic</span></span>
-<span><span class="co">## [1] -0.2469029</span></span>
+<span><span class="co">## [1] -0.2467601</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $chromatic</span></span>
-<span><span class="co">## [1] 2.098941</span></span></code></pre>
+<span><span class="co">## [1] 2.1022</span></span></code></pre>
 <p>The default scenario assumes both scalar contrasts decay with
 distance as veiling light replaces the object
 (<code>C(r) = C0 * exp(-c r)</code>). This is a teaching heuristic, not
@@ -178,13 +184,13 @@ than the <code>Kd * kd_to_c</code> proxy.</p>
 <span><span class="va">Kd_ref</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/jerlov_Kd.html">jerlov_Kd</a></span><span class="op">(</span><span class="st">"II"</span>, lambda <span class="op">=</span> <span class="fl">490</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detectability.html">detectability</a></span><span class="op">(</span><span class="va">red</span>, <span class="va">grey</span>, <span class="va">E_10m</span>, <span class="va">lam</span>, Kd <span class="op">=</span> <span class="va">Kd_ref</span>,</span>
-<span>                   beam_c <span class="op">=</span> <span class="va">c_beam</span>, species <span class="op">=</span> <span class="va">viewer</span><span class="op">)</span></span>
+<span>                   beam_c <span class="op">=</span> <span class="va">c_beam</span>, species <span class="op">=</span> <span class="va">viewer</span>, band <span class="op">=</span> <span class="va">band</span><span class="op">)</span></span>
 <span><span class="va">d</span></span></code></pre></div>
 <pre><code><span><span class="co">## &lt;lux_detection&gt; horizontal viewing, Danio rerio </span></span>
 <span><span class="co">##   model: scalar contrast/JND heuristic scenario estimate </span></span>
 <span><span class="co">##   validation: not empirically validated as an actual detection range</span></span>
 <span><span class="co">##   achromatic: C0 = -0.247 (Weber)   -&gt; estimate 7.85 m  (thr 0.020; crossed)</span></span>
-<span><span class="co">##   chromatic : dS = 2.099 JND        -&gt; estimate 2.32 m  (thr 1.00 JND; crossed)</span></span></code></pre>
+<span><span class="co">##   chromatic : dS = 2.102 JND        -&gt; estimate 2.32 m  (thr 1.00 JND; crossed)</span></span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></code></pre></div>
 <p><img src="seeing-through-water_files/figure-html/detect-plot-1.png" class="r-plt" alt="" width="672"></p>
@@ -199,8 +205,8 @@ coefficient becomes <code>c - Kd</code>:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/detection_range.html">detection_range</a></span><span class="op">(</span><span class="va">red</span>, <span class="va">grey</span>, <span class="va">E_10m</span>, <span class="va">lam</span>, Kd <span class="op">=</span> <span class="va">Kd_ref</span>, beam_c <span class="op">=</span> <span class="va">c_beam</span>,</span>
 <span>                species <span class="op">=</span> <span class="va">viewer</span>, channel <span class="op">=</span> <span class="st">"achromatic"</span>,</span>
-<span>                direction <span class="op">=</span> <span class="st">"up"</span><span class="op">)</span><span class="op">$</span><span class="va">achromatic</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 9.412969</span></span></code></pre>
+<span>                direction <span class="op">=</span> <span class="st">"up"</span>, band <span class="op">=</span> <span class="va">band</span><span class="op">)</span><span class="op">$</span><span class="va">achromatic</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 9.410803</span></span></code></pre>
 <p>For chromatic work, prefer the wavelength-resolved path model. It
 requires an explicit beam-attenuation spectrum and veiling radiance
 rather than treating a zero-distance JND as a scalar that decays
@@ -216,6 +222,7 @@ also the asymptotic veiling field:</p>
 <span>  Kd <span class="op">=</span> <span class="va">Kd_lambda</span>,</span>
 <span>  beam_c <span class="op">=</span> <span class="va">c_lambda</span>,</span>
 <span>  species <span class="op">=</span> <span class="va">viewer</span>,</span>
+<span>  band <span class="op">=</span> <span class="va">band</span>,</span>
 <span>  model <span class="op">=</span> <span class="st">"spectral_path"</span>,</span>
 <span>  veiling <span class="op">=</span> <span class="va">veil</span>,</span>
 <span>  max_distance <span class="op">=</span> <span class="fl">50</span>,</span>
@@ -225,8 +232,8 @@ also the asymptotic veiling field:</p>
 <pre><code><span><span class="co">## &lt;lux_detection&gt; horizontal viewing, Danio rerio </span></span>
 <span><span class="co">##   model: spectral-path scenario estimate </span></span>
 <span><span class="co">##   validation: not empirically validated as an actual detection range</span></span>
-<span><span class="co">##   achromatic: C0 = -0.247 (Weber)   -&gt; estimate 27.52 m  (thr 0.020; crossed)</span></span>
-<span><span class="co">##   chromatic : dS = 2.099 JND        -&gt; estimate 14.38 m  (thr 1.00 JND; crossed)</span></span></code></pre>
+<span><span class="co">##   achromatic: C0 = -0.247 (Weber)   -&gt; estimate 27.54 m  (thr 0.020; crossed)</span></span>
+<span><span class="co">##   chromatic : dS = 2.102 JND        -&gt; estimate 14.18 m  (thr 1.00 JND; crossed)</span></span></code></pre>
 <p>This remains a scenario estimate: the spectral calculation improves
 the path physics and receptor calculation, but it does not add target
 size, acuity, photon limits, behaviour, or empirical validation for the

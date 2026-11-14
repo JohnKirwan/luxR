@@ -52,7 +52,7 @@ x0m
     ##    import: 5952acfab4a04ea1b02eb085e6a768d5
     ##    import: naples-legacy-v1
     ##    import: 0.1.1
-    ##    import: 3ec3d85329d9e69b9b0531fbe8d127a1604968cc
+    ##    import: a7dffefc0dafceb3a9ce8a8e0a46a8cca8efd67c
     ##    import: parse canonical processed snapshot; validate schema grid and non-negative irradiance
 
 ``` r
@@ -116,7 +116,7 @@ x0m_W
     ##    import: 5952acfab4a04ea1b02eb085e6a768d5
     ##    import: naples-legacy-v1
     ##    import: 0.1.1
-    ##    import: 3ec3d85329d9e69b9b0531fbe8d127a1604968cc
+    ##    import: a7dffefc0dafceb3a9ce8a8e0a46a8cca8efd67c
     ##    import: parse canonical processed snapshot; validate schema grid and non-negative irradiance
 
 ### Validation against photobiology

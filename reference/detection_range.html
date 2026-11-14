@@ -79,7 +79,8 @@ wavelength and recomputes receptor catches at each evaluated distance.</p>
 <span>  max_distance <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  search_points <span class="op">=</span> <span class="fl">1001L</span>,</span>
 <span>  geometry <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lambertian"</span>, <span class="st">"scalar"</span>, <span class="st">"collimated"</span>, <span class="st">"custom"</span><span class="op">)</span>,</span>
-<span>  solid_angle <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  solid_angle <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  band <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">300</span>, <span class="fl">700</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -120,8 +121,8 @@ is supplied.</p></dd>
 <dd><p>Species name in <code>species_sensitivities</code>. Required for the
 chromatic channel. For the achromatic channel, a species must have a cited
 default in <code><a href="species_channels.html">species_channels</a></code>. If <code>NULL</code>, achromatic
-brightness is explicitly treated as total photon radiance without a species
-visual model.</p></dd>
+brightness is photon radiance over 400–700 nm (PAR) without a species
+visual model; the <code>lambda</code> bins must cover 400–700 nm.</p></dd>
 
 
 <dt id="arg-receptor">receptor<a class="anchor" aria-label="anchor" href="#arg-receptor"></a></dt>
@@ -196,6 +197,17 @@ model: <code>"lambertian"</code> (default), <code>"scalar"</code>,
 <dd><p>Solid angle in steradians when
 <code>geometry = "custom"</code>.</p></dd>
 
+
+<dt id="arg-band">band<a class="anchor" aria-label="anchor" href="#arg-band"></a></dt>
+<dd><p>Visual band <code>c(lower, upper)</code> in nm over which receptor
+quantum catches are integrated. Default <code>c(300, 700)</code>. A fixed band
+makes the result independent of how far the <code>lambda</code> grid extends;
+the grid's bins must cover it (a typed <code>luxR_grid_error</code> otherwise),
+and bins straddling an edge count only their in-band width. Narrow it
+explicitly when the light field is shorter, e.g. <code>c(350, 700)</code> for a
+Jerlov-propagated spectrum; catch below the band is then excluded.
+Used only with a <code>species</code>; see <code><a href="colour_jnd.html">colour_jnd</a></code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -240,10 +252,10 @@ bracketed by <code>search_points</code>; callers should check resolution sensiti
 <span class="r-in"><span><span class="va">Kd</span>   <span class="op">&lt;-</span> <span class="fu"><a href="jerlov_Kd.html">jerlov_Kd</a></span><span class="op">(</span><span class="st">"IA"</span>, lambda <span class="op">=</span> <span class="fl">490</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">detection_range</span><span class="op">(</span><span class="va">red</span>, <span class="va">grey</span>, <span class="va">sp</span><span class="op">$</span><span class="va">irradiance</span>, <span class="va">lam</span>, Kd <span class="op">=</span> <span class="va">Kd</span>, species <span class="op">=</span> <span class="st">"Danio rerio"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $achromatic</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 64.10393</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 64.08686</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $chromatic</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 42.72878</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 42.74283</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"status")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> achromatic  chromatic </span>
