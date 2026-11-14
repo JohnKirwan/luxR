@@ -9,11 +9,12 @@ govardovskii_template(lambda, lambda_max, chromophore = c("A1", "A2"))
 \arguments{
 \item{lambda}{Wavelength grid in nm (numeric vector).}
 
-\item{lambda_max}{Peak absorbance wavelength in nm, between 300 and 700.}
+\item{lambda_max}{Peak absorbance wavelength in nm: 300--700 for A1,
+440--620 for A2.}
 
 \item{chromophore}{Chromophore type: \code{"A1"} (11-cis retinal, default)
-or \code{"A2"} (11-cis 3,4-didehydroretinal). A2 shifts the peak toward
-longer wavelengths and broadens the spectrum.}
+or \code{"A2"} (11-cis 3,4-didehydroretinal). For the same
+\code{lambda_max}, the A2 spectrum is broader.}
 }
 \value{
 A data frame with columns \code{lambda} and \code{S} (normalised
@@ -29,24 +30,37 @@ comparative visual physiology.
 \details{
 The template models absorbance as the sum of an \eqn{\alpha}-band (main peak)
 and a \eqn{\beta}-band (short-wavelength shoulder). The \eqn{\alpha}-band
-follows the four-parameter expression:
+follows eqn 1 of Govardovskii et al. (2000):
 \deqn{S_\alpha(\lambda) = \left[
-  e^{A(a - x)} + e^{B(0.922 - x)} + e^{C(1.104 - x)} + D
+  e^{A(a - x)} + e^{B(b - x)} + e^{C(c - x)} + D
 \right]^{-1}, \quad x = \frac{\lambda_{\max}}{\lambda}}
-where \eqn{A}, \eqn{B}, \eqn{C}, \eqn{D}, and \eqn{a} are chromophore-specific
-constants (A1: \eqn{A=69.7}, \eqn{B=28}, \eqn{C=-14.9}, \eqn{D=0.674},
-\eqn{a} wavelength-dependent; A2: \eqn{A=62.7}, \eqn{B=26.5},
-\eqn{C=-15.6}, \eqn{D=0.530}). The \eqn{\beta}-band is a Gaussian:
-\deqn{S_\beta(\lambda) = 0.26\,\exp\!\left[
-  -\!\left(\frac{\lambda - \lambda_\beta}{b}\right)^2
+and the \eqn{\beta}-band is a Gaussian (eqn 4):
+\deqn{S_\beta(\lambda) = A_\beta \exp\!\left[
+  -\!\left(\frac{\lambda - \lambda_{m\beta}}{w}\right)^2
 \right]}
-with \eqn{\lambda_\beta = 189 + 0.315\,\lambda_{\max}} and
-\eqn{b = -40.5 + 0.195\,\lambda_{\max}}. The full template is
-\eqn{S(\lambda) = \max(0,\, S_\alpha + S_\beta)}, normalised to the
-template's own maximum. That maximum lies slightly below
-\eqn{\lambda_{\max}} and is found numerically, so the returned values do not
-depend on the wavelength grid supplied: a grid that misses the peak returns
-values below 1 rather than being rescaled.
+The constants depend on the chromophore:
+\itemize{
+  \item A1 (eqns 2, 5): \eqn{A = 69.7},
+    \eqn{a = 0.8795 + 0.0459\,e^{-(\lambda_{\max} - 300)^2/11940}},
+    \eqn{B = 28}, \eqn{b = 0.922}, \eqn{C = -14.9}, \eqn{c = 1.104},
+    \eqn{D = 0.674}; \eqn{A_\beta = 0.26},
+    \eqn{\lambda_{m\beta} = 189 + 0.315\,\lambda_{\max}},
+    \eqn{w = -40.5 + 0.195\,\lambda_{\max}}.
+  \item A2 (eqns 6, 8): \eqn{A = 62.7 + 1.834\,e^{(\lambda_{\max} - 625)/54.2}},
+    \eqn{a = 0.875 + 0.0268\,e^{(\lambda_{\max} - 665)/40.7}},
+    \eqn{B = 20.85}, \eqn{b = 0.9101}, \eqn{C = -10.37}, \eqn{c = 1.1123},
+    \eqn{D = 0.5343}; \eqn{A_\beta = 0.37},
+    \eqn{\lambda_{m\beta} = 216.7 + 0.287\,\lambda_{\max}},
+    \eqn{w = 317 - 1.149\,\lambda_{\max} + 0.00124\,\lambda_{\max}^2}.
+}
+The full template \eqn{S_\alpha + S_\beta} is normalised to its own maximum,
+which lies within a few nm of \eqn{\lambda_{\max}} and is found numerically,
+so the returned values do not depend on the wavelength grid supplied: a grid
+that misses the peak returns values below 1 rather than being rescaled.
+
+The A2 template was fitted to pigments peaking between about 444 and 620 nm,
+so \code{lambda_max} outside 440--620 nm is rejected for A2. A1 accepts
+300--700 nm.
 }
 \examples{
 lam <- seq(300, 750, by = 1)

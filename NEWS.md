@@ -1,6 +1,27 @@
 # luxR 0.1.1
 
 ## Breaking changes
+- The A2 `govardovskii_template()` now follows Govardovskii et al. (2000):
+  - The α-band uses eqns 6a/6b with B = 20.85, b = 0.9101, C = -10.37,
+    c = 1.1123 and D = 0.5343.
+  - The β-band uses A_β = 0.37 with eqns 8a/8b.
+
+  Previously A2 used wrong α constants and the A1 β-band, which made A2
+  narrower than A1; at λmax 620 nm the FWHM is now 147 nm, against 125 nm
+  for A1. A2 `lambda_max` is limited to the template's fitted range,
+  440–620 nm, and `fit_sensitivity()` searches that range by default
+  (`lambda_max_range = NULL`). A1 output is unchanged.
+- `species_sensitivities` corrections, now checked against their sources
+  (dataset version `species-v2`):
+  - *Homo sapiens* uses Bowmaker & Dartnall (1980): rod 497.6, S 420.3,
+    M 533.8 and L 562.8 nm (previously 498, 437, 533 and 564).
+  - *Danio rerio* cones are now **A1** (previously A2), with peaks from
+    Govardovskii et al. (2000) Table 1: 361, 414, 483 and 567 nm (previously
+    362, 415, 480 and 561, attributed to Robinson et al. 1993, which reports
+    only the UV cone).
+  - *Xenopus laevis* has a single A2 rod at 523 nm (Govardovskii et al.
+    2000). The previous A1 rod and the cones, attributed to an unverified
+    source, were removed.
 - `par_fraction()` now returns the photon fraction by default, since PAR is
   defined as a photon flux. `basis = "energy"` gives the energy fraction (the
   previous result for energy input). Numeric input states its unit with

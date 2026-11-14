@@ -1,13 +1,13 @@
 species,receptor,lambda_max,chromophore,channel_role,source
-Homo sapiens,S-cone,437,A1,chromatic,Bowmaker & Dartnall 1980
-Homo sapiens,M-cone,533,A1,chromatic,Bowmaker & Dartnall 1980
-Homo sapiens,L-cone,564,A1,chromatic,Bowmaker & Dartnall 1980
-Homo sapiens,rod,498,A1,achromatic,Bowmaker & Dartnall 1980
+Homo sapiens,S-cone,420.3,A1,chromatic,Bowmaker & Dartnall 1980
+Homo sapiens,M-cone,533.8,A1,chromatic,Bowmaker & Dartnall 1980
+Homo sapiens,L-cone,562.8,A1,chromatic,Bowmaker & Dartnall 1980
+Homo sapiens,rod,497.6,A1,achromatic,Bowmaker & Dartnall 1980
 Homo sapiens,ipRGC,480,A1,irradiance,Bailes & Lucas 2013
-Danio rerio,UV-cone,362,A2,chromatic,Robinson et al. 1993
-Danio rerio,S-cone,415,A2,chromatic,Robinson et al. 1993
-Danio rerio,M-cone,480,A2,chromatic,Robinson et al. 1993
-Danio rerio,L-cone,561,A2,chromatic,Robinson et al. 1993
+Danio rerio,UV-cone,361,A1,chromatic,Govardovskii et al. 2000
+Danio rerio,S-cone,414,A1,chromatic,Govardovskii et al. 2000
+Danio rerio,M-cone,483,A1,chromatic,Govardovskii et al. 2000
+Danio rerio,L-cone,567,A1,chromatic,Govardovskii et al. 2000
 Apis mellifera,UV,344,A1,chromatic,Peitsch et al. 1992
 Apis mellifera,blue,436,A1,chromatic,Peitsch et al. 1992
 Apis mellifera,green,544,A1,chromatic,Peitsch et al. 1992
@@ -18,10 +18,7 @@ Callorhinchus milii,rod,479,A1,achromatic,Hart et al. 2004
 Callorhinchus milii,L-cone,551,A1,chromatic,Hart et al. 2004
 Latimeria chalumnae,rod,476,A1,achromatic,Yokoyama et al. 1999
 Latimeria chalumnae,L-cone,604,A1,chromatic,Yokoyama et al. 1999
-Xenopus laevis,rod,502,A1,achromatic,Yoshiura et al. 2011
-Xenopus laevis,S-cone,430,A1,chromatic,Yoshiura et al. 2011
-Xenopus laevis,M-cone,502,A1,chromatic,Yoshiura et al. 2011
-Xenopus laevis,L-cone,575,A1,chromatic,Yoshiura et al. 2011
+Xenopus laevis,rod,523,A2,achromatic,Govardovskii et al. 2000
 Oncorhynchus mykiss,rod,503,A1,achromatic,Hawryshyn et al. 2003
 Oncorhynchus mykiss,S-cone,416,A1,chromatic,Hawryshyn et al. 2003
 Oncorhynchus mykiss,M-cone,514,A1,chromatic,Hawryshyn et al. 2003

@@ -98,7 +98,7 @@
 #' representative species from vertebrate and invertebrate taxa.
 #' Used by \code{\link{species_LEF}} and \code{\link{species_brightness}}.
 #'
-#' @format A data frame with 27 rows and 6 columns:
+#' @format A data frame with 24 rows and 6 columns:
 #' \describe{
 #'   \item{species}{Scientific name.}
 #'   \item{receptor}{Receptor class (e.g. \code{"L-cone"}, \code{"rod"}).}
@@ -116,12 +116,19 @@
 #'   template (see \code{\link{govardovskii_template}}).
 #'
 #'   Per-receptor lambda_max sources: Bowmaker & Dartnall (1980) and Bailes &
-#'   Lucas (2013) (\emph{Homo sapiens}); Robinson et al. (1993)
-#'   (\emph{Danio rerio}); Peitsch et al. (1992) (\emph{Apis mellifera}); Salcedo
+#'   Lucas (2013) (\emph{Homo sapiens}); Govardovskii et al. (2000), Table 1
+#'   (\emph{Danio rerio}, as \emph{Brachydanio rerio}, and the \emph{Xenopus
+#'   laevis} rod); Peitsch et al. (1992) (\emph{Apis mellifera}); Salcedo
 #'   et al. (1999) (\emph{Drosophila melanogaster}); Hart et al. (2004)
 #'   (\emph{Callorhinchus milii}); Yokoyama et al. (1999) (\emph{Latimeria
-#'   chalumnae}); Yoshiura et al. (2011) (\emph{Xenopus laevis}); Hawryshyn et
-#'   al. (2003) (\emph{Oncorhynchus mykiss}).
+#'   chalumnae}); Hawryshyn et al. (2003) (\emph{Oncorhynchus mykiss}).
+#'
+#'   \emph{Danio rerio} cones are coded A1 and the \emph{Xenopus laevis} rod
+#'   A2, as in Govardovskii et al. (2000). Those authors note that the Danio
+#'   UV cone deviates from the template (a raised long-wave tail), so its
+#'   modelled sensitivity is approximate. Only the principal (\dQuote{red})
+#'   Xenopus rod is included; its cones are omitted until a primary source for
+#'   their peaks is confirmed.
 #'
 #'   A role label does not by itself validate a receptor for a model. Complete,
 #'   cited channel memberships are recorded separately in
@@ -133,11 +140,11 @@
 #'   search of the visual pigment template. Visual Neuroscience 17:509-528.
 #'
 #'   Full citation keys and their verification status are recorded in
-#'   \code{data-raw/species_source_map.csv}. The legacy Hart et al. (2004) and
-#'   Yoshiura et al. (2011) attributions remain explicitly unverified pending
-#'   primary-source confirmation; the values are not silently relabelled.
+#'   \code{data-raw/species_source_map.csv}. The legacy Hart et al. (2004)
+#'   attribution remains explicitly unverified pending primary-source
+#'   confirmation; the values are not silently relabelled.
 #'
-#'   \insertRef{robinsonZebrafishUltravioletVisual1993}{luxR}
+#'   \insertRef{govardovskii2000}{luxR}
 #'
 #'   \insertRef{hawryshynRegenerationUltravioletsensitiveCones2003}{luxR}
 #'

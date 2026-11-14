@@ -495,7 +495,7 @@ function(input, output, session) {
                     species  == input$sp_species &
                     receptor == input$sp_receptor)
       if (nrow(row) > 0)
-        cat(sprintf("lambda_max = %d nm  (%s chromophore)\n",
+        cat(sprintf("lambda_max = %g nm  (%s chromophore)\n",
                     row$lambda_max[1], row$chromophore[1]))
       if (isTRUE(input$sp_od > 0)) {
         Eff <- sp_effective_S()
