@@ -103,7 +103,7 @@ implementation of that conversion is ever in play.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"photobiology"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="co"># The downwelling light field at 15 m, as a photobiology source_spct:</span></span></span>
 <span class="r-in"><span>  <span class="co"># Jerlov Kd data cover 350-700 nm, so trim before propagating.</span></span></span>
 <span class="r-in"><span>  <span class="va">surface</span> <span class="op">&lt;-</span> <span class="fu"><a href="from_solar.html">from_solar</a></span><span class="op">(</span><span class="st">"clear_noon"</span><span class="op">)</span><span class="op">[</span><span class="fl">350</span>, <span class="fl">700</span><span class="op">]</span></span></span>
@@ -111,7 +111,13 @@ implementation of that conversion is ever in play.</p>
 <span class="r-in"><span>                                 from <span class="op">=</span> <span class="fl">0</span>, to <span class="op">=</span> <span class="fl">15</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">s</span> <span class="op">&lt;-</span> <span class="fu">as_source_spct</span><span class="op">(</span><span class="va">at_depth</span><span class="op">[[</span><span class="st">"15"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu">photobiology</span><span class="fu">::</span><span class="fu"><a href="https://docs.r4photobiology.info/photobiology/reference/e_irrad.html" class="external-link">e_irrad</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  E_Total </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 133.0583 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"time.unit")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "second"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"radiation.unit")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "total energy irradiance"</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

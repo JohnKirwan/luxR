@@ -65,7 +65,7 @@ for the pavo equivalent;
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-  I  <- as_colourvision(from_solar("clear_noon"), name = "I")
-} # }
+if (requireNamespace("colourvision", quietly = TRUE)) {
+  I <- as_colourvision(from_solar("clear_noon"), name = "I")
+}
 ```

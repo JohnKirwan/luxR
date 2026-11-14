@@ -97,13 +97,17 @@ scaling, and resampling policy.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-x <- read_spectrum(
-  "path/to/calibrated-irradiance.IRR8",
-  measurement = "irradiance", value_scale = "absolute",
-  quantity = "irradiance", unit = "W/m2/nm",
-  calibration = "certificate CAL-2026-04",
-  range = c(300, 700), interpolate = TRUE
-)
-} # }
+# A reflectance spectrum from an Ocean Optics Jaz file shipped with lightr:
+f <- system.file("testdata", "jazspec.jaz", package = "lightr")
+if (requireNamespace("lightr", quietly = TRUE) && nzchar(f)) {
+  x <- read_spectrum(
+    f,
+    measurement = "reflectance", value_scale = "percent",
+    quantity = "reflectance", unit = "dimensionless",
+    calibration = "white standard",
+    range = c(400, 700), interpolate = TRUE
+  )
+  range(x$E)
+}
+#> [1] 0.1704821 0.7287551
 ```

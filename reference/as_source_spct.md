@@ -66,7 +66,7 @@ for the pavo bridge
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+if (requireNamespace("photobiology", quietly = TRUE)) {
   # The downwelling light field at 15 m, as a photobiology source_spct:
   # Jerlov Kd data cover 350-700 nm, so trim before propagating.
   surface <- from_solar("clear_noon")[350, 700]
@@ -74,5 +74,11 @@ if (FALSE) { # \dontrun{
                                  from = 0, to = 15)
   s <- as_source_spct(at_depth[["15"]])
   photobiology::e_irrad(s)
-} # }
+}
+#>  E_Total 
+#> 133.0583 
+#> attr(,"time.unit")
+#> [1] "second"
+#> attr(,"radiation.unit")
+#> [1] "total energy irradiance"
 ```

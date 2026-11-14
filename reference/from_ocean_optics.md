@@ -39,3 +39,18 @@ A validated `lux_spectrum` with import provenance in metadata.
 [`read_ocean_optics`](https://johnkirwan.github.io/luxR/reference/read_ocean_optics.md),
 [`from_trios`](https://johnkirwan.github.io/luxR/reference/from_trios.md),
 [`read_spectrum`](https://johnkirwan.github.io/luxR/reference/read_spectrum.md)
+
+## Examples
+
+``` r
+# A synthetic three-pixel Ocean Optics text export:
+f <- tempfile(fileext = ".txt")
+writeLines(c("Spectrometer: USB2E0034", "Integration Time (usec): 10000",
+             "Number of Pixels in Spectrum: 3", ">>>>>Begin Spectral Data<<<<<",
+             "400.0\t0.0012", "450.0\t0.0024", "500.0\t0.0036"), f)
+x <- from_ocean_optics(f, quantity = "irradiance", unit = "W/m2/nm",
+                       calibration = "example")
+x$E
+#> [1] 0.0012 0.0024 0.0036
+unlink(f)
+```

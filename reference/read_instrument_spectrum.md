@@ -71,3 +71,16 @@ declarations, instrument metadata, notices, and reproducibility context.
 
 [`read_spectrum`](https://johnkirwan.github.io/luxR/reference/read_spectrum.md),
 [`as_lux_spectrum`](https://johnkirwan.github.io/luxR/reference/as_lux_spectrum.md)
+
+## Examples
+
+``` r
+# An irradiance file from an Ocean Optics Jaz, shipped with lightr:
+f <- system.file("testdata", "irrad.JazIrrad", package = "lightr")
+if (requireNamespace("lightr", quietly = TRUE) && nzchar(f)) {
+  x <- read_instrument_spectrum(f, measurement = "irradiance",
+                                value_scale = "absolute", range = c(400, 700))
+  head(x$value)
+}
+#> [1] 0.145867 0.149644 0.151910 0.153795 0.154706 0.155034
+```

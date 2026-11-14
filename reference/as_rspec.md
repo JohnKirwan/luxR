@@ -63,11 +63,10 @@ for the reverse conversion;
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+if (requireNamespace("pavo", quietly = TRUE)) {
   # A bundled solar spectrum as an rspec, ready for the pavo toolkit:
   r <- as_rspec(from_solar("clear_noon"))
-
-  # Several spectra at once (e.g. TriOS radiance scans):
-  r2 <- as_rspec(from_trios(system.file("extdata/trios.dat", package = "luxR")))
-} # }
+}
+#> Warning: no DISPLAY variable so Tk is not available
+#> wavelengths found in column 1
 ```

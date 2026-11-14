@@ -42,7 +42,7 @@ Invisible `NULL`; called for its side effect of starting the app.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-run_app()
-} # }
+if (interactive() && requireNamespace("shiny", quietly = TRUE)) {
+  run_app()
+}
 ```

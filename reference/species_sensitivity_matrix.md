@@ -67,7 +67,13 @@ sensitivities.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-  C <- species_sensitivity_matrix("Apis mellifera")
-} # }
+C <- species_sensitivity_matrix("Apis mellifera")
+head(C)
+#>    wl       UV     blue    green
+#> 1 300 191.9259 56.53350 33.40979
+#> 2 301 196.7910 58.29910 34.46790
+#> 3 302 201.5677 60.06318 35.54264
+#> 4 303 206.2562 61.82265 36.63347
+#> 5 304 210.8577 63.57436 37.73986
+#> 6 305 215.3748 65.31518 38.86121
 ```

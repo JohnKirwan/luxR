@@ -197,5 +197,5 @@ d
 #>   validation: not empirically validated as an actual detection range
 #>   achromatic: C0 = -0.160 (Weber)   -> estimate 64.09 m  (thr 0.020; crossed)
 #>   chromatic : dS = 3.994 JND        -> estimate 42.74 m  (thr 1.00 JND; crossed)
-if (FALSE) plot(d) # \dontrun{}
+plot(d)
 ```

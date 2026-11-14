@@ -25,3 +25,10 @@ plot_spectra(x, ...)
 ## Value
 
 `invisible(x)` — called for its side effect (plot).
+
+## Examples
+
+``` r
+plot_spectra(list(noon = from_solar("clear_noon"),
+                  overcast = from_solar("overcast")))
+```
