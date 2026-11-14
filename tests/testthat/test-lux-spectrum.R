@@ -180,7 +180,7 @@ test_that("lux_spectrum: validates binwidth and grid compatibility", {
 test_that("lux_spectrum: accepts exactly the valid quantity-unit pairs", {
   pairs <- list(
     irradiance = c("W/m2/nm", "umol/m2/s/nm", "mmol/m2/s/nm",
-                   "mol/m2/s/nm"),
+                   "mol/m2/s/nm", "uW/cm2/nm"),
     radiance = c("W/m2/sr/nm", "mW/m2/sr/nm",
                  "umol/m2/s/sr/nm", "mmol/m2/s/sr/nm",
                  "mol/m2/s/sr/nm"),
@@ -554,4 +554,16 @@ test_that("lux_spectrum: plot produces no error for list of spectra", {
   a <- lux_spectrum(E,     lam, meta = list(label = "a"))
   b <- lux_spectrum(E * 2, lam, meta = list(label = "b"))
   expect_no_error(plot(list(a, b)))
+})
+
+test_that("irradiance functions give the same result for W/m2/nm and uW/cm2/nm", {
+  xW <- from_solar("clear_noon")
+  xu <- convert_unit(xW, "uW/cm2/nm")
+  expect_equal(xu$E, xW$E * 100)
+  K <- rep(0.1, length(xW$lambda))
+  for (f in list(par_fraction, scotopic_lux, irradiance2lux, par_irradiance,
+                 function(x) W2mol_spec_irradiance(x)$E,
+                 function(x) band_irradiance(x, K, depths = c(0, 5)))) {
+    expect_equal(f(xu), f(xW))
+  }
 })

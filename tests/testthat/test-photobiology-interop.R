@@ -25,6 +25,12 @@ test_that("an energy irradiance becomes a source_spct with s.e.irrad", {
   expect_identical(photobiology::getTimeUnit(out), "second")
 })
 
+test_that("uW/cm2/nm maps to s.e.irrad in W/m2/nm", {
+  skip_if_not_installed("photobiology")
+  out <- as_source_spct(irradiance_fixture("uW/cm2/nm"))
+  expect_equal(out$s.e.irrad, E_fixture * 1e-2)
+})
+
 test_that("photon units map to s.q.irrad with the correct decimal factor", {
   skip_if_not_installed("photobiology")
   cases <- list("mol/m2/s/nm" = 1, "mmol/m2/s/nm" = 1e-3,

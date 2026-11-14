@@ -50,7 +50,8 @@ physical quantity, unit, bin width, and free-form metadata together, so
 unit conversions and arithmetic operations stay consistent.
 }
 \details{
-Valid unit strings: \code{"W/m2/nm"}, \code{"W/m2/sr/nm"},
+Valid unit strings: \code{"W/m2/nm"}, \code{"uW/cm2/nm"},
+  \code{"W/m2/sr/nm"},
   \code{"mW/m2/sr/nm"}, \code{"umol/m2/s/nm"}, \code{"mmol/m2/s/nm"},
   \code{"mol/m2/s/nm"}, \code{"umol/m2/s/sr/nm"},
   \code{"mmol/m2/s/sr/nm"}, \code{"mol/m2/s/sr/nm"},

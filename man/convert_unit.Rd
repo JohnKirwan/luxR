@@ -18,8 +18,8 @@ A new \code{lux_spectrum} with updated \code{unit} and \code{E}.
 }
 \description{
 Converts the spectral values in a \code{lux_spectrum} between energy and
-photon-flux units, or between mW and W for radiance spectra. Supported
-conversions: \code{"W/m2/nm"} \eqn{\leftrightarrow}
+photon-flux units, or between scaled energy units. Supported
+conversions: \code{"W/m2/nm"} / \code{"uW/cm2/nm"} \eqn{\leftrightarrow}
 \code{"umol/m2/s/nm"} / \code{"mmol/m2/s/nm"} / \code{"mol/m2/s/nm"},
 and the corresponding \code{"/sr"} photonic units. Energy radiance units
 \code{"W/m2/sr/nm"} and \code{"mW/m2/sr/nm"} are also interchangeable.

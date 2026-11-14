@@ -311,3 +311,94 @@ test_that("from_ocean_optics enriches file errors with calibration context", {
   expect_identical(err$configuration$calibration, "CAL-ENRICH")
   expect_identical(err$operation, "from_ocean_optics")
 })
+
+# ---- Ocean Optics header variants (SpectraSuite / OceanView) -----------
+
+write_oo <- function(header, rows = c("400.0\t1", "450.0\t2", "500.0\t3"),
+                     begin = ">>>>>Begin Spectral Data<<<<<", end = NULL) {
+  path <- tempfile(fileext = ".txt")
+  writeLines(c(header, begin, rows, end), path)
+  path
+}
+
+test_that("read_ocean_optics parses the SpectraSuite processed-spectrum header", {
+  path <- write_oo(
+    c("Spectrometers: USB4A00428",
+      "Integration Time (usec): 20000 (USB4A00428)",
+      "Number of Pixels in Processed Spectrum: 3"),
+    begin = ">>>>>Begin Processed Spectral Data<<<<<",
+    end = ">>>>>End Processed Spectral Data<<<<<"
+  )
+  on.exit(unlink(path))
+  h <- attr(read_ocean_optics(path), "luxR.header")
+  expect_equal(h$instrument, "USB4A00428")
+  expect_equal(h$integration_time_us, 20000)
+  expect_equal(h$declared_pixels, 3)
+})
+
+test_that("read_ocean_optics checks the processed-spectrum pixel count", {
+  path <- write_oo(c("Number of Pixels in Processed Spectrum: 4"))
+  on.exit(unlink(path))
+  expect_error(read_ocean_optics(path), "declares 4 pixels",
+               class = "luxR_import_error")
+})
+
+test_that("read_ocean_optics rejects a serial suffix naming another spectrometer", {
+  path <- write_oo(c("Spectrometers: USB4A00428",
+                     "Integration Time (usec): 20000 (JAZA1465)"))
+  on.exit(unlink(path))
+  expect_error(read_ocean_optics(path), "JAZA1465",
+               class = "luxR_import_error")
+})
+
+test_that("read_ocean_optics rejects a serial suffix without a spectrometer", {
+  path <- write_oo(c("Integration Time (usec): 20000 (USB4A00428)"))
+  on.exit(unlink(path))
+  expect_error(read_ocean_optics(path), class = "luxR_import_error")
+})
+
+test_that("read_ocean_optics converts an OceanView integration time in seconds", {
+  path <- write_oo(c("Spectrometer: USB2+H09794",
+                     "Integration Time (sec): 2.000000E-2"))
+  on.exit(unlink(path))
+  h <- attr(read_ocean_optics(path), "luxR.header")
+  expect_equal(h$instrument, "USB2+H09794")
+  expect_equal(h$integration_time_us, 20000)
+})
+
+test_that("read_ocean_optics reads a pixel-count mismatch only on explicit opt-in", {
+  path <- write_oo(c("Number of Pixels in Spectrum: 2"))
+  on.exit(unlink(path))
+  expect_error(read_ocean_optics(path), "check_pixels = FALSE",
+               class = "luxR_import_error")
+  raw <- read_ocean_optics(path, check_pixels = FALSE)
+  expect_equal(nrow(raw), 3L)
+  expect_false(attr(raw, "luxR.import")$configuration$check_pixels)
+  x <- from_ocean_optics(path, "irradiance", "W/m2/nm", "test calibration",
+                         check_pixels = FALSE)
+  expect_false(x$meta$import$configuration$check_pixels)
+  expect_error(read_ocean_optics(path, check_pixels = NA),
+               class = "luxR_type_error")
+})
+
+test_that("read_ocean_optics reads the lightr Ocean Optics sample files", {
+  skip_if_not_installed("lightr")
+  d <- system.file("testdata", package = "lightr")
+  skip_if_not(all(file.exists(file.path(d, c("OOusb4000.txt", "OceanView.txt")))),
+              "lightr no longer ships the Ocean Optics sample files")
+  usb <- read_ocean_optics(file.path(d, "OOusb4000.txt"))
+  expect_equal(nrow(usb), 3648L)
+  expect_equal(attr(usb, "luxR.header")$integration_time_us, 20000)
+  spliced <- file.path(d, "OceanView.txt")
+  expect_error(read_ocean_optics(spliced), class = "luxR_import_error")
+  ov <- read_ocean_optics(spliced, check_pixels = FALSE)
+  expect_equal(nrow(ov), 2389L)
+  expect_equal(attr(ov, "luxR.header")$integration_time_us, 20000)
+})
+
+test_that("Ocean Optics irradiance in uW/cm2/nm imports and converts", {
+  x <- from_ocean_optics(get_oo_fixture(), "irradiance", "uW/cm2/nm",
+                         "test calibration")
+  expect_equal(x$unit, "uW/cm2/nm")
+  expect_equal(convert_unit(x, "W/m2/nm")$E, x$E * 1e-2)
+})

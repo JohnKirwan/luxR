@@ -26,7 +26,8 @@
 #'
 #' @param x A \code{\link{lux_spectrum}}, or a (named) list of them — for
 #'   example the output of \code{\link{from_trios}}. List elements are
-#'   interpolated onto the first spectrum's wavelength grid before merging.
+#'   must share one wavelength grid (use \code{\link{resample_spectrum}}
+#'   first); differing grids are an error, never silently extrapolated.
 #' @param name Single-spectrum method only: the column name to give the spectrum
 #'   in the \code{rspec}. Defaults to the spectrum's \code{meta$label}, then
 #'   \code{meta$source}, then \code{"spec"}.
@@ -71,7 +72,16 @@ as_rspec.list <- function(x, ...) {
   nms[blank] <- paste0("spec", seq_along(x))[blank]
   grid <- x[[1]]$lambda
   df <- data.frame(wl = grid)
-  for (i in seq_along(x))
-    df[[nms[i]]] <- stats::approx(x[[i]]$lambda, x[[i]]$E, grid, rule = 2)$y
+  for (i in seq_along(x)) {
+    lam <- x[[i]]$lambda
+    if (length(lam) != length(grid) ||
+        any(abs(lam - grid) > .grid_tolerance(grid)))
+      .luxr_abort(
+        paste0("as_rspec() needs every spectrum on one wavelength grid; '",
+               nms[i], "' differs from '", nms[1], "'. Put them on a common ",
+               "grid with resample_spectrum() first."),
+        "value", field = "lambda", spectrum = nms[i])
+    df[[nms[i]]] <- x[[i]]$E
+  }
   pavo::as.rspec(df, ...)
 }

@@ -18,6 +18,8 @@
     "mmol m\u207b\u00b2 s\u207b\u00b9 nm\u207b\u00b9",  # mmol m⁻² s⁻¹ nm⁻¹
   "mol/m2/s/nm" =
     "mol m\u207b\u00b2 s\u207b\u00b9 nm\u207b\u00b9",  # mol m⁻² s⁻¹ nm⁻¹
+  "uW/cm2/nm" =
+    "\u00b5W cm\u207b\u00b2 nm\u207b\u00b9",  # µW cm⁻² nm⁻¹
   "W/m2/sr/nm" =
     "W m\u207b\u00b2 sr\u207b\u00b9 nm\u207b\u00b9",  # W m⁻² sr⁻¹ nm⁻¹
   "mW/m2/sr/nm" =
@@ -37,6 +39,7 @@
   "umol/m2/s/nm"    = "mu*mol~m^{-2}~s^{-1}~nm^{-1}",
   "mmol/m2/s/nm"    = "mmol~m^{-2}~s^{-1}~nm^{-1}",
   "mol/m2/s/nm"     = "mol~m^{-2}~s^{-1}~nm^{-1}",
+  "uW/cm2/nm"       = "mu*W~cm^{-2}~nm^{-1}",
   "W/m2/sr/nm"      = "W~m^{-2}~sr^{-1}~nm^{-1}",
   "mW/m2/sr/nm"     = "mW~m^{-2}~sr^{-1}~nm^{-1}",
   "umol/m2/s/sr/nm" = "mu*mol~m^{-2}~s^{-1}~sr^{-1}~nm^{-1}",
