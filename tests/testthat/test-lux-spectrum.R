@@ -84,7 +84,7 @@ test_that("lux_spectrum: error on invalid unit", {
   expect_error(
     lux_spectrum(E, lam, unit = "furlongs"),
     "vocabulary",
-    class = "luxR_dimension_error"
+    class = "luxR_unit_error"
   )
 })
 
@@ -212,7 +212,7 @@ test_that("lux_spectrum: rejects mismatched quantity and unit dimensions", {
     expect_error(
       lux_spectrum(E, lam, quantity = pair[1], unit = pair[2]),
       "different dimensions",
-      class = "luxR_dimension_error"
+      class = "luxR_unit_error"
     )
   }
 })

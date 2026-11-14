@@ -248,12 +248,12 @@ test_that("photometric integration accepts only irradiance spectra", {
     expect_error(
       irradiance2lux(spectrum),
       "requires spectral irradiance",
-      class = "luxR_dimension_error"
+      class = "luxR_unit_error"
     )
     expect_error(
       scotopic_lux(spectrum),
       "requires spectral irradiance",
-      class = "luxR_dimension_error"
+      class = "luxR_unit_error"
     )
   }
 })

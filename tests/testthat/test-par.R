@@ -149,7 +149,7 @@ test_that("par_fraction: the unit of a lux_spectrum does not change the answer",
 test_that("par_fraction rejects radiance, negative and all-zero spectra", {
   lam <- seq(400, 700, by = 10)
   r <- lux_spectrum(rep(1, 31), lam, "radiance", "W/m2/sr/nm")
-  expect_error(par_fraction(r), class = "luxR_dimension_error")
+  expect_error(par_fraction(r), class = "luxR_unit_error")
   expect_error(par_fraction(rep(0, 31), lam), class = "luxR_value_error")
   expect_error(par_fraction(c(-1, rep(1, 30)), lam),
                class = "luxR_value_error")

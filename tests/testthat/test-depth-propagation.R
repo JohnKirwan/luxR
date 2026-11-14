@@ -494,7 +494,7 @@ test_that("fit_Kd.lux_spectrum: rejects non-irradiance, numeric E2 and grid mism
   s1  <- lux_spectrum(rep(2, length(lam)), lam, "irradiance", "W/m2/nm")
   rad <- lux_spectrum(rep(1, length(lam)), lam, "radiance", "W/m2/sr/nm")
   off <- lux_spectrum(rep(1, length(lam)), lam + 5, "irradiance", "W/m2/nm")
-  expect_error(fit_Kd(s1, 0, rad, 10), class = "luxR_dimension_error")
+  expect_error(fit_Kd(s1, 0, rad, 10), class = "luxR_unit_error")
   expect_error(fit_Kd(s1, 0, rep(1, length(lam)), 10),
                class = "luxR_type_error")
   expect_error(fit_Kd(s1, 0, off, 10), class = "luxR_grid_error")

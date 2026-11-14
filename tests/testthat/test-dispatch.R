@@ -235,9 +235,9 @@ test_that("par_irradiance rejects radiance and reflectance spectra", {
   radiance <- lux_spectrum(E, lam, "radiance", "umol/m2/s/sr/nm")
   reflectance <- lux_spectrum(E / 2, lam, "reflectance", "dimensionless")
   expect_error(par_irradiance(radiance), "requires spectral irradiance",
-               class = "luxR_dimension_error")
+               class = "luxR_unit_error")
   expect_error(par_irradiance(reflectance), "requires spectral irradiance",
-               class = "luxR_dimension_error")
+               class = "luxR_unit_error")
 })
 
 test_that("band_irradiance gives the same result for W and photon spectra", {
@@ -252,7 +252,7 @@ test_that("band_irradiance gives the same result for W and photon spectra", {
   expect_error(
     band_irradiance(lux_spectrum(E, lam, "radiance", "W/m2/sr/nm"), Kd,
                     depths = 0),
-    "requires spectral irradiance", class = "luxR_dimension_error"
+    "requires spectral irradiance", class = "luxR_unit_error"
   )
 })
 

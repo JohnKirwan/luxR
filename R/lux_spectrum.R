@@ -126,7 +126,7 @@ lux_spectrum <- function(E, lambda,
              paste(valid_quantities, collapse = ", "), "; got '",
              quantity, "'."),
       field = "quantity", value = quantity,
-      kind = "dimension", context = context
+      kind = "unit", context = context
     )
   }
   if (!unit %in% .VALID_UNITS) {
@@ -134,7 +134,7 @@ lux_spectrum <- function(E, lambda,
       paste0("`unit` '", unit, "' is not in the controlled vocabulary. ",
              "Valid: ", paste(.VALID_UNITS, collapse = ", ")),
       field = "unit", value = unit,
-      kind = "dimension", context = context
+      kind = "unit", context = context
     )
   }
   expected_quantity <- unname(.UNIT_QUANTITIES[[unit]])
@@ -144,7 +144,7 @@ lux_spectrum <- function(E, lambda,
              unit, "' requires quantity '", expected_quantity,
              "', not '", quantity, "'."),
       field = c("quantity", "unit"), value = c(quantity, unit),
-      kind = "dimension", context = context
+      kind = "unit", context = context
     )
   }
 
@@ -402,7 +402,7 @@ convert_unit.lux_spectrum <- function(x, to, ...) {
       paste0(operation, " requires spectral irradiance; got quantity '",
              x$quantity, "' with unit '", x$unit, "'."),
       field = c("quantity", "unit"), value = c(x$quantity, x$unit),
-      kind = "dimension", context = x$meta
+      kind = "unit", context = x$meta
     )
   }
   convert_unit(x, "W/m2/nm")

@@ -180,7 +180,7 @@ test_that("secchi_depth rejects invalid input", {
                class = "luxR_value_error")
   r <- lux_spectrum(E, lam, "radiance", "W/m2/sr/nm")
   expect_error(secchi_depth(rep(0.1, 31), spectrum = r),
-               class = "luxR_dimension_error")
+               class = "luxR_unit_error")
   expect_error(secchi_depth(rep(0.1, 31), spectrum = E),
                class = "luxR_type_error")
 })
