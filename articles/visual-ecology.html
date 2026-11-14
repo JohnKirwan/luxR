@@ -103,7 +103,7 @@ nm⁻¹), an illuminance (lux), or a scotopic illuminance.</p>
 <span><span class="co">##    import: 5952acfab4a04ea1b02eb085e6a768d5</span></span>
 <span><span class="co">##    import: naples-legacy-v1</span></span>
 <span><span class="co">##    import: 0.1.1</span></span>
-<span><span class="co">##    import: f6bf000ba9ef64bd12fc5ff4be56bed1897c4d24</span></span>
+<span><span class="co">##    import: 8324fbc696e9a0b2dc0c328f995190fa553d3118</span></span>
 <span><span class="co">##    import: parse canonical processed snapshot; validate schema grid and non-negative irradiance</span></span></code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">unit_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -230,7 +230,7 @@ scotopic scenarios.</p>
 retrieved from the package database via <code><a href="../reference/species_LEF.html">species_LEF()</a></code>.
 Zebrafish (<em>Danio rerio</em>) are tetrachromats with four cone
 classes (UV, S, M, L), but we restrict the model to the three
-longer-wavelength cones (S at 415 nm, M at 480 nm, L at 561 nm) because
+longer-wavelength cones (S at 414 nm, M at 483 nm, L at 567 nm) because
 the UV-cone’s peak lies at the edge of the modelled illuminant
 range.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -245,7 +245,7 @@ range.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">mws_df</span><span class="op">$</span><span class="va">lambda</span>, <span class="va">mws_df</span><span class="op">$</span><span class="va">S</span>, col <span class="op">=</span> <span class="st">"green3"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">lws_df</span><span class="op">$</span><span class="va">lambda</span>, <span class="va">lws_df</span><span class="op">$</span><span class="va">S</span>, col <span class="op">=</span> <span class="st">"red3"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topright"</span>,</span>
-<span>       legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S-cone (415 nm)"</span>, <span class="st">"M-cone (480 nm)"</span>, <span class="st">"L-cone (561 nm)"</span><span class="op">)</span>,</span>
+<span>       legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S-cone (414 nm)"</span>, <span class="st">"M-cone (483 nm)"</span>, <span class="st">"L-cone (567 nm)"</span><span class="op">)</span>,</span>
 <span>       col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"green3"</span>, <span class="st">"red3"</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visual-ecology_files/figure-html/pigments-1.png" class="r-plt" alt="" width="672"></p>
 <p><code><a href="../reference/quantum_catch.html">quantum_catch()</a></code> integrates photon irradiance weighted by
@@ -286,48 +286,48 @@ and declare its energy unit.</p>
 <tr class="odd">
 <td align="left">0</td>
 <td align="right">0</td>
-<td align="right">6.478647e+19</td>
-<td align="right">1.014199e+20</td>
-<td align="right">1.176856e+20</td>
-<td align="right">0.86</td>
+<td align="right">6.377988e+19</td>
+<td align="right">1.075382e+20</td>
+<td align="right">1.281409e+20</td>
+<td align="right">0.84</td>
 </tr>
 <tr class="even">
 <td align="left">5</td>
 <td align="right">5</td>
-<td align="right">4.286511e+19</td>
-<td align="right">7.406550e+19</td>
-<td align="right">7.647664e+19</td>
+<td align="right">4.181171e+19</td>
+<td align="right">7.839748e+19</td>
+<td align="right">8.062526e+19</td>
 <td align="right">0.97</td>
 </tr>
 <tr class="odd">
 <td align="left">10</td>
 <td align="right">10</td>
-<td align="right">2.865452e+19</td>
-<td align="right">5.439561e+19</td>
-<td align="right">5.156364e+19</td>
-<td align="right">1.05</td>
+<td align="right">2.770052e+19</td>
+<td align="right">5.750141e+19</td>
+<td align="right">5.330999e+19</td>
+<td align="right">1.08</td>
 </tr>
 <tr class="even">
 <td align="left">20</td>
 <td align="right">20</td>
-<td align="right">1.315803e+19</td>
-<td align="right">2.971752e+19</td>
-<td align="right">2.507115e+19</td>
-<td align="right">1.19</td>
+<td align="right">1.250108e+19</td>
+<td align="right">3.136088e+19</td>
+<td align="right">2.536621e+19</td>
+<td align="right">1.24</td>
 </tr>
 <tr class="odd">
 <td align="left">50</td>
 <td align="right">50</td>
-<td align="right">1.502259e+18</td>
-<td align="right">5.148881e+18</td>
-<td align="right">3.683800e+18</td>
-<td align="right">1.40</td>
+<td align="right">1.358361e+18</td>
+<td align="right">5.426504e+18</td>
+<td align="right">3.645735e+18</td>
+<td align="right">1.49</td>
 </tr>
 </tbody>
 </table>
 <p>As depth increases the M/L ratio rises: the blue-shifted deep
-illuminant peaks near 500 nm, which aligns with the M-cone (480 nm)
-better than the L-cone (561 nm), shifting the chromatic balance
+illuminant peaks near 500 nm, which aligns with the M-cone (483 nm)
+better than the L-cone (567 nm), shifting the chromatic balance
 available to the fish.</p>
 </div>
 <div class="section level2">
@@ -426,27 +426,27 @@ nm⁻¹), so we extract <code>$E</code> and <code>$lambda</code> from the
 <tr class="odd">
 <td align="left">0</td>
 <td align="right">0</td>
-<td align="right">2.81</td>
+<td align="right">3.44</td>
 </tr>
 <tr class="even">
 <td align="left">5</td>
 <td align="right">5</td>
-<td align="right">2.02</td>
+<td align="right">2.45</td>
 </tr>
 <tr class="odd">
 <td align="left">10</td>
 <td align="right">10</td>
-<td align="right">1.45</td>
+<td align="right">1.75</td>
 </tr>
 <tr class="even">
 <td align="left">20</td>
 <td align="right">20</td>
-<td align="right">0.79</td>
+<td align="right">0.92</td>
 </tr>
 <tr class="odd">
 <td align="left">50</td>
 <td align="right">50</td>
-<td align="right">0.19</td>
+<td align="right">0.20</td>
 </tr>
 </tbody>
 </table>
@@ -470,10 +470,10 @@ nm⁻¹), so we extract <code>$E</code> and <code>$lambda</code> from the
 <span><span class="op">}</span></span></code></pre></div>
 <pre><code><span><span class="co">## Discrimination fails (JND &lt; 1) at 20 m depth.</span></span></code></pre>
 <p>The model predicts that the zebrafish can discriminate the grey and
-red substrates in well-lit shallow water (JND ≈ 2–3 near the surface)
-but loses the ability by 20 m, where the blue-shifted Jerlov II
-illuminant has attenuated the red substrate’s 625 nm peak sufficiently
-to render it indistinguishable from the flat grey (JND &lt; 1).</p>
+red substrates in well-lit shallow water (JND &gt; 2 in the top 5 m) but
+loses the ability by 20 m, where the blue-shifted Jerlov II illuminant
+has attenuated the red substrate’s 625 nm peak sufficiently to render it
+indistinguishable from the flat grey (JND &lt; 1).</p>
 </div>
 <div class="section level2">
 <h2 id="validation-against-pavo">Validation against pavo<a class="anchor" aria-label="anchor" href="#validation-against-pavo"></a>
@@ -556,23 +556,23 @@ that with equal cone ratios (<code>n = 1</code>), so
 <tr class="odd">
 <td align="left">Homo sapiens</td>
 <td align="left">Homo sapiens</td>
-<td align="right">1.865302</td>
-<td align="right">1.865302</td>
-<td align="right">1.7e-13</td>
+<td align="right">1.780130</td>
+<td align="right">1.780130</td>
+<td align="right">5e-14</td>
 </tr>
 <tr class="even">
 <td align="left">Apis mellifera</td>
 <td align="left">Apis mellifera</td>
 <td align="right">0.943538</td>
 <td align="right">0.943538</td>
-<td align="right">3.0e-14</td>
+<td align="right">3e-14</td>
 </tr>
 <tr class="odd">
 <td align="left">Danio rerio</td>
 <td align="left">Danio rerio</td>
-<td align="right">1.768219</td>
-<td align="right">1.768219</td>
-<td align="right">8.0e-14</td>
+<td align="right">2.422568</td>
+<td align="right">2.422568</td>
+<td align="right">2e-14</td>
 </tr>
 </tbody>
 </table>

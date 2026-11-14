@@ -19,13 +19,13 @@ govardovskii_template(lambda, lambda_max, chromophore = c("A1", "A2"))
 
 - lambda_max:
 
-  Peak absorbance wavelength in nm, between 300 and 700.
+  Peak absorbance wavelength in nm: 300–700 for A1, 440–620 for A2.
 
 - chromophore:
 
   Chromophore type: `"A1"` (11-cis retinal, default) or `"A2"` (11-cis
-  3,4-didehydroretinal). A2 shifts the peak toward longer wavelengths
-  and broadens the spectrum.
+  3,4-didehydroretinal). For the same `lambda_max`, the A2 spectrum is
+  broader.
 
 ## Value
 
@@ -36,21 +36,36 @@ most 1; it reaches 1 only if `lambda` includes the template's peak).
 
 The template models absorbance as the sum of an \\\alpha\\-band (main
 peak) and a \\\beta\\-band (short-wavelength shoulder). The
-\\\alpha\\-band follows the four-parameter expression:
-\$\$S\_\alpha(\lambda) = \left\[ e^{A(a - x)} + e^{B(0.922 - x)} +
-e^{C(1.104 - x)} + D \right\]^{-1}, \quad x =
-\frac{\lambda\_{\max}}{\lambda}\$\$ where \\A\\, \\B\\, \\C\\, \\D\\,
-and \\a\\ are chromophore-specific constants (A1: \\A=69.7\\, \\B=28\\,
-\\C=-14.9\\, \\D=0.674\\, \\a\\ wavelength-dependent; A2: \\A=62.7\\,
-\\B=26.5\\, \\C=-15.6\\, \\D=0.530\\). The \\\beta\\-band is a Gaussian:
-\$\$S\_\beta(\lambda) = 0.26\\\exp\\\left\[ -\\\left(\frac{\lambda -
-\lambda\_\beta}{b}\right)^2 \right\]\$\$ with \\\lambda\_\beta = 189 +
-0.315\\\lambda\_{\max}\\ and \\b = -40.5 + 0.195\\\lambda\_{\max}\\. The
-full template is \\S(\lambda) = \max(0,\\ S\_\alpha + S\_\beta)\\,
-normalised to the template's own maximum. That maximum lies slightly
-below \\\lambda\_{\max}\\ and is found numerically, so the returned
-values do not depend on the wavelength grid supplied: a grid that misses
-the peak returns values below 1 rather than being rescaled.
+\\\alpha\\-band follows eqn 1 of Govardovskii et al. (2000):
+\$\$S\_\alpha(\lambda) = \left\[ e^{A(a - x)} + e^{B(b - x)} + e^{C(c -
+x)} + D \right\]^{-1}, \quad x = \frac{\lambda\_{\max}}{\lambda}\$\$ and
+the \\\beta\\-band is a Gaussian (eqn 4): \$\$S\_\beta(\lambda) =
+A\_\beta \exp\\\left\[ -\\\left(\frac{\lambda -
+\lambda\_{m\beta}}{w}\right)^2 \right\]\$\$ The constants depend on the
+chromophore:
+
+- A1 (eqns 2, 5): \\A = 69.7\\, \\a = 0.8795 +
+  0.0459\\e^{-(\lambda\_{\max} - 300)^2/11940}\\, \\B = 28\\, \\b =
+  0.922\\, \\C = -14.9\\, \\c = 1.104\\, \\D = 0.674\\; \\A\_\beta =
+  0.26\\, \\\lambda\_{m\beta} = 189 + 0.315\\\lambda\_{\max}\\, \\w =
+  -40.5 + 0.195\\\lambda\_{\max}\\.
+
+- A2 (eqns 6, 8): \\A = 62.7 + 1.834\\e^{(\lambda\_{\max} -
+  625)/54.2}\\, \\a = 0.875 + 0.0268\\e^{(\lambda\_{\max} -
+  665)/40.7}\\, \\B = 20.85\\, \\b = 0.9101\\, \\C = -10.37\\, \\c =
+  1.1123\\, \\D = 0.5343\\; \\A\_\beta = 0.37\\, \\\lambda\_{m\beta} =
+  216.7 + 0.287\\\lambda\_{\max}\\, \\w = 317 - 1.149\\\lambda\_{\max} +
+  0.00124\\\lambda\_{\max}^2\\.
+
+The full template \\S\_\alpha + S\_\beta\\ is normalised to its own
+maximum, which lies within a few nm of \\\lambda\_{\max}\\ and is found
+numerically, so the returned values do not depend on the wavelength grid
+supplied: a grid that misses the peak returns values below 1 rather than
+being rescaled.
+
+The A2 template was fitted to pigments peaking between about 444 and 620
+nm, so `lambda_max` outside 440–620 nm is rejected for A2. A1 accepts
+300–700 nm.
 
 ## References
 

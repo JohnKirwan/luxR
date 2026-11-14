@@ -14,7 +14,7 @@ fit_sensitivity(
   lambda,
   sensitivity,
   chromophore = c("A1", "A2"),
-  lambda_max_range = c(300, 700)
+  lambda_max_range = NULL
 )
 ```
 
@@ -37,7 +37,9 @@ fit_sensitivity(
 - lambda_max_range:
 
   Length-2 numeric vector giving the search interval for
-  \\\lambda\_{\max}\\ in nm. Default `c(300, 700)`.
+  \\\lambda\_{\max}\\ in nm. Default `NULL` searches the chromophore's
+  whole valid range (A1 300–700 nm, A2 440–620 nm); a range outside it
+  is an error.
 
 ## Value
 

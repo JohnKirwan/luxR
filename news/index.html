@@ -37,7 +37,21 @@
 <h2 class="pkg-version" data-toc-text="0.1.1" id="luxr-011">luxR 0.1.1<a class="anchor" aria-label="anchor" href="#luxr-011"></a></h2>
 <div class="section level3">
 <h3 id="breaking-changes-0-1-1">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-1-1"></a></h3>
+<ul><li>The A2 <code><a href="../reference/govardovskii_template.html">govardovskii_template()</a></code> now follows Govardovskii et al. (2000):
+<ul><li>The α-band uses eqns 6a/6b with B = 20.85, b = 0.9101, C = -10.37, c = 1.1123 and D = 0.5343.</li>
+<li>The β-band uses A_β = 0.37 with eqns 8a/8b.</li>
+</ul>
+Previously A2 used wrong α constants and the A1 β-band, which made A2 narrower than A1; at λmax 620 nm the FWHM is now 147 nm, against 125 nm for A1. A2 <code>lambda_max</code> is limited to the template’s fitted range, 440–620 nm, and <code><a href="../reference/fit_sensitivity.html">fit_sensitivity()</a></code> searches that range by default (<code>lambda_max_range = NULL</code>). A1 output is unchanged.</li>
+<li>
+<code>species_sensitivities</code> corrections, now checked against their sources (dataset version <code>species-v2</code>):
 <ul><li>
+<em>Homo sapiens</em> uses Bowmaker &amp; Dartnall (1980): rod 497.6, S 420.3, M 533.8 and L 562.8 nm (previously 498, 437, 533 and 564).</li>
+<li>
+<em>Danio rerio</em> cones are now <strong>A1</strong> (previously A2), with peaks from Govardovskii et al. (2000) Table 1: 361, 414, 483 and 567 nm (previously 362, 415, 480 and 561, attributed to Robinson et al. 1993, which reports only the UV cone).</li>
+<li>
+<em>Xenopus laevis</em> has a single A2 rod at 523 nm (Govardovskii et al. 2000). The previous A1 rod and the cones, attributed to an unverified source, were removed.</li>
+</ul></li>
+<li>
 <code><a href="../reference/par_fraction.html">par_fraction()</a></code> now returns the photon fraction by default, since PAR is defined as a photon flux. <code>basis = "energy"</code> gives the energy fraction (the previous result for energy input). Numeric input states its unit with <code>photonic</code>, as in <code><a href="../reference/par_irradiance.html">par_irradiance()</a></code>; a <code>lux_spectrum</code> is converted from its own unit, so µmol and W spectra now give the same answer. Non-irradiance spectra and negative values are rejected, and a zero total raises a <code>lux_spectrum_value_error</code> instead of returning <code>NA</code>.</li>
 <li>
 <code><a href="../reference/secchi_depth.html">secchi_depth()</a></code> weights the bins straddling 400 and 700 nm by their overlap with the window instead of counting them whole, converts a <code>lux_spectrum</code> to W m^-2 nm^-1 before weighting (µmol spectra previously weighted by photon flux), and validates its input: <code>Kd</code> must be positive and finite, <code>lambda</code> and <code>irradiance</code> come together and match <code>Kd</code> in length, irradiance is non-negative with some in the window, and only irradiance spectra are accepted.</li>

@@ -77,5 +77,5 @@ species_brightness(irr, lam, "Homo sapiens",
                    input_unit = "umol/m2/s/nm",
                    channel = "by_receptor")
 #>       L-cone       M-cone       S-cone        ipRGC          rod 
-#> 1.212507e+20 1.159651e+20 7.040981e+19 9.979925e+19 1.068839e+20 
+#> 1.210763e+20 1.161257e+20 5.358380e+19 9.979925e+19 1.067493e+20 
 ```

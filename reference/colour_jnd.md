@@ -94,10 +94,10 @@ sp2 <- solar_irradiance("underwater_10m")
 colour_jnd(sp1$irradiance, sp2$irradiance,
            lambda = sp1$wavelength, species = "Homo sapiens",
            receptor = c("L-cone", "M-cone", "S-cone"))
-#> [1] 1.860537
+#> [1] 1.774973
 
 # Zebrafish tetrachromat (all cones)
 colour_jnd(sp1$irradiance, sp2$irradiance,
            lambda = sp1$wavelength, species = "Danio rerio")
-#> [1] 1.758151
+#> [1] 2.415897
 ```

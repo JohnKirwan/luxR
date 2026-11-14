@@ -14,7 +14,7 @@ species_sensitivities
 
 ## Format
 
-A data frame with 27 rows and 6 columns:
+A data frame with 24 rows and 6 columns:
 
 - species:
 
@@ -50,11 +50,19 @@ visual-pigment template (see
 [`govardovskii_template`](https://johnkirwan.github.io/luxR/reference/govardovskii_template.md)).
 
 Per-receptor lambda_max sources: Bowmaker & Dartnall (1980) and Bailes &
-Lucas (2013) (*Homo sapiens*); Robinson et al. (1993) (*Danio rerio*);
+Lucas (2013) (*Homo sapiens*); Govardovskii et al. (2000), Table 1
+(*Danio rerio*, as *Brachydanio rerio*, and the *Xenopus laevis* rod);
 Peitsch et al. (1992) (*Apis mellifera*); Salcedo et al. (1999)
 (*Drosophila melanogaster*); Hart et al. (2004) (*Callorhinchus milii*);
-Yokoyama et al. (1999) (*Latimeria chalumnae*); Yoshiura et al. (2011)
-(*Xenopus laevis*); Hawryshyn et al. (2003) (*Oncorhynchus mykiss*).
+Yokoyama et al. (1999) (*Latimeria chalumnae*); Hawryshyn et al. (2003)
+(*Oncorhynchus mykiss*).
+
+*Danio rerio* cones are coded A1 and the *Xenopus laevis* rod A2, as in
+Govardovskii et al. (2000). Those authors note that the Danio UV cone
+deviates from the template (a raised long-wave tail), so its modelled
+sensitivity is approximate. Only the principal (“red”) Xenopus rod is
+included; its cones are omitted until a primary source for their peaks
+is confirmed.
 
 A role label does not by itself validate a receptor for a model.
 Complete, cited channel memberships are recorded separately in
@@ -69,16 +77,15 @@ Govardovskii VI, Fyhrquist N, Reuter T, Kuzmin DG, Donner K (2000) In
 search of the visual pigment template. Visual Neuroscience 17:509-528.
 
 Full citation keys and their verification status are recorded in
-`data-raw/species_source_map.csv`. The legacy Hart et al. (2004) and
-Yoshiura et al. (2011) attributions remain explicitly unverified pending
-primary-source confirmation; the values are not silently relabelled.
+`data-raw/species_source_map.csv`. The legacy Hart et al. (2004)
+attribution remains explicitly unverified pending primary-source
+confirmation; the values are not silently relabelled.
 
-Robinson J, Schmitt EA, Hárosi FI, Reece RJ, Dowling JE (1993).
-“Zebrafish Ultraviolet Visual Pigment: Absorption Spectrum, Sequence,
-and Localization.” *Proceedings of the National Academy of Sciences*,
-**90**(13), 6009–6012.
-[doi:10.1073/pnas.90.13.6009](https://doi.org/10.1073/pnas.90.13.6009) .
-[2026-06-04](https://johnkirwan.github.io/luxR/reference/2026-06-04).
+Govardovskii VI, Fyhrquist N, Reuter T, Kuzmin DG, Donner K (2000). “In
+Search of the Visual Pigment Template.” *Visual Neuroscience*,
+**17**(4), 509–528.
+[doi:10.1017/S0952523800174036](https://doi.org/10.1017/S0952523800174036)
+.
 
 Hawryshyn CW, Martens G, Allison WT, Anholt BR (2003). “Regeneration of
 Ultraviolet-Sensitive Cones in the Retinal Cone Mosaic of
@@ -92,9 +99,14 @@ Thyroxin-Challenged Post-Juvenile Rainbow Trout (Oncorhynchus Mykiss).”
 ``` r
 data(species_sensitivities)
 subset(species_sensitivities, species == "Danio rerio")
-#>       species receptor lambda_max chromophore channel_role               source
-#> 6 Danio rerio  UV-cone        362          A2    chromatic Robinson et al. 1993
-#> 7 Danio rerio   S-cone        415          A2    chromatic Robinson et al. 1993
-#> 8 Danio rerio   M-cone        480          A2    chromatic Robinson et al. 1993
-#> 9 Danio rerio   L-cone        561          A2    chromatic Robinson et al. 1993
+#>       species receptor lambda_max chromophore channel_role
+#> 6 Danio rerio  UV-cone        361          A1    chromatic
+#> 7 Danio rerio   S-cone        414          A1    chromatic
+#> 8 Danio rerio   M-cone        483          A1    chromatic
+#> 9 Danio rerio   L-cone        567          A1    chromatic
+#>                     source
+#> 6 Govardovskii et al. 2000
+#> 7 Govardovskii et al. 2000
+#> 8 Govardovskii et al. 2000
+#> 9 Govardovskii et al. 2000
 ```

@@ -56,6 +56,6 @@ print(x)
 #>    import: d85c574eff45c07906b6d806cc792c94
 #>    import: solar-legacy-v1
 #>    import: 0.1.1
-#>    import: f6bf000ba9ef64bd12fc5ff4be56bed1897c4d24
+#>    import: 8324fbc696e9a0b2dc0c328f995190fa553d3118
 #>    import: parse five-condition snapshot; validate grids; retain documented scaling and Jerlov legacy assumptions
 ```

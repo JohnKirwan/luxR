@@ -140,7 +140,7 @@ optical density.</p>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">catch</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##      UV-cone       S-cone       M-cone       L-cone </span></span>
-<span><span class="co">## 2.165486e+19 6.750207e+19 1.459538e+20 1.677029e+20</span></span></code></pre>
+<span><span class="co">## 1.717668e+19 6.414490e+19 1.549264e+20 1.732278e+20</span></span></code></pre>
 <p>The catches span almost an order of magnitude across the four cones —
 a direct readout of how much each receptor’s sensitivity overlaps the
 residual blue-green field at depth, rather than the broad, even
@@ -161,10 +161,10 @@ receptors.</p>
 <span><span class="va">ic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/inherent_contrast.html">inherent_contrast</a></span><span class="op">(</span><span class="va">red</span>, <span class="va">grey</span>, <span class="va">E_10m</span>, <span class="va">lam</span>, species <span class="op">=</span> <span class="va">viewer</span><span class="op">)</span></span>
 <span><span class="va">ic</span></span></code></pre></div>
 <pre><code><span><span class="co">## $achromatic</span></span>
-<span><span class="co">## [1] -0.2622355</span></span>
+<span><span class="co">## [1] -0.2469029</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $chromatic</span></span>
-<span><span class="co">## [1] 1.743446</span></span></code></pre>
+<span><span class="co">## [1] 2.098941</span></span></code></pre>
 <p>The default scenario assumes both scalar contrasts decay with
 distance as veiling light replaces the object
 (<code>C(r) = C0 * exp(-c r)</code>). This is a teaching heuristic, not
@@ -183,8 +183,8 @@ than the <code>Kd * kd_to_c</code> proxy.</p>
 <pre><code><span><span class="co">## &lt;lux_detection&gt; horizontal viewing, Danio rerio </span></span>
 <span><span class="co">##   model: scalar contrast/JND heuristic scenario estimate </span></span>
 <span><span class="co">##   validation: not empirically validated as an actual detection range</span></span>
-<span><span class="co">##   achromatic: C0 = -0.262 (Weber)   -&gt; estimate 8.04 m  (thr 0.020; crossed)</span></span>
-<span><span class="co">##   chromatic : dS = 1.743 JND        -&gt; estimate 1.74 m  (thr 1.00 JND; crossed)</span></span></code></pre>
+<span><span class="co">##   achromatic: C0 = -0.247 (Weber)   -&gt; estimate 7.85 m  (thr 0.020; crossed)</span></span>
+<span><span class="co">##   chromatic : dS = 2.099 JND        -&gt; estimate 2.32 m  (thr 1.00 JND; crossed)</span></span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></code></pre></div>
 <p><img src="seeing-through-water_files/figure-html/detect-plot-1.png" class="r-plt" alt="" width="672"></p>
@@ -200,7 +200,7 @@ coefficient becomes <code>c - Kd</code>:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/detection_range.html">detection_range</a></span><span class="op">(</span><span class="va">red</span>, <span class="va">grey</span>, <span class="va">E_10m</span>, <span class="va">lam</span>, Kd <span class="op">=</span> <span class="va">Kd_ref</span>, beam_c <span class="op">=</span> <span class="va">c_beam</span>,</span>
 <span>                species <span class="op">=</span> <span class="va">viewer</span>, channel <span class="op">=</span> <span class="st">"achromatic"</span>,</span>
 <span>                direction <span class="op">=</span> <span class="st">"up"</span><span class="op">)</span><span class="op">$</span><span class="va">achromatic</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 9.638616</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 9.412969</span></span></code></pre>
 <p>For chromatic work, prefer the wavelength-resolved path model. It
 requires an explicit beam-attenuation spectrum and veiling radiance
 rather than treating a zero-distance JND as a scalar that decays
@@ -225,8 +225,8 @@ also the asymptotic veiling field:</p>
 <pre><code><span><span class="co">## &lt;lux_detection&gt; horizontal viewing, Danio rerio </span></span>
 <span><span class="co">##   model: spectral-path scenario estimate </span></span>
 <span><span class="co">##   validation: not empirically validated as an actual detection range</span></span>
-<span><span class="co">##   achromatic: C0 = -0.262 (Weber)   -&gt; estimate 28.08 m  (thr 0.020; crossed)</span></span>
-<span><span class="co">##   chromatic : dS = 1.743 JND        -&gt; estimate 13.14 m  (thr 1.00 JND; crossed)</span></span></code></pre>
+<span><span class="co">##   achromatic: C0 = -0.247 (Weber)   -&gt; estimate 27.52 m  (thr 0.020; crossed)</span></span>
+<span><span class="co">##   chromatic : dS = 2.099 JND        -&gt; estimate 14.38 m  (thr 1.00 JND; crossed)</span></span></code></pre>
 <p>This remains a scenario estimate: the spectral calculation improves
 the path physics and receptor calculation, but it does not add target
 size, acuity, photon limits, behaviour, or empirical validation for the

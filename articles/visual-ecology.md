@@ -48,7 +48,7 @@ x0m_W
     ##    import: 5952acfab4a04ea1b02eb085e6a768d5
     ##    import: naples-legacy-v1
     ##    import: 0.1.1
-    ##    import: f6bf000ba9ef64bd12fc5ff4be56bed1897c4d24
+    ##    import: 8324fbc696e9a0b2dc0c328f995190fa553d3118
     ##    import: parse canonical processed snapshot; validate schema grid and non-negative irradiance
 
 ``` r
@@ -134,7 +134,7 @@ the package database via
 [`species_LEF()`](https://johnkirwan.github.io/luxR/reference/species_LEF.md).
 Zebrafish (*Danio rerio*) are tetrachromats with four cone classes (UV,
 S, M, L), but we restrict the model to the three longer-wavelength cones
-(S at 415 nm, M at 480 nm, L at 561 nm) because the UV-cone’s peak lies
+(S at 414 nm, M at 483 nm, L at 567 nm) because the UV-cone’s peak lies
 at the edge of the modelled illuminant range.
 
 ``` r
@@ -150,7 +150,7 @@ plot(sws_df$lambda, sws_df$S, type = "l", col = "blue",
 lines(mws_df$lambda, mws_df$S, col = "green3")
 lines(lws_df$lambda, lws_df$S, col = "red3")
 legend("topright",
-       legend = c("S-cone (415 nm)", "M-cone (480 nm)", "L-cone (561 nm)"),
+       legend = c("S-cone (414 nm)", "M-cone (483 nm)", "L-cone (567 nm)"),
        col = c("blue", "green3", "red3"), lty = 1)
 ```
 
@@ -187,15 +187,15 @@ knitr::kable(qc_df[, c("depth_m", "S", "M", "L", "M_L")],
 
 |     | Depth (m) | S-cone catch | M-cone catch | L-cone catch | M/L ratio |
 |:----|----------:|-------------:|-------------:|-------------:|----------:|
-| 0   |         0 | 6.478647e+19 | 1.014199e+20 | 1.176856e+20 |      0.86 |
-| 5   |         5 | 4.286511e+19 | 7.406550e+19 | 7.647664e+19 |      0.97 |
-| 10  |        10 | 2.865452e+19 | 5.439561e+19 | 5.156364e+19 |      1.05 |
-| 20  |        20 | 1.315803e+19 | 2.971752e+19 | 2.507115e+19 |      1.19 |
-| 50  |        50 | 1.502259e+18 | 5.148881e+18 | 3.683800e+18 |      1.40 |
+| 0   |         0 | 6.377988e+19 | 1.075382e+20 | 1.281409e+20 |      0.84 |
+| 5   |         5 | 4.181171e+19 | 7.839748e+19 | 8.062526e+19 |      0.97 |
+| 10  |        10 | 2.770052e+19 | 5.750141e+19 | 5.330999e+19 |      1.08 |
+| 20  |        20 | 1.250108e+19 | 3.136088e+19 | 2.536621e+19 |      1.24 |
+| 50  |        50 | 1.358361e+18 | 5.426504e+18 | 3.645735e+18 |      1.49 |
 
 As depth increases the M/L ratio rises: the blue-shifted deep illuminant
-peaks near 500 nm, which aligns with the M-cone (480 nm) better than the
-L-cone (561 nm), shifting the chromatic balance available to the fish.
+peaks near 500 nm, which aligns with the M-cone (483 nm) better than the
+L-cone (567 nm), shifting the chromatic balance available to the fish.
 
 ## Reflectance to radiance
 
@@ -299,11 +299,11 @@ knitr::kable(jnd_table,
 
 |     | Depth (m) | ΔS (JND) |
 |:----|----------:|---------:|
-| 0   |         0 |     2.81 |
-| 5   |         5 |     2.02 |
-| 10  |        10 |     1.45 |
-| 20  |        20 |     0.79 |
-| 50  |        50 |     0.19 |
+| 0   |         0 |     3.44 |
+| 5   |         5 |     2.45 |
+| 10  |        10 |     1.75 |
+| 20  |        20 |     0.92 |
+| 50  |        50 |     0.20 |
 
 ``` r
 
@@ -333,9 +333,9 @@ if (length(fail_idx) > 0) {
     ## Discrimination fails (JND < 1) at 20 m depth.
 
 The model predicts that the zebrafish can discriminate the grey and red
-substrates in well-lit shallow water (JND ≈ 2–3 near the surface) but
-loses the ability by 20 m, where the blue-shifted Jerlov II illuminant
-has attenuated the red substrate’s 625 nm peak sufficiently to render it
+substrates in well-lit shallow water (JND \> 2 in the top 5 m) but loses
+the ability by 20 m, where the blue-shifted Jerlov II illuminant has
+attenuated the red substrate’s 625 nm peak sufficiently to render it
 indistinguishable from the flat grey (JND \< 1).
 
 ## Validation against pavo
@@ -405,9 +405,9 @@ knitr::kable(cmp, digits = c(0, 6, 6, 14),
 
 |                | Species        |  luxR ΔS |  pavo ΔS | \|difference\| |
 |:---------------|:---------------|---------:|---------:|---------------:|
-| Homo sapiens   | Homo sapiens   | 1.865302 | 1.865302 |        1.7e-13 |
-| Apis mellifera | Apis mellifera | 0.943538 | 0.943538 |        3.0e-14 |
-| Danio rerio    | Danio rerio    | 1.768219 | 1.768219 |        8.0e-14 |
+| Homo sapiens   | Homo sapiens   | 1.780130 | 1.780130 |          5e-14 |
+| Apis mellifera | Apis mellifera | 0.943538 | 0.943538 |          3e-14 |
+| Danio rerio    | Danio rerio    | 2.422568 | 2.422568 |          2e-14 |
 
 The agreement is a useful regression guard as well as a check on
 correctness: `tests/testthat/test-pavo-validation.R` asserts it

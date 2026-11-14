@@ -196,10 +196,10 @@ red  <- 0.2 + 0.25 * exp(-((lam - 625) / 35)^2)
 Kd   <- jerlov_Kd("IA", lambda = 490)
 detection_range(red, grey, sp$irradiance, lam, Kd = Kd, species = "Danio rerio")
 #> $achromatic
-#> [1] 70.0432
+#> [1] 64.10393
 #> 
 #> $chromatic
-#> [1] 36.66406
+#> [1] 42.72878
 #> 
 #> attr(,"status")
 #> achromatic  chromatic 

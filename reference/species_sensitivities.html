@@ -51,7 +51,7 @@ Used by <code><a href="species_LEF.html">species_LEF</a></code> and <code><a hre
 
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
-    <p>A data frame with 27 rows and 6 columns:</p><dl><dt>species</dt>
+    <p>A data frame with 24 rows and 6 columns:</p><dl><dt>species</dt>
 <dd><p>Scientific name.</p></dd>
 
   <dt>receptor</dt>
@@ -80,12 +80,18 @@ Used by <code><a href="species_LEF.html">species_LEF</a></code> and <code><a hre
   curves from these peaks using the Govardovskii et al. (2000) visual-pigment
   template (see <code><a href="govardovskii_template.html">govardovskii_template</a></code>).</p>
 <p>Per-receptor lambda_max sources: Bowmaker &amp; Dartnall (1980) and Bailes &amp;
-  Lucas (2013) (<em>Homo sapiens</em>); Robinson et al. (1993)
-  (<em>Danio rerio</em>); Peitsch et al. (1992) (<em>Apis mellifera</em>); Salcedo
+  Lucas (2013) (<em>Homo sapiens</em>); Govardovskii et al. (2000), Table 1
+  (<em>Danio rerio</em>, as <em>Brachydanio rerio</em>, and the <em>Xenopus
+  laevis</em> rod); Peitsch et al. (1992) (<em>Apis mellifera</em>); Salcedo
   et al. (1999) (<em>Drosophila melanogaster</em>); Hart et al. (2004)
   (<em>Callorhinchus milii</em>); Yokoyama et al. (1999) (<em>Latimeria
-  chalumnae</em>); Yoshiura et al. (2011) (<em>Xenopus laevis</em>); Hawryshyn et
-  al. (2003) (<em>Oncorhynchus mykiss</em>).</p>
+  chalumnae</em>); Hawryshyn et al. (2003) (<em>Oncorhynchus mykiss</em>).</p>
+<p><em>Danio rerio</em> cones are coded A1 and the <em>Xenopus laevis</em> rod
+  A2, as in Govardovskii et al. (2000). Those authors note that the Danio
+  UV cone deviates from the template (a raised long-wave tail), so its
+  modelled sensitivity is approximate. Only the principal (“red”)
+  Xenopus rod is included; its cones are omitted until a primary source for
+  their peaks is confirmed.</p>
 <p>A role label does not by itself validate a receptor for a model. Complete,
   cited channel memberships are recorded separately in
   <code><a href="species_channels.html">species_channels</a></code>. The generic mantis-shrimp record and
@@ -97,15 +103,14 @@ Used by <code><a href="species_LEF.html">species_LEF</a></code> and <code><a hre
     <p>Govardovskii VI, Fyhrquist N, Reuter T, Kuzmin DG, Donner K (2000) In
   search of the visual pigment template. Visual Neuroscience 17:509-528.</p>
 <p>Full citation keys and their verification status are recorded in
-  <code>data-raw/species_source_map.csv</code>. The legacy Hart et al. (2004) and
-  Yoshiura et al. (2011) attributions remain explicitly unverified pending
-  primary-source confirmation; the values are not silently relabelled.</p>
-<p>Robinson J, Schmitt EA, Hárosi FI, Reece RJ, Dowling JE (1993).
-“Zebrafish Ultraviolet Visual Pigment: Absorption Spectrum, Sequence, and Localization.”
-<em>Proceedings of the National Academy of Sciences</em>, <b>90</b>(13), 6009–6012.
-<a href="https://doi.org/10.1073/pnas.90.13.6009" class="external-link">doi:10.1073/pnas.90.13.6009</a>
-.
-<a href="2026-06-04">2026-06-04</a>.</p>
+  <code>data-raw/species_source_map.csv</code>. The legacy Hart et al. (2004)
+  attribution remains explicitly unverified pending primary-source
+  confirmation; the values are not silently relabelled.</p>
+<p>Govardovskii VI, Fyhrquist N, Reuter T, Kuzmin DG, Donner K (2000).
+“In Search of the Visual Pigment Template.”
+<em>Visual Neuroscience</em>, <b>17</b>(4), 509–528.
+<a href="https://doi.org/10.1017/S0952523800174036" class="external-link">doi:10.1017/S0952523800174036</a>
+.</p>
 <p>Hawryshyn CW, Martens G, Allison WT, Anholt BR (2003).
 “Regeneration of Ultraviolet-Sensitive Cones in the Retinal Cone Mosaic of Thyroxin-Challenged Post-Juvenile Rainbow Trout (Oncorhynchus Mykiss).”
 <em>Journal of Experimental Biology</em>, <b>206</b>(15), 2665–2673.
@@ -119,11 +124,16 @@ ISSN 0022-0949.
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">species_sensitivities</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">species_sensitivities</span>, <span class="va">species</span> <span class="op">==</span> <span class="st">"Danio rerio"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       species receptor lambda_max chromophore channel_role               source</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 Danio rerio  UV-cone        362          A2    chromatic Robinson et al. 1993</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7 Danio rerio   S-cone        415          A2    chromatic Robinson et al. 1993</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8 Danio rerio   M-cone        480          A2    chromatic Robinson et al. 1993</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9 Danio rerio   L-cone        561          A2    chromatic Robinson et al. 1993</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       species receptor lambda_max chromophore channel_role</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 Danio rerio  UV-cone        361          A1    chromatic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7 Danio rerio   S-cone        414          A1    chromatic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8 Danio rerio   M-cone        483          A1    chromatic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9 Danio rerio   L-cone        567          A1    chromatic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                     source</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 Govardovskii et al. 2000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7 Govardovskii et al. 2000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8 Govardovskii et al. 2000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9 Govardovskii et al. 2000</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

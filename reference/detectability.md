@@ -181,7 +181,7 @@ d
 #> <lux_detection> horizontal viewing, Danio rerio 
 #>   model: scalar contrast/JND heuristic scenario estimate 
 #>   validation: not empirically validated as an actual detection range
-#>   achromatic: C0 = -0.193 (Weber)   -> estimate 70.04 m  (thr 0.020; crossed)
-#>   chromatic : dS = 3.280 JND        -> estimate 36.66 m  (thr 1.00 JND; crossed)
+#>   achromatic: C0 = -0.160 (Weber)   -> estimate 64.10 m  (thr 0.020; crossed)
+#>   chromatic : dS = 3.992 JND        -> estimate 42.73 m  (thr 1.00 JND; crossed)
 if (FALSE) plot(d) # \dontrun{}
 ```

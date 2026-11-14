@@ -90,7 +90,7 @@ round(catch)
 ```
 
     ##      UV-cone       S-cone       M-cone       L-cone 
-    ## 2.165486e+19 6.750207e+19 1.459538e+20 1.677029e+20
+    ## 1.717668e+19 6.414490e+19 1.549264e+20 1.732278e+20
 
 The catches span almost an order of magnitude across the four cones — a
 direct readout of how much each receptor’s sensitivity overlaps the
@@ -115,10 +115,10 @@ ic
 ```
 
     ## $achromatic
-    ## [1] -0.2622355
+    ## [1] -0.2469029
     ## 
     ## $chromatic
-    ## [1] 1.743446
+    ## [1] 2.098941
 
 The default scenario assumes both scalar contrasts decay with distance
 as veiling light replaces the object (`C(r) = C0 * exp(-c r)`). This is
@@ -142,8 +142,8 @@ d
     ## <lux_detection> horizontal viewing, Danio rerio 
     ##   model: scalar contrast/JND heuristic scenario estimate 
     ##   validation: not empirically validated as an actual detection range
-    ##   achromatic: C0 = -0.262 (Weber)   -> estimate 8.04 m  (thr 0.020; crossed)
-    ##   chromatic : dS = 1.743 JND        -> estimate 1.74 m  (thr 1.00 JND; crossed)
+    ##   achromatic: C0 = -0.247 (Weber)   -> estimate 7.85 m  (thr 0.020; crossed)
+    ##   chromatic : dS = 2.099 JND        -> estimate 2.32 m  (thr 1.00 JND; crossed)
 
 ``` r
 
@@ -168,7 +168,7 @@ detection_range(red, grey, E_10m, lam, Kd = Kd_ref, beam_c = c_beam,
                 direction = "up")$achromatic
 ```
 
-    ## [1] 9.638616
+    ## [1] 9.412969
 
 For chromatic work, prefer the wavelength-resolved path model. It
 requires an explicit beam-attenuation spectrum and veiling radiance
@@ -198,8 +198,8 @@ d_spectral
     ## <lux_detection> horizontal viewing, Danio rerio 
     ##   model: spectral-path scenario estimate 
     ##   validation: not empirically validated as an actual detection range
-    ##   achromatic: C0 = -0.262 (Weber)   -> estimate 28.08 m  (thr 0.020; crossed)
-    ##   chromatic : dS = 1.743 JND        -> estimate 13.14 m  (thr 1.00 JND; crossed)
+    ##   achromatic: C0 = -0.247 (Weber)   -> estimate 27.52 m  (thr 0.020; crossed)
+    ##   chromatic : dS = 2.099 JND        -> estimate 14.38 m  (thr 1.00 JND; crossed)
 
 This remains a scenario estimate: the spectral calculation improves the
 path physics and receptor calculation, but it does not add target size,

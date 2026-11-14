@@ -98,9 +98,9 @@ grey <- rep(0.3, length(lam))
 red  <- 0.2 + 0.25 * exp(-((lam - 625) / 35)^2)
 inherent_contrast(red, grey, sp$irradiance, lam, species = "Danio rerio")
 #> $achromatic
-#> [1] -0.1934718
+#> [1] -0.1596046
 #> 
 #> $chromatic
-#> [1] 3.280236
+#> [1] 3.992479
 #> 
 ```
