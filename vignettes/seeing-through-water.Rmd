@@ -140,9 +140,9 @@ plot(d)
 
 Under this heuristic the two channels behave very differently. The brightness
 (achromatic) difference
-stays above threshold for several metres, while the colour signal — only just
-above 1 JND at zero distance — washes out almost immediately as veiling light
-floods in. Detecting an object by its colour underwater is demanding: it needs
+stays above threshold for about `r round(d$range$achromatic, 1)` m, while the
+colour signal — `r round(d$inherent$chromatic, 1)` JND at zero distance — is
+lost after about `r round(d$range$chromatic, 1)` m as veiling light floods in. Detecting an object by its colour underwater is demanding: it needs
 both photons and inherent contrast to spare. Looking **up** (against the brighter
 surface) extends the range, because the contrast-attenuation coefficient becomes
 `c - Kd`:

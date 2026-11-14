@@ -22,15 +22,21 @@
   provenance
 }
 
-.luxr_code_commit <- function() {
-  description <- tryCatch(utils::packageDescription("luxR"),
-                          error = function(e) NULL)
-  if (!is.null(description) && !is.null(description[["GithubSHA1"]]) &&
-      nzchar(description[["GithubSHA1"]])) {
-    return(description[["GithubSHA1"]])
+# The commit luxR was installed from, as recorded in its installed DESCRIPTION
+# by remotes/pak (GithubSHA1, RemoteSha) or r-universe (RemoteSha). Only a full
+# 40-hex SHA is accepted: for a CRAN install RemoteSha holds the version string.
+# Ambient environment variables such as GITHUB_SHA are ignored because they
+# describe the caller's repository, not luxR. NA means the commit is unknown.
+.luxr_code_commit <- function(description = utils::packageDescription("luxR")) {
+  if (!is.list(description)) return(NA_character_)
+  for (field in c("RemoteSha", "GithubSHA1")) {
+    sha <- description[[field]]
+    if (is.character(sha) && length(sha) == 1L &&
+        grepl("^[0-9a-f]{40}$", sha)) {
+      return(sha)
+    }
   }
-  commit <- Sys.getenv("GITHUB_SHA", unset = NA_character_)
-  if (!is.na(commit) && nzchar(commit)) commit else NA_character_
+  NA_character_
 }
 
 .luxr_package_version <- function() {
