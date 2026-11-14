@@ -183,8 +183,12 @@ test_that("broken internal invariants are internal errors", {
 test_that("vector arguments in messages stay typed user errors", {
   expect_error(species_LEF(c("zz", "yy")), "unknown species",
                class = "luxR_value_error")
-  expect_error(irr[c(800, 801), c(900, 901)], "No wavelengths",
-               class = "luxR_grid_error")
+  # Comparing the grid with a length-2 bound triggers base R's recycling
+  # warning before the luxR error; only the error is under test here.
+  suppressWarnings(
+    expect_error(irr[c(800, 801), c(900, 901)], "No wavelengths",
+                 class = "luxR_grid_error")
+  )
 })
 
 test_that("length mismatches are dimension errors everywhere", {
