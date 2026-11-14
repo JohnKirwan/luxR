@@ -455,3 +455,12 @@ test_that("species achromatic contrast integrates over the 300-700 nm visual ban
                "do not cover the band 300-700 nm",
                class = "luxR_grid_error")
 })
+
+test_that("band is validated even without a species model", {
+  g <- grid_case(function(l) l > 0)
+  expect_error(
+    inherent_contrast(g$red, g$grey, g$E, g$lam, channel = "achromatic",
+                      band = 300),
+    "must be c\\(lower, upper\\)", class = "luxR_dimension_error"
+  )
+})

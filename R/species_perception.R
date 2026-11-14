@@ -486,13 +486,7 @@ quantum_catch <- function(irradiance, lambda, S,
 # Govardovskii beta band never reaches zero in the UV). The grid must cover
 # the band; bins straddling an edge count only their in-band width.
 .receptor_catches <- function(L, lambda, rows, binwidth, band, operation) {
-  .check_input(band, "band", operation, lower = 0, lower_open = TRUE)
-  if (length(band) != 2L)
-    .input_fail(operation)(
-      paste0("`band` must be c(lower, upper) in nm; got length ",
-             length(band), "."),
-      "band", band, NULL, "dimension"
-    )
+  .check_band(band, operation)
   binwidth <- .grid_binwidth(lambda, binwidth, operation)
   w <- .band_widths(lambda, binwidth, band[1L], band[2L], operation)
   vapply(seq_len(nrow(rows)), function(i) {
@@ -501,6 +495,16 @@ quantum_catch <- function(irradiance, lambda, S,
                        binwidth = binwidth)
     sum(Q / binwidth * w)
   }, numeric(1))
+}
+
+.check_band <- function(band, operation) {
+  .check_input(band, "band", operation, lower = 0, lower_open = TRUE)
+  if (length(band) != 2L)
+    .input_fail(operation)(
+      paste0("`band` must be c(lower, upper) in nm; got length ",
+             length(band), "."),
+      "band", band, NULL, "dimension"
+    )
 }
 
 .validate_quantum_sensitivity <- function(S) {

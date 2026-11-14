@@ -139,6 +139,7 @@
 # bands keep the result independent of the grid's extent.
 .viewer_brightness <- function(L, lambda, species, receptor, binwidth, band,
                                operation) {
+  .check_band(band, operation)
   if (is.null(species))
     return(sum(W2photon(L, lambda) *
                  .band_widths(lambda, binwidth, 400, 700, operation)))
