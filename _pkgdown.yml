@@ -34,6 +34,7 @@ reference:
     desc: "Package overview and the interactive Shiny explorer."
     contents:
       - luxR-package
+      - luxR-conditions
       - run_app
 
   - title: "Unit conversions"
