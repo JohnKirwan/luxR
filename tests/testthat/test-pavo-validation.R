@@ -119,20 +119,23 @@ test_that("spectral-path chromatic signal benchmarks against pavo", {
   background_seen <- veiling +
     (background * illuminant - veiling) * transmission
 
-  luxr_ds <- luxR:::.spectral_signals(
-    distance = distance,
-    object_radiance = object * illuminant,
-    background_radiance = background * illuminant,
-    veiling_radiance = veiling,
+  # "collimated" leaves the illuminant unchanged, so the radiances are R * E.
+  luxr_ds <- luxR:::.spectral_signal_fn(
+    object = object,
+    background = background,
+    illuminant = illuminant,
     lambda = lam,
+    veiling = veiling,
     effective_c = beam_c,
     species = benchmark_config$species,
     receptor = NULL,
     noise = benchmark_config$receptor_noise,
     channel = "chromatic",
     binwidth = 1,
-    band = c(300, 700)
-  )$chromatic
+    band = c(300, 700),
+    geometry = "collimated",
+    solid_angle = NULL
+  )(distance, "chromatic")
   pavo_ds <- suppressMessages(
     pavo_dS(
       in_band(object_seen, lam), in_band(background_seen, lam), lam, benchmark_config$species,

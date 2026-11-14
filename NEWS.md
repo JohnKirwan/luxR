@@ -133,6 +133,13 @@
   or `binwidth` is supplied (both come from the object); `binwidth` used to
   fail with "matched by multiple actual arguments".
 
+## Performance
+- `detection_range(model = "spectral_path")` and `detectability()` build the
+  receptor templates once per call instead of once per distance evaluated,
+  and with `channel = "both"` each threshold search computes only its own
+  channel. A 1001-point search for both channels takes about 5 s instead of
+  about 32 s; results are unchanged.
+
 ## Unit handling
 - `par_irradiance()` now rejects radiance and reflectance `lux_spectrum`
   objects with a `luxR_unit_error`. Photon-radiance spectra were
