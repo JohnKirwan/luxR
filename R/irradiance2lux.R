@@ -240,7 +240,8 @@ irradiance2lux.numeric <- function(irradiance, lambda,
             " (", nrow(LEF), " bins)")
 
   if (isTRUE(photonic)) {
-    .validate_scalar_character(molar_unit, "molar_unit", "irradiance2lux")
+    .validate_scalar_character(molar_unit, "molar_unit",
+                               list(operation = "irradiance2lux"))
     if (molar_unit != "photons")
       irradiance <- mol2photon_FUN(irradiance, molar_unit)
     irradiance <- photon2W(irradiance, lambda)
