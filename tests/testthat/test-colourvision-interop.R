@@ -101,3 +101,24 @@ test_that("species_sensitivity_matrix rejects a non-increasing grid", {
     "increasing"
   )
 })
+
+test_that("as_colourvision converts photon-basis spectra to energy units", {
+  lam <- seq(400, 700, 10)
+  e   <- lux_spectrum(rep(1, length(lam)), lam, "irradiance", "W/m2/nm")
+  p   <- convert_unit(e, "umol/m2/s/nm")
+  expect_equal(as_colourvision(p, name = "I")$I, e$E)
+  r_e <- lux_spectrum(rep(1, length(lam)), lam, "radiance", "W/m2/sr/nm")
+  r_p <- convert_unit(r_e, "umol/m2/s/sr/nm")
+  expect_equal(as_colourvision(r_p, name = "L")$L, r_e$E)
+  df <- as_colourvision(list(p = p, e = e))
+  expect_equal(df$p, e$E)
+  expect_equal(df$e, e$E)
+})
+
+test_that("as_colourvision passes reflectance through unchanged", {
+  lam <- seq(400, 700, 10)
+  r <- lux_spectrum(seq(0.1, 0.5, length.out = length(lam)), lam,
+                    "reflectance", "dimensionless")
+  expect_identical(as_colourvision(r, name = "R")$R, r$E)
+  expect_identical(as_colourvision(list(R = r))$R, r$E)
+})
