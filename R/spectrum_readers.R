@@ -39,7 +39,7 @@ from_solar <- function(condition = "clear_noon") {
   valid <- c("clear_noon", "clear_dawn", "overcast",
              "underwater_1m", "underwater_10m")
   if (!condition %in% valid)
-    stop("condition must be one of: ", paste(valid, collapse = ", "))
+    .luxr_abort(paste0("condition must be one of: ", paste(valid, collapse = ", ")), "value")
   sp <- solar_irradiance(condition)
   provenance <- .bundled_dataset_provenance(solar_spectra, "solar_spectra")
   lux_spectrum(

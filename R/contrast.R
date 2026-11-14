@@ -14,9 +14,9 @@
 #' @export
 michelson_contrast <- function(I_bright, I_dark) {
   if (any(I_bright + I_dark == 0))
-    stop("I_bright and I_dark cannot both be zero.")
+    .luxr_abort("I_bright and I_dark cannot both be zero.", "value")
   if (any(I_bright < I_dark))
-    stop("I_bright must be >= I_dark. Check argument order.")
+    .luxr_abort("I_bright must be >= I_dark. Check argument order.", "value")
   (I_bright - I_dark) / (I_bright + I_dark)
 }
 

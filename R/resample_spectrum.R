@@ -83,7 +83,7 @@ resample_spectrum.numeric <- function(x, lambda, from = NULL,
                                        method = c("linear", "cubic"),
                                        rule   = 1) {
   if (is.null(from))
-    stop("'from' (source wavelength grid) is required when 'x' is numeric.")
+    .luxr_abort("'from' (source wavelength grid) is required when 'x' is numeric.", "value")
   method <- match.arg(method)
   out        <- .interp(x, from, lambda, method, rule)
   names(out) <- as.character(lambda)

@@ -70,7 +70,7 @@ irradiance2radiance <- function(E,
     collimated = E,
     custom     = {
       if (is.null(solid_angle))
-        stop("`solid_angle` (sr) is required for geometry = 'custom'.")
+        .luxr_abort("`solid_angle` (sr) is required for geometry = 'custom'.", "value")
       E / solid_angle
     }
   )
@@ -125,7 +125,7 @@ radiance2irradiance <- function(L,
     collimated = L,
     custom     = {
       if (is.null(solid_angle))
-        stop("`solid_angle` (sr) is required for geometry = 'custom'.")
+        .luxr_abort("`solid_angle` (sr) is required for geometry = 'custom'.", "value")
       L * solid_angle
     }
   )

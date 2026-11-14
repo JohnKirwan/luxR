@@ -55,12 +55,12 @@ as_lux_spectrum.data.frame <- function(x,
   if (is.null(lambda_col)) {
     lambda_col <- intersect(c("lambda", "wavelength", "wv"), names(x))[1]
     if (is.na(lambda_col))
-      stop("Cannot find lambda column. Specify lambda_col explicitly.")
+      .luxr_abort("Cannot find lambda column. Specify lambda_col explicitly.", "value")
   }
   if (is.null(E_col)) {
     E_col <- intersect(c("E", "irradiance", "radiance", "value"), names(x))[1]
     if (is.na(E_col))
-      stop("Cannot find E column. Specify E_col explicitly.")
+      .luxr_abort("Cannot find E column. Specify E_col explicitly.", "value")
   }
   lux_spectrum(x[[E_col]], x[[lambda_col]], quantity, unit, binwidth, meta)
 }
@@ -182,10 +182,10 @@ as_lux_spectrum.rspec <- function(x, column = 2,
                                   unit     = "W/m2/nm",
                                   meta     = list(), ...) {
   if (is.null(x[["wl"]]))
-    stop("Not a valid rspec: no 'wl' wavelength column.")
+    .luxr_abort("Not a valid rspec: no 'wl' wavelength column.", "type")
   vals <- x[[column]]
   if (is.null(vals))
-    stop("Column not found in rspec: ", column)
+    .luxr_abort(paste0("Column not found in rspec: ", column), "value")
   if (is.null(meta$source))
     meta$source <- if (is.character(column)) column else names(x)[column]
   lux_spectrum(E = vals, lambda = x[["wl"]],

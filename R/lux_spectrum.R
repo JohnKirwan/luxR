@@ -268,7 +268,7 @@ summary.lux_spectrum <- function(object, ...) {
 `[.lux_spectrum` <- function(x, lambda_min, lambda_max) {
   idx <- x$lambda >= lambda_min & x$lambda <= lambda_max
   if (!any(idx))
-    stop("No wavelengths in [", lambda_min, ", ", lambda_max, "] nm.")
+    .luxr_abort(paste0("No wavelengths in [", lambda_min, ", ", lambda_max, "] nm."), "grid")
   lux_spectrum(x$E[idx], x$lambda[idx],
                quantity = x$quantity, unit = x$unit,
                binwidth = x$binwidth, meta = x$meta)
@@ -277,14 +277,14 @@ summary.lux_spectrum <- function(object, ...) {
 .lux_arithmetic <- function(a, b, op) {
   if (inherits(a, "lux_spectrum") && inherits(b, "lux_spectrum")) {
     if (!identical(a$lambda, b$lambda))
-      stop("lux_spectrum arithmetic requires identical lambda grids.")
+      .luxr_abort("lux_spectrum arithmetic requires identical lambda grids.", "grid")
 
     if (identical(op, `+`) || identical(op, `-`)) {
       if (a$unit != b$unit || a$quantity != b$quantity)
-        stop("Cannot ", if (identical(op, `+`)) "add" else "subtract",
-             " lux_spectrum objects with different quantities or units: ",
-             a$quantity, " [", a$unit, "] and ",
-             b$quantity, " [", b$unit, "].")
+        .luxr_abort(paste0("Cannot ", if (identical(op, `+`)) "add" else "subtract",
+                           " lux_spectrum objects with different quantities or units: ",
+                           a$quantity, " [", a$unit, "] and ",
+                           b$quantity, " [", b$unit, "]."), "unit")
 
       E_new <- op(a$E, b$E)
       return(lux_spectrum(E_new, a$lambda, a$quantity, a$unit,
@@ -304,26 +304,26 @@ summary.lux_spectrum <- function(object, ...) {
         return(lux_spectrum(a$E * b$E, a$lambda, a$quantity, a$unit,
                             a$binwidth, a$meta))
 
-      stop("Unsupported lux_spectrum multiplication: ",
-           a$quantity, " [", a$unit, "] * ",
-           b$quantity, " [", b$unit, "].")
+      .luxr_abort(paste0("Unsupported lux_spectrum multiplication: ",
+                         a$quantity, " [", a$unit, "] * ",
+                         b$quantity, " [", b$unit, "]."), "type")
     }
 
     if (identical(op, `/`))
-      stop("Unsupported lux_spectrum division between two spectra; ",
-           "the resulting dimensions are not represented by lux_spectrum.")
+      .luxr_abort(paste0("Unsupported lux_spectrum division between two spectra; ",
+                         "the resulting dimensions are not represented by lux_spectrum."), "type")
 
-    stop("Unsupported lux_spectrum operator.")
+    .luxr_abort("Unsupported lux_spectrum operator.", "internal")
   } else if (inherits(a, "lux_spectrum")) {
     if (!is.numeric(b) || length(b) != 1L)
-      stop("A lux_spectrum may only be combined with a numeric scalar.")
+      .luxr_abort("A lux_spectrum may only be combined with a numeric scalar.", "type")
     lux_spectrum(op(a$E, b), a$lambda, a$quantity, a$unit, a$binwidth, a$meta)
   } else {
     if (!is.numeric(a) || length(a) != 1L)
-      stop("A lux_spectrum may only be combined with a numeric scalar.")
+      .luxr_abort("A lux_spectrum may only be combined with a numeric scalar.", "type")
     if (identical(op, `/`))
-      stop("Division of a numeric scalar by a lux_spectrum is unsupported: ",
-           "the reciprocal dimensions are not represented by lux_spectrum.")
+      .luxr_abort(paste0("Division of a numeric scalar by a lux_spectrum is unsupported: ",
+                         "the reciprocal dimensions are not represented by lux_spectrum."), "type")
     lux_spectrum(op(a, b$E), b$lambda, b$quantity, b$unit, b$binwidth, b$meta)
   }
 }
@@ -374,18 +374,18 @@ convert_unit <- function(x, to, ...) UseMethod("convert_unit")
 #' @export
 convert_unit.lux_spectrum <- function(x, to, ...) {
   if (!to %in% .VALID_UNITS)
-    stop("'", to, "' is not in the controlled unit vocabulary.")
+    .luxr_abort(paste0("'", to, "' is not in the controlled unit vocabulary."), "unit")
   if (to == "dimensionless")
-    stop("Cannot convert to 'dimensionless' via unit conversion.")
+    .luxr_abort("Cannot convert to 'dimensionless' via unit conversion.", "unit")
   if (x$unit == to) return(x)
 
   from <- .UNITS[.UNITS$unit == x$unit, ]
   target <- .UNITS[.UNITS$unit == to, ]
   if (from$quantity != target$quantity)
-    stop("No conversion defined from '", x$unit, "' to '", to, "'",
-         if (!is.na(from$basis))
-           ": cannot convert between irradiance and radiance units",
-         ".")
+    .luxr_abort(paste0("No conversion defined from '", x$unit, "' to '", to, "'",
+                       if (!is.na(from$basis))
+                         ": cannot convert between irradiance and radiance units",
+                       "."), "unit")
 
   E <- x$E * from$scale
   if (from$basis != target$basis) {
@@ -430,7 +430,10 @@ plot.lux_spectrum <- function(x, main = x$quantity, ...) {
 #' @return \code{invisible(x)} — called for its side effect (plot).
 #' @export
 plot_spectra <- function(x, ...) {
-  stopifnot(is.list(x), length(x) > 0)
+  if (!is.list(x) || length(x) == 0L) {
+    .luxr_abort("`x` must be a non-empty list of lux_spectrum objects.",
+                if (is.list(x)) "value" else "type", field = "x")
+  }
   labels <- if (!is.null(names(x))) names(x) else as.character(seq_along(x))
   for (i in seq_along(x))
     if (!is.null(x[[i]]$meta$label)) labels[i] <- x[[i]]$meta$label

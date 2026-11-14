@@ -56,8 +56,8 @@ n2W_spec_irradiance.lux_spectrum <- function(value, ...) {
   x <- value
   unit <- .UNITS[.UNITS$unit == x$unit, ]
   if (!identical(unit$basis, "photon"))
-    stop("n2W_spec_irradiance requires a photonic unit; x$unit is '",
-         x$unit, "'.")
+    .luxr_abort(paste0("n2W_spec_irradiance requires a photonic unit; x$unit is '",
+                       x$unit, "'."), "unit")
   convert_unit(x, if (unit$quantity == "radiance") "W/m2/sr/nm" else "W/m2/nm")
 }
 
@@ -108,8 +108,8 @@ W2mol_spec_irradiance.lux_spectrum <- function(W, molar_unit = "umol", ...) {
   x <- W
   unit <- .UNITS[.UNITS$unit == x$unit, ]
   if (!identical(unit$basis, "energy"))
-    stop("W2mol_spec_irradiance requires an energy-based unit; x$unit is '",
-         x$unit, "'. Use n2W_spec_irradiance() to convert photonic units.")
+    .luxr_abort(paste0("W2mol_spec_irradiance requires an energy-based unit; x$unit is '",
+                       x$unit, "'. Use n2W_spec_irradiance() to convert photonic units."), "unit")
   convert_unit(x, paste0(
     molar_unit, if (unit$quantity == "radiance") "/m2/s/sr/nm" else "/m2/s/nm"
   ))

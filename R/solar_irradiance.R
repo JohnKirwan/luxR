@@ -34,8 +34,8 @@
 solar_irradiance <- function(condition = "clear_noon") {
   valid <- names(solar_spectra)
   if (!condition %in% valid)
-    stop("unknown condition: '", condition, "'. ",
-         "Valid: ", paste(valid, collapse = ", "))
+    .luxr_abort(paste0("unknown condition: '", condition, "'. ",
+                       "Valid: ", paste(valid, collapse = ", ")), "value")
 
   spectrum <- solar_spectra[[condition]]
   .validate_solar_source_metadata(spectrum, condition)

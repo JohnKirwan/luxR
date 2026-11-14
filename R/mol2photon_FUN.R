@@ -21,8 +21,8 @@ mol2photon_FUN <- function(value,molar_unit=NULL){
     molar_unit %in% c("umol","micromole","microEinstein","uE")){
     n = value * .AVOGADRO * 1e-6
   } else {
-    stop("Unrecognised molar_unit '", molar_unit, "'. ",
-         "Use 'mol', 'mmol', 'umol' or their aliases.")
+    .luxr_abort(paste0("Unrecognised molar_unit '", molar_unit, "'. ",
+                       "Use 'mol', 'mmol', 'umol' or their aliases."), "unit")
   }
   return(n)
 }

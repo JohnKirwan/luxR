@@ -16,8 +16,8 @@
       !is.character(provenance$source_artifact_md5) ||
       length(provenance$source_artifact_md5) != 1L ||
       !grepl("^[0-9a-f]{32}$", provenance$source_artifact_md5)) {
-    stop("Bundled dataset `", dataset,
-         "` has invalid or incomplete provenance metadata.", call. = FALSE)
+    .luxr_abort(paste0("Bundled dataset `", dataset,
+                       "` has invalid or incomplete provenance metadata."), "data")
   }
   provenance
 }
@@ -42,7 +42,7 @@
 .bundled_source_import <- function(provenance) {
   if (!is.list(provenance) ||
       any(!.required_dataset_provenance %in% names(provenance))) {
-    stop("Bundled source provenance is incomplete.", call. = FALSE)
+    .luxr_abort("Bundled source provenance is incomplete.", "data")
   }
   list(
     calibration_state = "bundled/reference source",

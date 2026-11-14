@@ -372,8 +372,8 @@ species_LEF <- function(species, receptor = NULL,
                          lambda = seq(300, 700, by = 1)) {
   rows <- species_sensitivities[species_sensitivities$species == species, ]
   if (nrow(rows) == 0)
-    stop("unknown species: '", species,
-         "'. See `species_sensitivities$species` for the list.")
+    .luxr_abort(paste0("unknown species: '", species,
+                       "'. See `species_sensitivities$species` for the list."), "value")
 
   build <- function(r)
     govardovskii_template(lambda, r$lambda_max, r$chromophore)
@@ -385,7 +385,7 @@ species_LEF <- function(species, receptor = NULL,
 
   r <- rows[rows$receptor == receptor, ]
   if (nrow(r) == 0)
-    stop("unknown receptor '", receptor, "' for species '", species, "'.")
+    .luxr_abort(paste0("unknown receptor '", receptor, "' for species '", species, "'."), "value")
   build(r)
 }
 
