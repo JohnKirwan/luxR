@@ -336,8 +336,69 @@ test_that("govardovskii_template stays small when the peak is far off the grid",
   expect_true(all(out$S >= 0 & out$S < 0.01))
 })
 
+# Long-wave half-maximum wavelength of a template (lambda > lambda_max).
+half_max_long <- function(lmax, chromophore) {
+  f <- function(l) govardovskii_template(l, lmax, chromophore)$S - 0.5
+  uniroot(f, c(lmax + 1, lmax + 200), tol = 1e-8)$root
+}
+
+test_that("A1 template reproduces Govardovskii et al. (2000) eqn 3", {
+  # Eqn 3 is the paper's independent regression of lambda_max on the
+  # long-wave half-maximum, so it checks the template's constants.
+  for (lmax in c(400, 500, 560)) {
+    l05 <- half_max_long(lmax, "A1")
+    expect_equal(45.02 + 0.756 * l05 + 0.000141 * l05^2, lmax, tolerance = 0.5 / lmax)
+  }
+})
+
+test_that("A2 template reproduces Govardovskii et al. (2000) eqn 7", {
+  for (lmax in c(460, 523, 620)) {
+    l05 <- half_max_long(lmax, "A2")
+    expect_equal(30.6 + 0.7907 * l05 + 0.000102 * l05^2, lmax, tolerance = 0.5 / lmax)
+  }
+})
+
+test_that("A2 beta band agrees with the cones fitted in Govardovskii et al. (2000) Fig. 10", {
+  # Individually fitted beta bands of A. stellatus cones, which scatter around
+  # the eqn 8 regressions: red (563.7 nm) and blue (459.4 nm).
+  fig10 <- list(list(lmax = 563.7, A = 0.37, l = 378, w = 69),
+                list(lmax = 459.4, A = 0.38, l = 339, w = 52.4))
+  for (f in fig10) {
+    p <- luxR:::.govardovskii_coefs(f$lmax, "A2")
+    expect_equal(p$A_beta, f$A, tolerance = 0.02 / f$A)
+    expect_lt(abs(p$l_beta - f$l), 10)
+    expect_lt(abs(p$w_beta - f$w), 7)
+  }
+})
+
+test_that("A2 template is broader than A1 at the same long-wave peak", {
+  fwhm <- function(ch) {
+    lam <- seq(450, 800, by = 0.05)
+    S   <- govardovskii_template(lam, 620, ch)$S
+    diff(range(lam[S >= 0.5]))
+  }
+  expect_gt(fwhm("A2"), fwhm("A1") + 15)
+})
+
+test_that("A2 template is limited to the fitted 440-620 nm range", {
+  lam <- seq(400, 700, by = 1)
+  for (lmax in c(439, 621)) {
+    expect_error(govardovskii_template(lam, lmax, "A2"),
+                 "440 and 620", class = "lux_invalid_sensitivity_peak_error")
+  }
+  expect_no_error(govardovskii_template(lam, 344, "A1"))
+  expect_error(fit_sensitivity(lam, govardovskii_template(lam, 500, "A2")$S,
+                               chromophore = "A2",
+                               lambda_max_range = c(400, 600)),
+               class = "lux_invalid_sensitivity_peak_error")
+  fit <- fit_sensitivity(lam, govardovskii_template(lam, 523, "A2")$S,
+                         chromophore = "A2")
+  expect_equal(fit$lambda_max, 523, tolerance = 0.1 / 523)
+})
+
 test_that("govardovskii_template never exceeds one on a fine grid", {
-  for (ch in c("A1", "A2")) for (lmax in c(300, 360, 500, 620, 700)) {
+  peaks <- list(A1 = c(300, 360, 500, 620, 700), A2 = c(440, 500, 620))
+  for (ch in names(peaks)) for (lmax in peaks[[ch]]) {
     S <- govardovskii_template(seq(250, 750, by = 0.01), lmax, ch)$S
     expect_lte(max(S), 1)
     expect_equal(max(S), 1, tolerance = 1e-6)

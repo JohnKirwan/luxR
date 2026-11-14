@@ -10,30 +10,44 @@
 #' @details
 #' The template models absorbance as the sum of an \eqn{\alpha}-band (main peak)
 #' and a \eqn{\beta}-band (short-wavelength shoulder). The \eqn{\alpha}-band
-#' follows the four-parameter expression:
+#' follows eqn 1 of Govardovskii et al. (2000):
 #' \deqn{S_\alpha(\lambda) = \left[
-#'   e^{A(a - x)} + e^{B(0.922 - x)} + e^{C(1.104 - x)} + D
+#'   e^{A(a - x)} + e^{B(b - x)} + e^{C(c - x)} + D
 #' \right]^{-1}, \quad x = \frac{\lambda_{\max}}{\lambda}}
-#' where \eqn{A}, \eqn{B}, \eqn{C}, \eqn{D}, and \eqn{a} are chromophore-specific
-#' constants (A1: \eqn{A=69.7}, \eqn{B=28}, \eqn{C=-14.9}, \eqn{D=0.674},
-#' \eqn{a} wavelength-dependent; A2: \eqn{A=62.7}, \eqn{B=26.5},
-#' \eqn{C=-15.6}, \eqn{D=0.530}). The \eqn{\beta}-band is a Gaussian:
-#' \deqn{S_\beta(\lambda) = 0.26\,\exp\!\left[
-#'   -\!\left(\frac{\lambda - \lambda_\beta}{b}\right)^2
+#' and the \eqn{\beta}-band is a Gaussian (eqn 4):
+#' \deqn{S_\beta(\lambda) = A_\beta \exp\!\left[
+#'   -\!\left(\frac{\lambda - \lambda_{m\beta}}{w}\right)^2
 #' \right]}
-#' with \eqn{\lambda_\beta = 189 + 0.315\,\lambda_{\max}} and
-#' \eqn{b = -40.5 + 0.195\,\lambda_{\max}}. The full template is
-#' \eqn{S(\lambda) = \max(0,\, S_\alpha + S_\beta)}, normalised to the
-#' template's own maximum. That maximum lies slightly below
-#' \eqn{\lambda_{\max}} and is found numerically, so the returned values do not
-#' depend on the wavelength grid supplied: a grid that misses the peak returns
-#' values below 1 rather than being rescaled.
+#' The constants depend on the chromophore:
+#' \itemize{
+#'   \item A1 (eqns 2, 5): \eqn{A = 69.7},
+#'     \eqn{a = 0.8795 + 0.0459\,e^{-(\lambda_{\max} - 300)^2/11940}},
+#'     \eqn{B = 28}, \eqn{b = 0.922}, \eqn{C = -14.9}, \eqn{c = 1.104},
+#'     \eqn{D = 0.674}; \eqn{A_\beta = 0.26},
+#'     \eqn{\lambda_{m\beta} = 189 + 0.315\,\lambda_{\max}},
+#'     \eqn{w = -40.5 + 0.195\,\lambda_{\max}}.
+#'   \item A2 (eqns 6, 8): \eqn{A = 62.7 + 1.834\,e^{(\lambda_{\max} - 625)/54.2}},
+#'     \eqn{a = 0.875 + 0.0268\,e^{(\lambda_{\max} - 665)/40.7}},
+#'     \eqn{B = 20.85}, \eqn{b = 0.9101}, \eqn{C = -10.37}, \eqn{c = 1.1123},
+#'     \eqn{D = 0.5343}; \eqn{A_\beta = 0.37},
+#'     \eqn{\lambda_{m\beta} = 216.7 + 0.287\,\lambda_{\max}},
+#'     \eqn{w = 317 - 1.149\,\lambda_{\max} + 0.00124\,\lambda_{\max}^2}.
+#' }
+#' The full template \eqn{S_\alpha + S_\beta} is normalised to its own maximum,
+#' which lies within a few nm of \eqn{\lambda_{\max}} and is found numerically,
+#' so the returned values do not depend on the wavelength grid supplied: a grid
+#' that misses the peak returns values below 1 rather than being rescaled.
+#'
+#' The A2 template was fitted to pigments peaking between about 444 and 620 nm,
+#' so \code{lambda_max} outside 440--620 nm is rejected for A2. A1 accepts
+#' 300--700 nm.
 #'
 #' @param lambda      Wavelength grid in nm (numeric vector).
-#' @param lambda_max  Peak absorbance wavelength in nm, between 300 and 700.
+#' @param lambda_max  Peak absorbance wavelength in nm: 300--700 for A1,
+#'   440--620 for A2.
 #' @param chromophore Chromophore type: \code{"A1"} (11-cis retinal, default)
-#'   or \code{"A2"} (11-cis 3,4-didehydroretinal). A2 shifts the peak toward
-#'   longer wavelengths and broadens the spectrum.
+#'   or \code{"A2"} (11-cis 3,4-didehydroretinal). For the same
+#'   \code{lambda_max}, the A2 spectrum is broader.
 #' @return A data frame with columns \code{lambda} and \code{S} (normalised
 #'   absorbance, at most 1; it reaches 1 only if \code{lambda} includes the
 #'   template's peak).
@@ -47,17 +61,19 @@
 govardovskii_template <- function(lambda, lambda_max,
                                    chromophore = c("A1", "A2")) {
   .check_template_grid(lambda)
+  chromophore <- match.arg(chromophore)
+  range <- .template_range[[chromophore]]
   if (!is.numeric(lambda_max) || is.complex(lambda_max) ||
       is.object(lambda_max) || !is.null(dim(lambda_max)) ||
       length(lambda_max) != 1L || !is.finite(lambda_max) ||
-      lambda_max < 300 || lambda_max > 700) {
+      lambda_max < range[1] || lambda_max > range[2]) {
     .stop_species_model(
-      "'lambda_max' must be one finite number between 300 and 700 nm.",
+      sprintf("'lambda_max' must be one finite number between %d and %d nm for an %s template.",
+              range[1], range[2], chromophore),
       "lux_invalid_sensitivity_peak_error",
       field = "lambda_max", value = lambda_max
     )
   }
-  chromophore <- match.arg(chromophore)
 
   S <- .govardovskii_raw(lambda, lambda_max, chromophore)
   # Normalise to the template's own maximum, which lies just below
@@ -82,27 +98,36 @@ govardovskii_template <- function(lambda, lambda_max,
   }
 }
 
+# Valid lambda_max range (nm) per chromophore. A2 is limited to the range of
+# pigments the A2 template was fitted to (Govardovskii et al. 2000, Table 1).
+.template_range <- list(A1 = c(300L, 700L), A2 = c(440L, 620L))
+
+# Govardovskii et al. (2000) parameters for a given lambda_max: alpha band
+# (eqn 1) and beta band (eqn 4). A1: eqns 1, 2, 5a, 5b; A2: eqns 6a, 6b, 8a, 8b
+# with the constants on p. 517.
+.govardovskii_coefs <- function(lambda_max, chromophore) {
+  if (chromophore == "A1") {
+    list(A = 69.7, a = 0.8795 + 0.0459 * exp(-(lambda_max - 300)^2 / 11940),
+         B = 28, b = 0.922, C = -14.9, c = 1.104, D = 0.674,
+         A_beta = 0.26, l_beta = 189 + 0.315 * lambda_max,
+         w_beta = -40.5 + 0.195 * lambda_max)
+  } else {
+    list(A = 62.7 + 1.834 * exp((lambda_max - 625) / 54.2),
+         a = 0.875 + 0.0268 * exp((lambda_max - 665) / 40.7),
+         B = 20.85, b = 0.9101, C = -10.37, c = 1.1123, D = 0.5343,
+         A_beta = 0.37, l_beta = 216.7 + 0.287 * lambda_max,
+         w_beta = 317 - 1.149 * lambda_max + 0.00124 * lambda_max^2)
+  }
+}
+
 # Un-normalised Govardovskii template (alpha band plus beta band).
 .govardovskii_raw <- function(lambda, lambda_max, chromophore) {
-  if (chromophore == "A1") {
-    a_coef <- 0.8795 + 0.0459 * exp(-(lambda_max - 300)^2 / 11940)
-    coefs  <- list(A = 69.7, B = 28, C = -14.9, D = 0.674, a = a_coef)
-  } else {
-    a_coef <- 0.875 + 0.0268 * exp(-(lambda_max - 665)^2 / 25000)
-    coefs  <- list(A = 62.7, B = 26.5, C = -15.6, D = 0.530, a = a_coef)
-  }
-
+  p     <- .govardovskii_coefs(lambda_max, chromophore)
   x     <- lambda_max / lambda
-  alpha <- 1 / (exp(coefs$A * (coefs$a - x)) +
-                exp(coefs$B * (0.922 - x))  +
-                exp(coefs$C * (1.104 - x))  +
-                coefs$D)
-
-  lmb  <- 189 + 0.315 * lambda_max
-  b    <- -40.5 + 0.195 * lambda_max
-  beta <- 0.26 * exp(-((lambda - lmb) / b)^2)
-
-  pmax(0, alpha + beta)
+  alpha <- 1 / (exp(p$A * (p$a - x)) + exp(p$B * (p$b - x)) +
+                exp(p$C * (p$c - x)) + p$D)
+  beta  <- p$A_beta * exp(-((lambda - p$l_beta) / p$w_beta)^2)
+  alpha + beta
 }
 
 
@@ -229,7 +254,9 @@ receptor_absorptance <- function(S, optical_density = NULL,
 #' @param chromophore      \code{"A1"} (11-cis retinal, default) or
 #'   \code{"A2"} (11-cis 3,4-didehydroretinal).
 #' @param lambda_max_range Length-2 numeric vector giving the search interval
-#'   for \eqn{\lambda_{\max}} in nm. Default \code{c(300, 700)}.
+#'   for \eqn{\lambda_{\max}} in nm. Default \code{NULL} searches the
+#'   chromophore's whole valid range (A1 300--700 nm, A2 440--620 nm); a range
+#'   outside it is an error.
 #' @return A list with components:
 #'   \describe{
 #'     \item{\code{lambda_max}}{Best-fit peak wavelength (nm).}
@@ -257,8 +284,10 @@ receptor_absorptance <- function(S, optical_density = NULL,
 #' @export
 fit_sensitivity <- function(lambda, sensitivity,
                              chromophore      = c("A1", "A2"),
-                             lambda_max_range = c(300, 700)) {
+                             lambda_max_range = NULL) {
   chromophore <- match.arg(chromophore)
+  valid <- .template_range[[chromophore]]
+  if (is.null(lambda_max_range)) lambda_max_range <- valid
   fail <- function(message, field, value = NULL,
                    class = "lux_species_input_error") {
     .stop_species_model(paste0("fit_sensitivity(): ", message), class,
@@ -273,9 +302,10 @@ fit_sensitivity <- function(lambda, sensitivity,
       anyNA(lambda_max_range) || lambda_max_range[1] >= lambda_max_range[2])
     fail("`lambda_max_range` must be two increasing wavelengths.",
          "lambda_max_range", lambda_max_range)
-  if (lambda_max_range[1] < 300 || lambda_max_range[2] > 700) {
+  if (lambda_max_range[1] < valid[1] || lambda_max_range[2] > valid[2]) {
     .stop_species_model(
-      "'lambda_max_range' must lie within 300-700 nm, where the template is defined.",
+      sprintf("'lambda_max_range' must lie within %d-%d nm, where the %s template is defined.",
+              valid[1], valid[2], chromophore),
       "lux_invalid_sensitivity_peak_error",
       field = "lambda_max_range", value = lambda_max_range
     )

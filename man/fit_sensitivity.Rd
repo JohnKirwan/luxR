@@ -8,7 +8,7 @@ fit_sensitivity(
   lambda,
   sensitivity,
   chromophore = c("A1", "A2"),
-  lambda_max_range = c(300, 700)
+  lambda_max_range = NULL
 )
 }
 \arguments{
@@ -22,7 +22,9 @@ silently dropped.}
 \code{"A2"} (11-cis 3,4-didehydroretinal).}
 
 \item{lambda_max_range}{Length-2 numeric vector giving the search interval
-for \eqn{\lambda_{\max}} in nm. Default \code{c(300, 700)}.}
+for \eqn{\lambda_{\max}} in nm. Default \code{NULL} searches the
+chromophore's whole valid range (A1 300--700 nm, A2 440--620 nm); a range
+outside it is an error.}
 }
 \value{
 A list with components:
