@@ -90,14 +90,21 @@ the spectrum's <code>meta$label</code>, then <code>meta$source</code>, then <cod
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <code>data.frame</code> with a <code>wl</code> column plus one column per
-  spectrum, ready to pass as colourvision's <code>I</code>, <code>R1</code>, <code>R2</code>,
+  spectrum (light in energy units, reflectance unchanged), ready to pass as colourvision's <code>I</code>, <code>R1</code>, <code>R2</code>,
   or <code>Rb</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Unlike <code><a href="as_rspec.html">as_rspec</a></code>, this performs no interpolation: colourvision
 resamples inputs itself via its <code>nm</code>/<code>interpolate</code> arguments at
-model time, so the converter is a pure reshape with no hidden resampling.
+model time, so the converter performs no hidden resampling.</p>
+<p>Irradiance and radiance are converted to energy units (<code>"W/m2/nm"</code> or
+<code>"W/m2/sr/nm"</code>) because colourvision integrates energy
+(\(\int I R C\)) and the default matrix from
+<code><a href="species_sensitivity_matrix.html">species_sensitivity_matrix</a></code> (<code>weight = "photon"</code>, columns
+\(S\lambda\)) is correct only for an energy-basis illuminant. A photon-unit
+spectrum passed unconverted would be weighted by \(\lambda^2\).
+Reflectance is passed through unchanged.
 <span class="pkg">colourvision</span> is an optional (<code>Suggests</code>) dependency.</p>
     </div>
     <div class="section level2">

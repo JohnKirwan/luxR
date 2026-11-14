@@ -38,6 +38,8 @@
 <div class="section level3">
 <h3 id="breaking-changes-0-1-1">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-1-1"></a></h3>
 <ul><li>
+<code><a href="../reference/as_colourvision.html">as_colourvision()</a></code> now converts irradiance and radiance to energy units (<code>W/m2/nm</code>, <code>W/m2/sr/nm</code>) before reshaping; reflectance is unchanged. colourvision integrates energy, and the default <code><a href="../reference/species_sensitivity_matrix.html">species_sensitivity_matrix()</a></code> columns (<code>S * lambda</code>) assume an energy illuminant, so a photon-unit spectrum was previously weighted by lambda squared without warning.</li>
+<li>
 <code><a href="../reference/as_rspec.html">as_rspec()</a></code> on a list of spectra now requires one shared wavelength grid and raises a <code>luxR_value_error</code> otherwise; use <code><a href="../reference/resample_spectrum.html">resample_spectrum()</a></code> first. It previously extended shorter spectra by repeating their end values.</li>
 <li>Achromatic contrast and receptor catches no longer depend on how far the wavelength grid extends. Previously they summed over whatever grid was supplied, so the same object gave a species-free Weber contrast of -0.19 on a 300-800 nm grid, -0.15 on 400-700 nm and -0.28 on 300-600 nm; it is now -0.146 on any grid that covers 400-700 nm.
 <ul><li>

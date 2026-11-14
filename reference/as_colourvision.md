@@ -42,17 +42,26 @@ as_colourvision(x, ...)
 
 ## Value
 
-A `data.frame` with a `wl` column plus one column per spectrum, ready to
-pass as colourvision's `I`, `R1`, `R2`, or `Rb`.
+A `data.frame` with a `wl` column plus one column per spectrum (light in
+energy units, reflectance unchanged), ready to pass as colourvision's
+`I`, `R1`, `R2`, or `Rb`.
 
 ## Details
 
 Unlike
 [`as_rspec`](https://johnkirwan.github.io/luxR/reference/as_rspec.md),
 this performs no interpolation: colourvision resamples inputs itself via
-its `nm`/`interpolate` arguments at model time, so the converter is a
-pure reshape with no hidden resampling. colourvision is an optional
-(`Suggests`) dependency.
+its `nm`/`interpolate` arguments at model time, so the converter
+performs no hidden resampling.
+
+Irradiance and radiance are converted to energy units (`"W/m2/nm"` or
+`"W/m2/sr/nm"`) because colourvision integrates energy (\\\int I R C\\)
+and the default matrix from
+[`species_sensitivity_matrix`](https://johnkirwan.github.io/luxR/reference/species_sensitivity_matrix.md)
+(`weight = "photon"`, columns \\S\lambda\\) is correct only for an
+energy-basis illuminant. A photon-unit spectrum passed unconverted would
+be weighted by \\\lambda^2\\. Reflectance is passed through unchanged.
+colourvision is an optional (`Suggests`) dependency.
 
 ## See also
 
