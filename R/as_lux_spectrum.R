@@ -97,21 +97,19 @@ as_lux_spectrum.lux_instrument_spectrum <- function(
       paste0("A ", x$measurement, " instrument record cannot be represented ",
              "as a lux_spectrum; supported measurements are: ",
              paste(supported, collapse = ", "), "."),
-      context, class = "luxR_spectrum_dimension_error", field = "measurement",
+      context, kind = "unit", field = "measurement",
       value = x$measurement
     )
   }
   quantity <- .validate_import_string(
-    quantity, "quantity", context, class = "luxR_spectrum_schema_error"
-  )
+    quantity, "quantity", context)
   unit <- .validate_import_string(
-    unit, "unit", context, class = "luxR_spectrum_schema_error"
-  )
+    unit, "unit", context)
   if (!identical(quantity, x$measurement)) {
     .stop_spectrum_import(
       paste0("The declared instrument measurement is ", x$measurement,
              ", not ", quantity, "."),
-      context, class = "luxR_spectrum_dimension_error", field = "quantity",
+      context, kind = "unit", field = "quantity",
       value = quantity
     )
   }
@@ -124,7 +122,7 @@ as_lux_spectrum.lux_instrument_spectrum <- function(
     .stop_spectrum_import(
       paste0("Value scale '", x$value_scale,
              "' cannot be converted to a physical lux_spectrum."),
-      context, class = "luxR_spectrum_dimension_error", field = "value_scale",
+      context, kind = "unit", field = "value_scale",
       value = x$value_scale
     )
   )
@@ -136,7 +134,7 @@ as_lux_spectrum.lux_instrument_spectrum <- function(
       paste0("Processed ", x$measurement, " contains a negative value at row ",
              i, "; inspect the instrument record or explicitly set ",
              "`negative_policy = \"zero\"`."),
-      context, class = "luxR_spectrum_value_error", field = "value",
+      context, kind = "value", field = "value",
       value = values[[i]], row = i
     )
   }
@@ -211,7 +209,7 @@ as_lux_spectrum.rspec <- function(x, column = 2,
     .stop_spectrum_import(
       paste0("A ", class_name, " holding ", multiple, " spectra cannot become ",
              "a single lux_spectrum; subset it to one spectrum first."),
-      context, class = "luxR_spectrum_schema_error", field = "multiple.wl",
+      context, kind = "dimension", field = "multiple.wl",
       value = multiple
     )
   }
@@ -233,7 +231,7 @@ as_lux_spectrum.rspec <- function(x, column = 2,
              lambda[negative[1]], " nm (", E[negative[1]], "). Retain it as a ",
              "photobiology object, or request the recorded floor with ",
              "`negative_policy = \"zero\"`."),
-      context, class = "luxR_spectrum_value_error", field = "value",
+      context, kind = "value", field = "value",
       value = E[negative[1]]
     )
   }
@@ -247,7 +245,7 @@ as_lux_spectrum.rspec <- function(x, column = 2,
              min(steps), "-", max(steps), " nm). luxR will not resample it ",
              "silently; pass `interpolate = TRUE` to resample onto integer ",
              "nanometres, and the choice will be recorded."),
-      context, class = "luxR_spectrum_grid_error", field = "w.length",
+      context, kind = "grid", field = "w.length",
       value = c(min(steps), max(steps))
     )
   }
@@ -261,7 +259,7 @@ as_lux_spectrum.rspec <- function(x, column = 2,
                " nm spans less than one integer nanometre, so it cannot be ",
                "resampled onto an integer-nanometre grid of at least two ",
                "points. Retain it as a photobiology object instead."),
-        context, class = "luxR_spectrum_grid_error", field = "w.length",
+        context, kind = "grid", field = "w.length",
         value = c(min(lambda), max(lambda))
       )
     }
@@ -298,7 +296,7 @@ as_lux_spectrum.source_spct <- function(x, measurement = NULL,
       paste0("A source_spct with time.unit '", time_unit, "' is a dose, not a ",
              "spectral irradiance, and has no lux_spectrum representation. ",
              "Convert it to a per-second basis in photobiology first."),
-      context, class = "luxR_spectrum_dimension_error", field = "time.unit",
+      context, kind = "unit", field = "time.unit",
       value = time_unit
     )
   }
@@ -308,7 +306,7 @@ as_lux_spectrum.source_spct <- function(x, measurement = NULL,
       paste0("A source_spct weighted by bswf.used '", bswf, "' is an ",
              "effective, not a physical, irradiance and cannot become a ",
              "lux_spectrum."),
-      context, class = "luxR_spectrum_dimension_error", field = "bswf.used",
+      context, kind = "unit", field = "bswf.used",
       value = bswf
     )
   }
@@ -318,7 +316,7 @@ as_lux_spectrum.source_spct <- function(x, measurement = NULL,
   if (!has_e && !has_q) {
     .stop_spectrum_import(
       "The source_spct holds neither an s.e.irrad nor an s.q.irrad column.",
-      context, class = "luxR_spectrum_schema_error", field = "columns",
+      context, kind = "value", field = "columns",
       value = paste(names(x), collapse = ", ")
     )
   }
@@ -327,7 +325,7 @@ as_lux_spectrum.source_spct <- function(x, measurement = NULL,
       paste0("The source_spct holds both s.e.irrad and s.q.irrad; luxR will ",
              "not choose a basis for you. Pass `measurement = \"energy\"` or ",
              "`measurement = \"photon\"`."),
-      context, class = "luxR_spectrum_schema_error", field = "measurement",
+      context, kind = "value", field = "measurement",
       value = NA_character_
     )
   }
@@ -339,7 +337,7 @@ as_lux_spectrum.source_spct <- function(x, measurement = NULL,
     .stop_spectrum_import(
       paste0("`measurement = \"energy\"` was requested but the source_spct ",
              "has no s.e.irrad column."),
-      context, class = "luxR_spectrum_schema_error", field = "s.e.irrad",
+      context, kind = "value", field = "s.e.irrad",
       value = NA_character_
     )
   }
@@ -347,7 +345,7 @@ as_lux_spectrum.source_spct <- function(x, measurement = NULL,
     .stop_spectrum_import(
       paste0("`measurement = \"photon\"` was requested but the source_spct ",
              "has no s.q.irrad column."),
-      context, class = "luxR_spectrum_schema_error", field = "s.q.irrad",
+      context, kind = "value", field = "s.q.irrad",
       value = NA_character_
     )
   }
@@ -388,7 +386,7 @@ as_lux_spectrum.reflector_spct <- function(x, negative_policy = "error",
   } else {
     .stop_spectrum_import(
       "The reflector_spct holds neither an Rfr nor an Rpc column.",
-      context, class = "luxR_spectrum_schema_error", field = "columns",
+      context, kind = "value", field = "columns",
       value = paste(names(x), collapse = ", ")
     )
   }

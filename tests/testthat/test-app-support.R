@@ -353,12 +353,12 @@ test_that(".read_reflectance_csv rejects repair and extrapolation paths", {
   writeLines(c("wavelength,reflectance", "450,0.1", "650,0.5"),
              short_coverage)
   expect_error(luxR:::.read_reflectance_csv(outside, lambda),
-               class = "luxR_spectrum_value_error")
+               class = "luxR_value_error")
   expect_error(luxR:::.read_reflectance_csv(malformed, lambda),
-               class = "luxR_spectrum_value_error")
+               class = "luxR_value_error")
   expect_error(luxR:::.read_reflectance_csv(short_coverage, lambda),
                "extrapolation is disabled",
-               class = "luxR_spectrum_value_error")
+               class = "luxR_value_error")
 })
 
 test_that(".app_jnd is ~0 for identical reflectances and >0 for different ones", {

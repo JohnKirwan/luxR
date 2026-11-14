@@ -82,7 +82,7 @@ from_trios <- function(path, negative_policy = c("error", "zero")) {
         paste0("Spectrum '", name, "' contains negative calibrated radiance ",
                "at row ", negative[[1L]], "; inspect it with `read_trios()` ",
                "or explicitly set `negative_policy = \"zero\"`."),
-        context, class = "luxR_spectrum_value_error", field = "radiance",
+        context, kind = "value", field = "radiance",
         value = block$radiance[negative[[1L]]], row = negative[[1L]],
         spectrum = name
       )
@@ -132,7 +132,7 @@ read_ocean_optics <- function(path) {
     .stop_spectrum_import(
       paste0("Expected exactly one Ocean Optics spectral-data delimiter; found ",
              length(begin), "."),
-      context, class = "luxR_spectrum_format_error", field = "data_delimiter",
+      context, kind = "format", field = "data_delimiter",
       value = length(begin)
     )
   }
@@ -141,7 +141,7 @@ read_ocean_optics <- function(path) {
   if (length(end) > 1L || (length(end) == 1L && end[[1L]] <= begin)) {
     .stop_spectrum_import(
       "Ocean Optics spectral-data end delimiter is duplicated or misplaced.",
-      context, class = "luxR_spectrum_format_error", field = "end_delimiter",
+      context, kind = "format", field = "end_delimiter",
       value = end
     )
   }
@@ -150,7 +150,7 @@ read_ocean_optics <- function(path) {
   if (!length(data_lines)) {
     .stop_spectrum_import(
       "Ocean Optics spectral-data block is empty.", context,
-      class = "luxR_spectrum_schema_error", field = "data"
+      kind = "format", field = "data"
     )
   }
 
@@ -168,7 +168,7 @@ read_ocean_optics <- function(path) {
       if (header$integration_time_us <= 0) {
         .stop_spectrum_import(
           paste0("Integration time must be positive; got ", token, "."),
-          context, class = "luxR_spectrum_value_error",
+          context, kind = "value",
           field = "integration_time_us", value = header$integration_time_us,
           line = i
         )
@@ -190,7 +190,7 @@ read_ocean_optics <- function(path) {
     if (!nzchar(text)) {
       .stop_spectrum_import(
         paste0("Blank spectral row at source line ", source_line, "."),
-        context, class = "luxR_spectrum_schema_error", field = "row",
+        context, kind = "format", field = "row",
         value = data_lines[[i]], row = i, line = source_line
       )
     }
@@ -200,7 +200,7 @@ read_ocean_optics <- function(path) {
         paste0("Ocean Optics spectral row ", i, " at source line ",
                source_line, " must contain exactly two tab-separated fields; ",
                "got ", length(fields), "."),
-        context, class = "luxR_spectrum_schema_error", field = "row",
+        context, kind = "format", field = "row",
         value = data_lines[[i]], row = i, line = source_line
       )
     }
@@ -217,7 +217,7 @@ read_ocean_optics <- function(path) {
     .stop_spectrum_import(
       paste0("Header declares ", format(header$declared_pixels),
              " pixels but ", nrow(parsed), " spectral rows were parsed."),
-      context, class = "luxR_spectrum_schema_error",
+      context, kind = "format",
       field = "declared_pixels", value = header$declared_pixels
     )
   }
@@ -257,7 +257,7 @@ from_ocean_optics <- function(path, quantity = NULL, unit = NULL,
                                 negative_policy = "error")
   raw <- tryCatch(
     read_ocean_optics(path),
-    luxR_spectrum_import_error = function(e) {
+    luxR_import_error = function(e) {
       for (name in names(context)) e[[name]] <- context[[name]]
       stop(e)
     }

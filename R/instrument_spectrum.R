@@ -15,13 +15,12 @@
 )
 
 .validate_lightr_choice <- function(x, field, choices, context) {
-  value <- .validate_import_string(x, field, context,
-                                   class = "luxR_spectrum_schema_error")
+  value <- .validate_import_string(x, field, context)
   if (!value %in% choices) {
     .stop_spectrum_import(
       paste0("`", field, "` must be one of: ", paste(choices, collapse = ", "),
              "; got '", value, "'."),
-      context, class = "luxR_spectrum_schema_error", field = field,
+      context, kind = "value", field = field,
       value = value
     )
   }
@@ -32,7 +31,7 @@
   if (!is.list(parser_args) || is.object(parser_args)) {
     .stop_spectrum_import(
       "`parser_args` must be a plain named list.", context,
-      class = "luxR_spectrum_schema_error", field = "parser_args",
+      kind = "type", field = "parser_args",
       value = parser_args
     )
   }
@@ -41,7 +40,7 @@
         any(!nzchar(names(parser_args))) || anyDuplicated(names(parser_args))) {
     .stop_spectrum_import(
       "`parser_args` must have unique, non-empty names.", context,
-      class = "luxR_spectrum_schema_error", field = "parser_args",
+      kind = "value", field = "parser_args",
       value = parser_args
     )
   }
@@ -52,7 +51,7 @@
     .stop_spectrum_import(
       paste0("`parser_args` cannot override luxR-controlled argument(s): ",
              paste(conflict, collapse = ", "), "."),
-      context, class = "luxR_spectrum_schema_error", field = "parser_args",
+      context, kind = "value", field = "parser_args",
       value = conflict
     )
   }
@@ -65,7 +64,7 @@
       paste0("Every `parser_args` value must be NULL or one non-missing plain ",
              "atomic scalar; invalid: ",
              paste(names(parser_args)[!simple], collapse = ", "), "."),
-      context, class = "luxR_spectrum_schema_error", field = "parser_args",
+      context, kind = "type", field = "parser_args",
       value = parser_args[!simple]
     )
   }
@@ -80,7 +79,7 @@
     .stop_spectrum_import(
       paste0("`range` must explicitly declare two finite increasing ",
              "wavelengths in nm."),
-      context, class = "luxR_spectrum_schema_error", field = "range",
+      context, kind = "value", field = "range",
       value = range
     )
   }
@@ -105,7 +104,7 @@
     .stop_spectrum_import(
       paste0("lightr reported a ", stage, " warning: ",
              paste(warnings, collapse = " | ")),
-      context, class = "luxR_spectrum_format_error", field = stage,
+      context, kind = "format", field = stage,
       value = warnings
     )
   }
@@ -157,7 +156,7 @@ read_instrument_spectrum <- function(
     .stop_spectrum_import(
       paste0("read_instrument_spectrum() requires the 'lightr' package. ",
              "Install it with install.packages(\"lightr\")."),
-      context, class = "luxR_spectrum_format_error", field = "dependency",
+      context, kind = "dependency", field = "dependency",
       value = "lightr"
     )
   }
@@ -166,7 +165,7 @@ read_instrument_spectrum <- function(
     .stop_spectrum_import(
       paste0("lightr >= 2.0.0 is required; installed version is ",
              lightr_version, "."),
-      context, class = "luxR_spectrum_format_error", field = "dependency",
+      context, kind = "dependency", field = "dependency",
       value = lightr_version
     )
   }
@@ -181,7 +180,7 @@ read_instrument_spectrum <- function(
         is.na(interpolate)) {
     .stop_spectrum_import(
       "`interpolate` must be one non-missing logical value.", context,
-      class = "luxR_spectrum_schema_error", field = "interpolate",
+      kind = "type", field = "interpolate",
       value = interpolate
     )
   }
@@ -191,7 +190,7 @@ read_instrument_spectrum <- function(
     .stop_spectrum_import(
       paste0("Cannot determine the file format: '", basename(path),
              "' has no extension."),
-      context, class = "luxR_spectrum_format_error", field = "extension",
+      context, kind = "format", field = "extension",
       value = extension
     )
   }
@@ -200,7 +199,7 @@ read_instrument_spectrum <- function(
     .stop_spectrum_import(
       paste0("Extension .", extension, " identifies a ", expected,
              " measurement, not ", measurement, "."),
-      context, class = "luxR_spectrum_dimension_error", field = "measurement",
+      context, kind = "unit", field = "measurement",
       value = measurement
     )
   }
@@ -217,7 +216,7 @@ read_instrument_spectrum <- function(
     .stop_spectrum_import(
       paste0("`value_scale = \"", value_scale, "\"` is incompatible with ",
              "`measurement = \"", measurement, "\"`."),
-      context, class = "luxR_spectrum_dimension_error", field = "value_scale",
+      context, kind = "unit", field = "value_scale",
       value = value_scale
     )
   }
@@ -233,7 +232,7 @@ read_instrument_spectrum <- function(
   if (!dir.create(staging)) {
     .stop_spectrum_import(
       "Could not create a temporary staging directory for lightr.", context,
-      class = "luxR_spectrum_format_error", field = "staging",
+      kind = "format", field = "staging",
       value = staging
     )
   }
@@ -242,7 +241,7 @@ read_instrument_spectrum <- function(
   if (!file.copy(path, staged_file)) {
     .stop_spectrum_import(
       paste0("Could not stage the file for import: ", path), context,
-      class = "luxR_spectrum_format_error", field = "path", value = path
+      kind = "format", field = "path", value = path
     )
   }
 
@@ -256,7 +255,7 @@ read_instrument_spectrum <- function(
     error = function(e) {
       .stop_spectrum_import(
         paste0("lightr spectrum parsing failed: ", conditionMessage(e)),
-        context, class = "luxR_spectrum_format_error", field = "parser",
+        context, kind = "format", field = "parser",
         value = conditionMessage(e)
       )
     }
@@ -271,7 +270,7 @@ read_instrument_spectrum <- function(
     }
     .stop_spectrum_import(
       paste0("lightr could not read a spectrum from: ", path, ".", detail),
-      context, class = "luxR_spectrum_format_error", field = "file",
+      context, kind = "format", field = "file",
       value = path
     )
   }
@@ -279,14 +278,14 @@ read_instrument_spectrum <- function(
     .stop_spectrum_import(
       paste0("Expected exactly one spectrum in '", basename(path),
              "'; lightr returned ", ncol(spectrum) - 1L, "."),
-      context, class = "luxR_spectrum_schema_error", field = "spectra",
+      context, kind = "format", field = "spectra",
       value = names(spectrum)[-1L]
     )
   }
   if (!identical(names(spectrum)[[1L]], "wl")) {
     .stop_spectrum_import(
       "lightr result is missing its required `wl` wavelength column.", context,
-      class = "luxR_spectrum_schema_error", field = "wl",
+      kind = "format", field = "wl",
       value = names(spectrum)
     )
   }
@@ -296,14 +295,14 @@ read_instrument_spectrum <- function(
         is.complex(value) || is.object(lambda) || is.object(value)) {
     .stop_spectrum_import(
       "lightr returned nonnumeric wavelength or spectral values.", context,
-      class = "luxR_spectrum_schema_error", field = "spectrum",
+      kind = "format", field = "spectrum",
       value = vapply(spectrum, class, character(1L))
     )
   }
   if (!length(lambda)) {
     .stop_spectrum_import(
       "lightr returned no values in the requested wavelength range.", context,
-      class = "luxR_spectrum_schema_error", field = "range", value = range
+      kind = "format", field = "range", value = range
     )
   }
   invalid <- which(!is.finite(lambda) | !is.finite(value))
@@ -313,7 +312,7 @@ read_instrument_spectrum <- function(
     bad_value <- if (field == "wavelength") lambda[[i]] else value[[i]]
     .stop_spectrum_import(
       paste0("lightr returned a non-finite ", field, " at row ", i, "."),
-      context, class = "luxR_spectrum_value_error", field = field,
+      context, kind = "value", field = field,
       value = bad_value, row = i
     )
   }
@@ -327,7 +326,7 @@ read_instrument_spectrum <- function(
     error = function(e) {
       .stop_spectrum_import(
         paste0("lightr metadata parsing failed: ", conditionMessage(e)),
-        context, class = "luxR_spectrum_format_error", field = "metadata",
+        context, kind = "format", field = "metadata",
         value = conditionMessage(e)
       )
     }
@@ -344,7 +343,7 @@ read_instrument_spectrum <- function(
       .stop_spectrum_import(
         paste0("Expected metadata for exactly one spectrum; lightr returned ",
                nrow(instrument_metadata), " rows."),
-        context, class = "luxR_spectrum_schema_error", field = "metadata",
+        context, kind = "format", field = "metadata",
         value = nrow(instrument_metadata)
       )
     }

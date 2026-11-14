@@ -28,7 +28,7 @@ read_trios <- function(path) {
   if (length(comment_idx) == 0L) {
     .stop_spectrum_import(
       paste0("No 'Comment' blocks found in file: ", path), context,
-      class = "luxR_spectrum_format_error", field = "Comment"
+      kind = "format", field = "Comment"
     )
   }
 
@@ -41,7 +41,7 @@ read_trios <- function(path) {
       .stop_spectrum_import(
         paste0("Spectrum block at source line ", ci,
                " has an empty or malformed Comment label."),
-        context, class = "luxR_spectrum_schema_error", field = "Comment",
+        context, kind = "format", field = "Comment",
         value = raw[[ci]], line = ci
       )
     }
@@ -50,7 +50,7 @@ read_trios <- function(path) {
       .stop_spectrum_import(
         paste0("Duplicate spectrum label '", label,
                "' at source line ", ci, "."),
-        context, class = "luxR_spectrum_schema_error", field = "Comment",
+        context, kind = "format", field = "Comment",
         value = label, line = ci, spectrum = label
       )
     }
@@ -60,7 +60,7 @@ read_trios <- function(path) {
       .stop_spectrum_import(
         paste0("Spectrum '", label,
                "' ends before its required 29-line header is complete."),
-        context, class = "luxR_spectrum_schema_error", field = "header",
+        context, kind = "format", field = "header",
         line = ci, spectrum = label
       )
     }
@@ -70,7 +70,7 @@ read_trios <- function(path) {
     if (length(end_idx) == 0L) {
       .stop_spectrum_import(
         paste0("No [END] marker found after spectrum '", label, "'."),
-        context, class = "luxR_spectrum_format_error", field = "[END]",
+        context, kind = "format", field = "[END]",
         line = ci, spectrum = label
       )
     }
@@ -78,7 +78,7 @@ read_trios <- function(path) {
     if (data_start > data_end) {
       .stop_spectrum_import(
         paste0("Empty data block for spectrum '", label, "'."),
-        context, class = "luxR_spectrum_schema_error", field = "data",
+        context, kind = "format", field = "data",
         line = end_idx[[1L]], spectrum = label
       )
     }
@@ -90,7 +90,7 @@ read_trios <- function(path) {
       if (!nzchar(text)) {
         .stop_spectrum_import(
           paste0("Blank spectral row at source line ", source_line, "."),
-          context, class = "luxR_spectrum_schema_error", field = "row",
+          context, kind = "format", field = "row",
           value = data_lines[[i]], row = i, line = source_line,
           spectrum = label
         )
@@ -101,7 +101,7 @@ read_trios <- function(path) {
           paste0("TriOS spectral row ", i, " at source line ", source_line,
                  " must contain exactly three fields; got ",
                  length(fields), "."),
-          context, class = "luxR_spectrum_schema_error", field = "row",
+          context, kind = "format", field = "row",
           value = data_lines[[i]], row = i, line = source_line,
           spectrum = label
         )
@@ -126,7 +126,7 @@ read_trios <- function(path) {
       .stop_spectrum_import(
         paste0("TriOS row index must be consecutive from 0 or 1; row ", i,
                " contains ", format(parsed[i, "index"]), "."),
-        context, class = "luxR_spectrum_schema_error", field = "index",
+        context, kind = "format", field = "index",
         value = parsed[i, "index"], row = i, line = data_start + i - 1L,
         spectrum = label
       )

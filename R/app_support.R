@@ -377,7 +377,7 @@
       any(!is.finite(lambda))) {
     .stop_spectrum_import(
       "`lambda` must be a non-empty finite numeric target grid.", context,
-      class = "luxR_spectrum_schema_error", field = "lambda", value = lambda
+      kind = "value", field = "lambda", value = lambda
     )
   }
   .validate_import_grid(lambda, context)
@@ -388,7 +388,7 @@
     error = function(e) {
       .stop_spectrum_import(
         paste0("Could not parse reflectance CSV: ", conditionMessage(e)),
-        context, class = "luxR_spectrum_format_error", field = "file"
+        context, kind = "format", field = "file"
       )
     }
   )
@@ -397,7 +397,7 @@
       paste0("Reflectance CSV must contain exactly two columns and at least ",
              "one data row; got ", ncol(table), " columns and ",
              nrow(table), " rows."),
-      context, class = "luxR_spectrum_schema_error", field = "columns",
+      context, kind = "format", field = "columns",
       value = ncol(table)
     )
   }
@@ -412,7 +412,7 @@
     if (nrow(table) == 0L) {
       .stop_spectrum_import(
         "Reflectance CSV contains a header but no data rows.", context,
-        class = "luxR_spectrum_schema_error", field = "data"
+        kind = "format", field = "data"
       )
     }
   } else {
@@ -437,7 +437,7 @@
     .stop_spectrum_import(
       paste0("Reflectance must lie in [0, 1]; row ", i, " is ",
              format(reflectance[[i]]), "."),
-      context, class = "luxR_spectrum_value_error", field = "reflectance",
+      context, kind = "value", field = "reflectance",
       value = reflectance[[i]], row = i, line = i + line_offset
     )
   }
@@ -446,7 +446,7 @@
       paste0("Target wavelength range ", min(lambda), "--", max(lambda),
              " nm exceeds measured reflectance coverage ", min(wavelength),
              "--", max(wavelength), " nm; endpoint extrapolation is disabled."),
-      context, class = "luxR_spectrum_value_error", field = "lambda",
+      context, kind = "value", field = "lambda",
       value = range(lambda)
     )
   }
@@ -455,7 +455,7 @@
   if (any(!is.finite(result))) {
     .stop_spectrum_import(
       "Reflectance interpolation produced non-finite values.", context,
-      class = "luxR_spectrum_value_error", field = "reflectance",
+      kind = "numerical", field = "reflectance",
       value = result
     )
   }

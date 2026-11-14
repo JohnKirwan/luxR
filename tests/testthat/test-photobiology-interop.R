@@ -163,7 +163,7 @@ test_that("a dose-based time unit is refused", {
   d <- photobiology::source_spct(w.length = lam_fixture,
                                  s.e.irrad = E_fixture, time.unit = "day")
   expect_error(as_lux_spectrum(d), "time.unit",
-               class = "luxR_spectrum_dimension_error")
+               class = "luxR_unit_error")
 })
 
 test_that("a biologically weighted spectrum is refused", {
@@ -171,14 +171,14 @@ test_that("a biologically weighted spectrum is refused", {
   b <- source_spct_fixture()
   photobiology::setBSWFUsed(b, "unknown")
   expect_error(as_lux_spectrum(b), "bswf",
-               class = "luxR_spectrum_dimension_error")
+               class = "luxR_unit_error")
 })
 
 test_that("an ambiguous energy/photon basis must be named", {
   skip_if_not_installed("photobiology")
   both <- photobiology::e2q(source_spct_fixture(), action = "add")
   expect_error(as_lux_spectrum(both), "measurement",
-               class = "luxR_spectrum_schema_error")
+               class = "luxR_value_error")
   expect_identical(as_lux_spectrum(both, measurement = "energy")$unit,
                    "W/m2/nm")
   expect_identical(as_lux_spectrum(both, measurement = "photon")$unit,
@@ -191,7 +191,7 @@ test_that("negative values are refused unless the zero floor is requested", {
                                    s.e.irrad = c(-0.5, E_fixture[-1]),
                                    strict.range = FALSE)
   expect_error(as_lux_spectrum(neg), "negative",
-               class = "luxR_spectrum_value_error")
+               class = "luxR_value_error")
   floored <- as_lux_spectrum(neg, negative_policy = "zero")
   expect_equal(floored$E[1], 0)
   expect_identical(floored$meta$import$configuration$negative_policy, "zero")
@@ -203,7 +203,7 @@ test_that("an irregular grid is refused unless interpolation is requested", {
   irr <- photobiology::source_spct(w.length = irregular_wl,
                                    s.e.irrad = seq(1, 2, length.out = 5))
   expect_error(as_lux_spectrum(irr), "interpolate",
-               class = "luxR_spectrum_grid_error")
+               class = "luxR_grid_error")
   fixed <- as_lux_spectrum(irr, interpolate = TRUE)
   expect_true(fixed$meta$import$configuration$interpolate)
   expect_equal(diff(fixed$lambda), rep(1, length(fixed$lambda) - 1))
@@ -216,7 +216,7 @@ test_that("a multi-spectrum source_spct is refused", {
   )
   expect_gt(photobiology::getMultipleWl(multi), 1)
   expect_error(as_lux_spectrum(multi), "spectra",
-               class = "luxR_spectrum_schema_error")
+               class = "luxR_dimension_error")
 })
 
 test_that("a source_spct with neither irradiance column is refused", {
@@ -230,7 +230,7 @@ test_that("a source_spct with neither irradiance column is refused", {
   photobiology::setTimeUnit(bare, "second")
   stopifnot(photobiology::is.source_spct(bare))
   expect_error(as_lux_spectrum(bare), "s.e.irrad",
-               class = "luxR_spectrum_schema_error")
+               class = "luxR_value_error")
 })
 
 test_that("a sub-nanometre wavelength span cannot be resampled", {
@@ -238,7 +238,7 @@ test_that("a sub-nanometre wavelength span cannot be resampled", {
   narrow <- photobiology::source_spct(w.length = c(400.1, 400.3, 400.7),
                                       s.e.irrad = c(1, 1.1, 1.2))
   expect_error(as_lux_spectrum(narrow, interpolate = TRUE),
-               "span", class = "luxR_spectrum_grid_error")
+               "span", class = "luxR_grid_error")
 })
 
 test_that("a reflector_spct imports as dimensionless reflectance", {
