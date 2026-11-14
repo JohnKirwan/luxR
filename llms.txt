@@ -192,18 +192,8 @@ Convert between radiometric and photometric quantities.
   : Convert photon counts to watts at a given wavelength.
 - [`W2photon()`](https://johnkirwan.github.io/luxR/reference/W2photon.md)
   : Convert watts to photon counts at a given wavelength.
-- [`n2W_spec_irradiance()`](https://johnkirwan.github.io/luxR/reference/n2W_spec_irradiance.md)
-  : Convert photon-count spectral irradiance to W m^-2 nm^-1.
-- [`W2mol_spec_irradiance()`](https://johnkirwan.github.io/luxR/reference/W2mol_spec_irradiance.md)
-  : Convert energy spectral irradiance to molar photon flux.
 - [`reflectance_to_radiance()`](https://johnkirwan.github.io/luxR/reference/reflectance_to_radiance.md)
   : Convert spectral reflectance to spectral radiance
-- [`wavelength_in_medium()`](https://johnkirwan.github.io/luxR/reference/wavelength_in_medium.md)
-  : Wavelength of light inside an optical medium.
-- [`ft2m()`](https://johnkirwan.github.io/luxR/reference/ft2m.md) :
-  Convert feet to metres.
-- [`m2ft()`](https://johnkirwan.github.io/luxR/reference/m2ft.md) :
-  Convert metres to feet.
 
 ## Photometric quantities
 

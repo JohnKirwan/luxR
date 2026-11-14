@@ -12,7 +12,6 @@
 <url><loc>https://johnkirwan.github.io/luxR/reference/CIE1931.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/CIE_scotopic.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/Naples.html</loc></url>
-<url><loc>https://johnkirwan.github.io/luxR/reference/W2mol_spec_irradiance.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/W2photon.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/absorbance.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/angle_of_polarization.html</loc></url>
@@ -39,7 +38,6 @@
 <url><loc>https://johnkirwan.github.io/luxR/reference/from_ocean_optics.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/from_solar.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/from_trios.html</loc></url>
-<url><loc>https://johnkirwan.github.io/luxR/reference/ft2m.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/govardovskii_template.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/index.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/inherent_contrast.html</loc></url>
@@ -53,11 +51,8 @@
 <url><loc>https://johnkirwan.github.io/luxR/reference/luxR-conditions.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/luxR-package.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/lux_spectrum.html</loc></url>
-<url><loc>https://johnkirwan.github.io/luxR/reference/m2ft.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/michelson_contrast.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/mol2photon_FUN.html</loc></url>
-<url><loc>https://johnkirwan.github.io/luxR/reference/n2W_spec_irradiance.html</loc></url>
-<url><loc>https://johnkirwan.github.io/luxR/reference/n2W_spec_irradiance_FUN.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/par_fraction.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/par_irradiance.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/photic_depth.html</loc></url>
@@ -96,7 +91,6 @@
 <url><loc>https://johnkirwan.github.io/luxR/reference/unit_expression.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/unit_label.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/visual_range.html</loc></url>
-<url><loc>https://johnkirwan.github.io/luxR/reference/wavelength_in_medium.html</loc></url>
 <url><loc>https://johnkirwan.github.io/luxR/reference/weber_contrast.html</loc></url>
 </urlset>
 

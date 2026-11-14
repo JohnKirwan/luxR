@@ -37,7 +37,17 @@
 <h2 class="pkg-version" data-toc-text="0.1.1" id="luxr-011">luxR 0.1.1<a class="anchor" aria-label="anchor" href="#luxr-011"></a></h2>
 <div class="section level3">
 <h3 id="breaking-changes-0-1-1">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-1-1"></a></h3>
+<ul><li>Removed exports that duplicated other functions, to keep the API focused before the first CRAN release:
 <ul><li>
+<code>n2W_spec_irradiance()</code> and <code>W2mol_spec_irradiance()</code>. Their <code>lux_spectrum</code> methods only wrapped <code><a href="../reference/convert_unit.html">convert_unit()</a></code>; use <code>convert_unit(x, "W/m2/nm")</code> or <code>convert_unit(x, "umol/m2/s/nm")</code> (and the <code>/sr</code> units for radiance). For plain vectors, use <code><a href="../reference/photon2W.html">photon2W()</a></code> / <code><a href="../reference/W2photon.html">W2photon()</a></code> for photon counts, or <code>convert_unit(lux_spectrum(E, lambda, "irradiance", unit), to)$E</code> for molar units.</li>
+<li>
+<code>ft2m()</code> and <code>m2ft()</code>; multiply or divide by 0.3048.</li>
+<li>
+<code>wavelength_in_medium()</code>; divide by the refractive index, <code>lambda / n</code>.</li>
+</ul></li>
+<li>
+<code>irradiance2lux(photonic = TRUE)</code> now requires <code>molar_unit</code> to be one non-missing string and raises a <code>luxR_type_error</code> otherwise. An <code>NA</code> value was previously treated as raw photon counts without notice.</li>
+<li>
 <code><a href="../reference/as_colourvision.html">as_colourvision()</a></code> now converts irradiance and radiance to energy units (<code>W/m2/nm</code>, <code>W/m2/sr/nm</code>) before reshaping; reflectance is unchanged. colourvision integrates energy, and the default <code><a href="../reference/species_sensitivity_matrix.html">species_sensitivity_matrix()</a></code> columns (<code>S * lambda</code>) assume an energy illuminant, so a photon-unit spectrum was previously weighted by lambda squared without warning.</li>
 <li>
 <code><a href="../reference/as_rspec.html">as_rspec()</a></code> on a list of spectra now requires one shared wavelength grid and raises a <code>luxR_value_error</code> otherwise; use <code><a href="../reference/resample_spectrum.html">resample_spectrum()</a></code> first. It previously extended shorter spectra by repeating their end values.</li>
@@ -211,11 +221,11 @@ Previously A2 used wrong α constants and the A1 β-band, which made A2 narrower
 <ul><li>
 <code><a href="../reference/photon2W.html">photon2W()</a></code>, <code><a href="../reference/W2photon.html">W2photon()</a></code> — single-bin photon ↔︎ energy conversion</li>
 <li>
-<code><a href="../reference/n2W_spec_irradiance.html">n2W_spec_irradiance()</a></code>, <code><a href="../reference/W2mol_spec_irradiance.html">W2mol_spec_irradiance()</a></code> — spectral photon-flux conversions</li>
+<code>n2W_spec_irradiance()</code>, <code>W2mol_spec_irradiance()</code> — spectral photon-flux conversions</li>
 <li>
-<code><a href="../reference/wavelength_in_medium.html">wavelength_in_medium()</a></code> — in-medium wavelength from refractive index</li>
+<code>wavelength_in_medium()</code> — in-medium wavelength from refractive index</li>
 <li>
-<code><a href="../reference/ft2m.html">ft2m()</a></code>, <code><a href="../reference/m2ft.html">m2ft()</a></code> — depth unit convenience functions</li>
+<code>ft2m()</code>, <code>m2ft()</code> — depth unit convenience functions</li>
 </ul></div>
 <div class="section level4">
 <h4 id="photometric-quantities-0-1-0">Photometric quantities<a class="anchor" aria-label="anchor" href="#photometric-quantities-0-1-0"></a></h4>

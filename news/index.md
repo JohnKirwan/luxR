@@ -4,6 +4,26 @@
 
 ### Breaking changes
 
+- Removed exports that duplicated other functions, to keep the API
+  focused before the first CRAN release:
+  - `n2W_spec_irradiance()` and `W2mol_spec_irradiance()`. Their
+    `lux_spectrum` methods only wrapped
+    [`convert_unit()`](https://johnkirwan.github.io/luxR/reference/convert_unit.md);
+    use `convert_unit(x, "W/m2/nm")` or
+    `convert_unit(x, "umol/m2/s/nm")` (and the `/sr` units for
+    radiance). For plain vectors, use
+    [`photon2W()`](https://johnkirwan.github.io/luxR/reference/photon2W.md)
+    /
+    [`W2photon()`](https://johnkirwan.github.io/luxR/reference/W2photon.md)
+    for photon counts, or
+    `convert_unit(lux_spectrum(E, lambda, "irradiance", unit), to)$E`
+    for molar units.
+  - `ft2m()` and `m2ft()`; multiply or divide by 0.3048.
+  - `wavelength_in_medium()`; divide by the refractive index,
+    `lambda / n`.
+- `irradiance2lux(photonic = TRUE)` now requires `molar_unit` to be one
+  non-missing string and raises a `luxR_type_error` otherwise. An `NA`
+  value was previously treated as raw photon counts without notice.
 - [`as_colourvision()`](https://johnkirwan.github.io/luxR/reference/as_colourvision.md)
   now converts irradiance and radiance to energy units (`W/m2/nm`,
   `W/m2/sr/nm`) before reshaping; reflectance is unchanged. colourvision
@@ -557,14 +577,10 @@ Initial release.
 - [`photon2W()`](https://johnkirwan.github.io/luxR/reference/photon2W.md),
   [`W2photon()`](https://johnkirwan.github.io/luxR/reference/W2photon.md)
   — single-bin photon ↔︎ energy conversion
-- [`n2W_spec_irradiance()`](https://johnkirwan.github.io/luxR/reference/n2W_spec_irradiance.md),
-  [`W2mol_spec_irradiance()`](https://johnkirwan.github.io/luxR/reference/W2mol_spec_irradiance.md)
-  — spectral photon-flux conversions
-- [`wavelength_in_medium()`](https://johnkirwan.github.io/luxR/reference/wavelength_in_medium.md)
-  — in-medium wavelength from refractive index
-- [`ft2m()`](https://johnkirwan.github.io/luxR/reference/ft2m.md),
-  [`m2ft()`](https://johnkirwan.github.io/luxR/reference/m2ft.md) —
-  depth unit convenience functions
+- `n2W_spec_irradiance()`, `W2mol_spec_irradiance()` — spectral
+  photon-flux conversions
+- `wavelength_in_medium()` — in-medium wavelength from refractive index
+- `ft2m()`, `m2ft()` — depth unit convenience functions
 
 #### Photometric quantities
 

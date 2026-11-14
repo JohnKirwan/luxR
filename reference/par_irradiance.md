@@ -40,11 +40,9 @@ par_irradiance(irradiance, ...)
   s\\^{-1}\\ nm\\^{-1}\\), not molar units. For molar-unit
   (µmol/m²/s/nm) input, either wrap in a
   [`lux_spectrum`](https://johnkirwan.github.io/luxR/reference/lux_spectrum.md)
-  or convert to W/m²/nm first with
-  [`n2W_spec_irradiance`](https://johnkirwan.github.io/luxR/reference/n2W_spec_irradiance.md).
-  Note: `photonic = TRUE` means molar units in
-  [`n2W_spec_irradiance`](https://johnkirwan.github.io/luxR/reference/n2W_spec_irradiance.md)
-  and photon-or-molar units in
+  or convert it with
+  [`convert_unit`](https://johnkirwan.github.io/luxR/reference/convert_unit.md)
+  first. Note: `photonic = TRUE` means photon-or-molar units in
   [`irradiance2lux`](https://johnkirwan.github.io/luxR/reference/irradiance2lux.md).
 
 - binwidth:

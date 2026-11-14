@@ -29,8 +29,7 @@ Johnsen S (2012) The Optics of Life. Princeton University Press, ch. 5.
 
 ## See also
 
-[`fresnel_reflectance`](https://johnkirwan.github.io/luxR/reference/fresnel_reflectance.md),
-[`wavelength_in_medium`](https://johnkirwan.github.io/luxR/reference/wavelength_in_medium.md)
+[`fresnel_reflectance`](https://johnkirwan.github.io/luxR/reference/fresnel_reflectance.md)
 
 ## Examples
 

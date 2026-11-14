@@ -61,9 +61,7 @@ irradiance2lux(
   Logical; if `TRUE`, input is in photon or molar units — specify which
   via `molar_unit`. Note: `photonic = TRUE` means raw photon counts only
   in
-  [`par_irradiance`](https://johnkirwan.github.io/luxR/reference/par_irradiance.md),
-  and molar units only in
-  [`n2W_spec_irradiance`](https://johnkirwan.github.io/luxR/reference/n2W_spec_irradiance.md).
+  [`par_irradiance`](https://johnkirwan.github.io/luxR/reference/par_irradiance.md).
 
 - molar_unit:
 
