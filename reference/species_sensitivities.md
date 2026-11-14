@@ -92,7 +92,6 @@ Ultraviolet-Sensitive Cones in the Retinal Cone Mosaic of
 Thyroxin-Challenged Post-Juvenile Rainbow Trout (Oncorhynchus Mykiss).”
 *Journal of Experimental Biology*, **206**(15), 2665–2673. ISSN
 0022-0949. [doi:10.1242/jeb.00470](https://doi.org/10.1242/jeb.00470) .
-[2026-06-04](https://johnkirwan.github.io/luxR/reference/2026-06-04).
 
 ## Examples
 
