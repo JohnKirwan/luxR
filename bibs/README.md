@@ -12,12 +12,16 @@ column of `species_sensitivities`) and the key methods luxR implements.
 
 Drop a `.bib` file in here (e.g. `robinson_1993.bib`) and it will be tracked.
 
-These entries are consolidated into **`inst/REFERENCES.bib`**, the package
-bibliography that Rdpack reads for `\insertRef{key}{luxR}` in the help pages
-(e.g. `?species_sensitivities`). When you add or change a `.bib` here, refresh
-that file — currently just a concatenation:
+**`inst/REFERENCES.bib` is the canonical package bibliography.** Rdpack reads
+it for `\insertRef{key}{luxR}` in the help pages (e.g. `?species_sensitivities`),
+and `data-raw/` provenance files cite its keys. It holds more entries than this
+folder, so never regenerate it from `bibs/` (`cat bibs/*.bib > ...` would delete
+the others). To add a source, check its key is not already present, append the
+entry, and re-document:
 
 ```sh
-cat bibs/*.bib > inst/REFERENCES.bib   # then re-document
+grep -n "@[a-z]*{newKey2024," inst/REFERENCES.bib   # must print nothing
+cat bibs/new_2024.bib >> inst/REFERENCES.bib
 ```
 
+To change an existing entry, edit it in both places.
