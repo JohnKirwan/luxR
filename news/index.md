@@ -250,6 +250,14 @@
 
 ### Bug fixes
 
+- The pavo and colourvision examples in the visual-ecology vignette no
+  longer extend the 350-700 nm Jerlov light field down to 300 nm by
+  repeating its 350 nm value. Half of the honeybee UV receptor’s
+  sensitivity fell in that invented band. The pavo example now models
+  the reef triggerfish *Rhinecanthus aculeatus*, whose pavo
+  sensitivities are zero below 350 nm, and passes pavo the illuminant in
+  photon units (it previously passed W m^-2 nm^-1). The colourvision
+  example now models human vision over 350-700 nm.
 - [`read_ocean_optics()`](https://johnkirwan.github.io/luxR/reference/read_ocean_optics.md)
   and
   [`from_ocean_optics()`](https://johnkirwan.github.io/luxR/reference/from_ocean_optics.md)

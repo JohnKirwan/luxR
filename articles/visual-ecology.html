@@ -507,9 +507,9 @@ whole of each 1 nm bin from 300 to 700 nm
 <span></span>
 <span><span class="va">lam</span> <span class="op">&lt;-</span> <span class="fl">300</span><span class="op">:</span><span class="fl">700</span></span>
 <span><span class="va">s1</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/approxfun.html" class="external-link">approx</a></span><span class="op">(</span><span class="va">solar_spectra</span><span class="op">$</span><span class="va">clear_noon</span><span class="op">$</span><span class="va">wavelength</span>,</span>
-<span>              <span class="va">solar_spectra</span><span class="op">$</span><span class="va">clear_noon</span><span class="op">$</span><span class="va">irradiance</span>, <span class="va">lam</span>, rule <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">$</span><span class="va">y</span></span>
+<span>              <span class="va">solar_spectra</span><span class="op">$</span><span class="va">clear_noon</span><span class="op">$</span><span class="va">irradiance</span>, <span class="va">lam</span><span class="op">)</span><span class="op">$</span><span class="va">y</span></span>
 <span><span class="va">s2</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/approxfun.html" class="external-link">approx</a></span><span class="op">(</span><span class="va">solar_spectra</span><span class="op">$</span><span class="va">underwater_10m</span><span class="op">$</span><span class="va">wavelength</span>,</span>
-<span>              <span class="va">solar_spectra</span><span class="op">$</span><span class="va">underwater_10m</span><span class="op">$</span><span class="va">irradiance</span>, <span class="va">lam</span>, rule <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">$</span><span class="va">y</span></span>
+<span>              <span class="va">solar_spectra</span><span class="op">$</span><span class="va">underwater_10m</span><span class="op">$</span><span class="va">irradiance</span>, <span class="va">lam</span><span class="op">)</span><span class="op">$</span><span class="va">y</span></span>
 <span><span class="va">w</span>   <span class="op">&lt;-</span> <span class="fl">0.05</span></span>
 <span></span>
 <span><span class="va">pavo_dS</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">species</span><span class="op">)</span> <span class="op">{</span></span>
@@ -599,17 +599,32 @@ colours. <code><a href="../reference/as_rspec.html">as_rspec()</a></code> conver
 <code><a href="../reference/as_lux_spectrum.html">as_lux_spectrum()</a></code> method converts back.</p>
 <p>The pipeline below propagates daylight to 15 m in Jerlov II water
 with luxR, then uses that <strong>in-water light field as the
-illuminant</strong> for a pavo visual model of two substrates — a
-calculation neither package does alone.</p>
+illuminant</strong> for a pavo visual model of two substrates seen by a
+reef triggerfish, <em>Rhinecanthus aculeatus</em> — a calculation
+neither package does alone.</p>
+<p>The Jerlov light field starts at 350 nm, so the model runs over
+350–700 nm and nothing is extrapolated below it. pavo’s built-in
+triggerfish sensitivities are zero below about 400 nm, so restricting
+them to 350–700 nm drops nothing from pavo’s data. A UV-sensitive viewer
+such as the honeybee would need light data below 350 nm, which the
+Jerlov tables do not provide.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pavo.colrverse.com" class="external-link">pavo</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># luxR: the downwelling light field at 15 m (this becomes pavo's illuminant)</span></span>
-<span><span class="va">Ld</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/light_at_depth.html">light_at_depth</a></span><span class="op">(</span><span class="st">"clear_noon"</span>, <span class="st">"II"</span>, depth <span class="op">=</span> <span class="fl">15</span>,</span>
-<span>                      wavelength_policy <span class="op">=</span> <span class="st">"trim"</span><span class="op">)</span></span>
+<span><span class="va">lam</span> <span class="op">&lt;-</span> <span class="fl">350</span><span class="op">:</span><span class="fl">700</span></span>
 <span></span>
-<span><span class="co"># Two object reflectances, bridged into pavo via as_rspec() (interpolated to 1 nm)</span></span>
-<span><span class="va">lam</span>   <span class="op">&lt;-</span> <span class="va">Ld</span><span class="op">$</span><span class="va">lambda</span></span>
+<span><span class="co"># luxR: the downwelling light field at 15 m, on a 1 nm grid within its measured</span></span>
+<span><span class="co"># range, in the photon units pavo expects for an illuminant.</span></span>
+<span><span class="va">Ld</span>    <span class="op">&lt;-</span> <span class="fu"><a href="../reference/light_at_depth.html">light_at_depth</a></span><span class="op">(</span><span class="st">"clear_noon"</span>, <span class="st">"II"</span>, depth <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>                        wavelength_policy <span class="op">=</span> <span class="st">"trim"</span><span class="op">)</span></span>
+<span><span class="va">illum</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/convert_unit.html">convert_unit</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/resample_spectrum.html">resample_spectrum</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="../reference/as_lux_spectrum.html">as_lux_spectrum</a></span><span class="op">(</span><span class="va">Ld</span>, quantity <span class="op">=</span> <span class="st">"irradiance"</span>, unit <span class="op">=</span> <span class="st">"W/m2/nm"</span><span class="op">)</span>, <span class="va">lam</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="st">"umol/m2/s/nm"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Two object reflectances, bridged into pavo via as_rspec()</span></span>
 <span><span class="va">gauss</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">centre</span><span class="op">)</span> <span class="fl">0.2</span> <span class="op">+</span> <span class="fl">0.25</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="op">(</span><span class="va">lam</span> <span class="op">-</span> <span class="va">centre</span><span class="op">)</span> <span class="op">/</span> <span class="fl">35</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">refl</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_rspec.html">as_rspec</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  red_substrate  <span class="op">=</span> <span class="fu"><a href="../reference/as_lux_spectrum.html">as_lux_spectrum</a></span><span class="op">(</span></span>
@@ -620,17 +635,20 @@ calculation neither package does alone.</p>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">lam</span><span class="op">)</span><span class="op">)</span>, lambda <span class="op">=</span> <span class="va">lam</span>,</span>
 <span>    quantity <span class="op">=</span> <span class="st">"reflectance"</span>, unit <span class="op">=</span> <span class="st">"dimensionless"</span></span>
 <span>  <span class="op">)</span></span>
-<span><span class="op">)</span>, lim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">300</span>, <span class="fl">700</span><span class="op">)</span><span class="op">)</span>   <span class="co"># match pavo's built-in honeybee visual system</span></span>
+<span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Put luxR's light field on the rspec's (1 nm) grid so it can serve as the illuminant</span></span>
-<span><span class="va">illum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/approxfun.html" class="external-link">approx</a></span><span class="op">(</span><span class="va">Ld</span><span class="op">$</span><span class="va">lambda</span>, <span class="va">Ld</span><span class="op">$</span><span class="va">irradiance</span>, <span class="va">refl</span><span class="op">$</span><span class="va">wl</span>, rule <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">$</span><span class="va">y</span></span>
+<span><span class="co"># pavo's triggerfish receptors, restricted to the light field's band</span></span>
+<span><span class="va">fish</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pavo.colrverse.com/reference/sensdata.html" class="external-link">sensdata</a></span><span class="op">(</span>visual <span class="op">=</span> <span class="st">"rhinecanthus"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">fish</span><span class="op">[</span><span class="va">fish</span><span class="op">$</span><span class="va">wl</span> <span class="op">&lt;</span> <span class="fl">350</span>, <span class="op">-</span><span class="fl">1</span><span class="op">]</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span>  <span class="co"># nothing dropped below 350 nm</span></span>
+<span><span class="va">fish</span> <span class="op">&lt;-</span> <span class="va">fish</span><span class="op">[</span><span class="va">fish</span><span class="op">$</span><span class="va">wl</span> <span class="op">&gt;=</span> <span class="fl">350</span>, <span class="op">]</span></span>
 <span></span>
-<span><span class="co"># pavo: model a honeybee viewing those substrates UNDER luxR's underwater light</span></span>
-<span><span class="va">vm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pavo.colrverse.com/reference/vismodel.html" class="external-link">vismodel</a></span><span class="op">(</span><span class="va">refl</span>, visual <span class="op">=</span> <span class="st">"apis"</span>, illum <span class="op">=</span> <span class="va">illum</span>,</span>
+<span><span class="co"># pavo: model the triggerfish viewing those substrates UNDER luxR's light</span></span>
+<span><span class="va">vm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pavo.colrverse.com/reference/vismodel.html" class="external-link">vismodel</a></span><span class="op">(</span><span class="va">refl</span>, visual <span class="op">=</span> <span class="va">fish</span>, illum <span class="op">=</span> <span class="va">illum</span><span class="op">$</span><span class="va">E</span>,</span>
 <span>               qcatch <span class="op">=</span> <span class="st">"Qi"</span>, relative <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co"># Equal receptor ratios, for illustration only</span></span>
 <span><span class="fu"><a href="https://pavo.colrverse.com/reference/coldist.html" class="external-link">coldist</a></span><span class="op">(</span><span class="va">vm</span>, n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, achromatic <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patch1"</span>, <span class="st">"patch2"</span>, <span class="st">"dS"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">##          patch1         patch2        dS</span></span>
-<span><span class="co">## 1 red_substrate grey_substrate 0.2932094</span></span></code></pre>
+<span><span class="co">## 1 red_substrate grey_substrate 0.2193973</span></span></code></pre>
 <p>luxR owns the water; pavo owns the colour space, and
 <code><a href="../reference/as_rspec.html">as_rspec()</a></code> is the seam.</p>
 </div>
@@ -645,18 +663,22 @@ each model argument is a plain data frame whose first column is
 wavelength. <code><a href="../reference/as_colourvision.html">as_colourvision()</a></code> produces that shape, and
 <code><a href="../reference/species_sensitivity_matrix.html">species_sensitivity_matrix()</a></code> builds the receptor matrix
 <code>C</code> from luxR’s own Govardovskii templates.</p>
+<p>The example below models a diver’s view (<em>Homo sapiens</em>) over
+350–700 nm, the band the Jerlov light field covers. luxR’s templates
+omit the lens, so 12% of the S-cone’s photon-weighted 300–700 nm
+sensitivity lies below 350 nm and is excluded; in a real human eye the
+lens absorbs most light below 400 nm anyway.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">colourvision</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">lam</span> <span class="op">&lt;-</span> <span class="fl">300</span><span class="op">:</span><span class="fl">700</span></span>
+<span><span class="va">lam</span> <span class="op">&lt;-</span> <span class="fl">350</span><span class="op">:</span><span class="fl">700</span></span>
 <span></span>
-<span><span class="co"># luxR: the downwelling light field at 15 m in Jerlov II water becomes</span></span>
-<span><span class="co"># colourvision's illuminant I.</span></span>
+<span><span class="co"># luxR: the downwelling light field at 15 m in Jerlov II water, on a 1 nm grid</span></span>
+<span><span class="co"># within its measured range, becomes colourvision's illuminant I.</span></span>
 <span><span class="va">Ld</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/light_at_depth.html">light_at_depth</a></span><span class="op">(</span><span class="st">"clear_noon"</span>, <span class="st">"II"</span>, depth <span class="op">=</span> <span class="fl">15</span>, wavelength_policy <span class="op">=</span> <span class="st">"trim"</span><span class="op">)</span></span>
 <span><span class="va">I</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_colourvision.html">as_colourvision</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="../reference/as_lux_spectrum.html">as_lux_spectrum</a></span><span class="op">(</span></span>
-<span>    <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/approxfun.html" class="external-link">approx</a></span><span class="op">(</span><span class="va">Ld</span><span class="op">$</span><span class="va">lambda</span>, <span class="va">Ld</span><span class="op">$</span><span class="va">irradiance</span>, <span class="va">lam</span>, rule <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">$</span><span class="va">y</span>,</span>
-<span>    lambda <span class="op">=</span> <span class="va">lam</span>, quantity <span class="op">=</span> <span class="st">"irradiance"</span>, unit <span class="op">=</span> <span class="st">"W/m2/nm"</span></span>
+<span>  <span class="fu"><a href="../reference/resample_spectrum.html">resample_spectrum</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="../reference/as_lux_spectrum.html">as_lux_spectrum</a></span><span class="op">(</span><span class="va">Ld</span>, quantity <span class="op">=</span> <span class="st">"irradiance"</span>, unit <span class="op">=</span> <span class="st">"W/m2/nm"</span><span class="op">)</span>, <span class="va">lam</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"I"</span><span class="op">)</span></span>
 <span></span>
@@ -666,12 +688,12 @@ wavelength. <code><a href="../reference/as_colourvision.html">as_colourvision()<
 <span><span class="va">Rb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>wl <span class="op">=</span> <span class="va">lam</span>, R <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">lam</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># luxR's own receptors as colourvision's C (photon-weighted).</span></span>
-<span><span class="va">C</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/species_sensitivity_matrix.html">species_sensitivity_matrix</a></span><span class="op">(</span><span class="st">"Apis mellifera"</span>, lambda <span class="op">=</span> <span class="va">lam</span><span class="op">)</span></span>
+<span><span class="va">C</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/species_sensitivity_matrix.html">species_sensitivity_matrix</a></span><span class="op">(</span><span class="st">"Homo sapiens"</span>, lambda <span class="op">=</span> <span class="va">lam</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/colourvision/man/RNLmodel.html" class="external-link">RNLmodel</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"log"</span>, R1 <span class="op">=</span> <span class="va">R1</span>, R2 <span class="op">=</span> <span class="va">R2</span>, Rb <span class="op">=</span> <span class="va">Rb</span>, I <span class="op">=</span> <span class="va">I</span>, C <span class="op">=</span> <span class="va">C</span>,</span>
 <span>         noise <span class="op">=</span> <span class="cn">TRUE</span>, e <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">C</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>         interpolate <span class="op">=</span> <span class="cn">FALSE</span>, nm <span class="op">=</span> <span class="va">lam</span><span class="op">)</span><span class="op">[[</span><span class="st">"deltaS"</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 4.993406</span></span></code></pre>
+<pre><code><span><span class="co">## [1] 4.870315</span></span></code></pre>
 <p>luxR owns the water; colourvision owns the colour space, and
 <code><a href="../reference/as_colourvision.html">as_colourvision()</a></code> plus
 <code><a href="../reference/species_sensitivity_matrix.html">species_sensitivity_matrix()</a></code> are the seam.</p>
