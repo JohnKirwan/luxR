@@ -25,7 +25,7 @@ the spectrum's \code{meta$label}, then \code{meta$source}, then \code{"spec"}.}
 }
 \value{
 A \code{data.frame} with a \code{wl} column plus one column per
-  spectrum, ready to pass as colourvision's \code{I}, \code{R1}, \code{R2},
+  spectrum (light in energy units, reflectance unchanged), ready to pass as colourvision's \code{I}, \code{R1}, \code{R2},
   or \code{Rb}.
 }
 \description{
@@ -40,7 +40,15 @@ matrix \code{C} with \code{\link{species_sensitivity_matrix}}.
 \details{
 Unlike \code{\link{as_rspec}}, this performs no interpolation: colourvision
 resamples inputs itself via its \code{nm}/\code{interpolate} arguments at
-model time, so the converter is a pure reshape with no hidden resampling.
+model time, so the converter performs no hidden resampling.
+
+Irradiance and radiance are converted to energy units (\code{"W/m2/nm"} or
+\code{"W/m2/sr/nm"}) because colourvision integrates energy
+(\eqn{\int I R C}) and the default matrix from
+\code{\link{species_sensitivity_matrix}} (\code{weight = "photon"}, columns
+\eqn{S\lambda}) is correct only for an energy-basis illuminant. A photon-unit
+spectrum passed unconverted would be weighted by \eqn{\lambda^2}.
+Reflectance is passed through unchanged.
 \pkg{colourvision} is an optional (\code{Suggests}) dependency.
 }
 \examples{

@@ -1,6 +1,11 @@
 # luxR 0.1.1
 
 ## Breaking changes
+- `as_colourvision()` now converts irradiance and radiance to energy units
+  (`W/m2/nm`, `W/m2/sr/nm`) before reshaping; reflectance is unchanged.
+  colourvision integrates energy, and the default `species_sensitivity_matrix()`
+  columns (`S * lambda`) assume an energy illuminant, so a photon-unit spectrum
+  was previously weighted by lambda squared without warning.
 - `as_rspec()` on a list of spectra now requires one shared wavelength grid
   and raises a `luxR_value_error` otherwise; use `resample_spectrum()` first.
   It previously extended shorter spectra by repeating their end values.
