@@ -17,12 +17,14 @@ Description: Tools for quantifying and modelling underwater light environments.
     records; explicit measurement, scale, calibration, and resampling policies
     govern conversion via read_spectrum(). Spectra convert to and from the
     generic spectral classes of the optional 'photobiology' package, which
-    also serves as the reference implementation luxR's integration and
-    photometry are validated against. Includes visual
-    ecology utilities: Govardovskii (2000) visual-pigment templates,
-    photoreceptor quantum catch, Vorobyev-Osorio colour discrimination (JND),
-    Secchi depth, and explicitly unvalidated contrast-threshold distance
-    scenarios.
+    also serves as the reference implementation against which spectral
+    integration and photometry are validated. Includes visual ecology
+    utilities: visual-pigment templates of Govardovskii et al. (2000)
+    <doi:10.1017/S0952523800174036>, photoreceptor quantum catch, colour
+    discrimination in just-noticeable differences under the receptor-noise
+    model of Vorobyev and Osorio (1998) <doi:10.1098/rspb.1998.0302>, Secchi
+    depth, and contrast-threshold distance scenarios, which are explicitly
+    not validated.
 License: GPL (>= 3)
 URL: https://johnkirwan.github.io/luxR/, https://github.com/JohnKirwan/luxR
 BugReports: https://github.com/JohnKirwan/luxR/issues
