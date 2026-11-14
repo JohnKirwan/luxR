@@ -23,3 +23,6 @@ bibs/*.pdf
 bibs/*.epub
 bibs/*.mobi
 bibs/*.djvu
+
+# pkgdown output: built and deployed to gh-pages by CI
+/docs/
