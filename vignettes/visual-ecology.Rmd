@@ -92,7 +92,7 @@ it can mislead when applied to non-human or scotopic scenarios.
 ## Building a visual model
 
 We use the zebrafish (*Danio rerio*) cone sensitivities retrieved from the package
-database via `species_LEF()`. Zebrafish (*Danio rerio*) are tetrachromats with four cone classes (UV, S, M, L), but we restrict the model to the three longer-wavelength cones (S at 415 nm, M at 480 nm, L at 561 nm) because the UV-cone's peak lies at the edge of the modelled illuminant range.
+database via `species_LEF()`. Zebrafish (*Danio rerio*) are tetrachromats with four cone classes (UV, S, M, L), but we restrict the model to the three longer-wavelength cones (S at 414 nm, M at 483 nm, L at 567 nm) because the UV-cone's peak lies at the edge of the modelled illuminant range.
 
 ```{r pigments}
 sws_df <- species_LEF("Danio rerio", receptor = "S-cone", lambda = lam)
@@ -106,7 +106,7 @@ plot(sws_df$lambda, sws_df$S, type = "l", col = "blue",
 lines(mws_df$lambda, mws_df$S, col = "green3")
 lines(lws_df$lambda, lws_df$S, col = "red3")
 legend("topright",
-       legend = c("S-cone (415 nm)", "M-cone (480 nm)", "L-cone (561 nm)"),
+       legend = c("S-cone (414 nm)", "M-cone (483 nm)", "L-cone (567 nm)"),
        col = c("blue", "green3", "red3"), lty = 1)
 ```
 
@@ -138,8 +138,8 @@ knitr::kable(qc_df[, c("depth_m", "S", "M", "L", "M_L")],
 ```
 
 As depth increases the M/L ratio rises: the blue-shifted deep illuminant peaks
-near 500 nm, which aligns with the M-cone (480 nm) better than the L-cone
-(561 nm), shifting the chromatic balance available to the fish.
+near 500 nm, which aligns with the M-cone (483 nm) better than the L-cone
+(567 nm), shifting the chromatic balance available to the fish.
 
 ## Reflectance to radiance
 
@@ -250,7 +250,7 @@ if (length(fail_idx) > 0) {
 ```
 
 The model predicts that the zebrafish can discriminate the grey and red substrates
-in well-lit shallow water (JND ≈ 2–3 near the surface) but loses the ability
+in well-lit shallow water (JND > 2 in the top 5 m) but loses the ability
 by 20 m, where the blue-shifted Jerlov II illuminant has attenuated the red
 substrate's 625 nm peak sufficiently to render it indistinguishable from the flat
 grey (JND < 1).

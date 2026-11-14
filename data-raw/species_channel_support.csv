@@ -1,7 +1,7 @@
 species,channel_role,status,reason,source
 Homo sapiens,chromatic,supported,Validated S M and L cone opponent set,Bowmaker & Dartnall 1980
 Homo sapiens,achromatic,unavailable,No adaptation-specific photopic or scotopic default is encoded,Package review decision
-Danio rerio,chromatic,supported,Validated UV S M and L cone set,Robinson et al. 1993
+Danio rerio,chromatic,supported,Validated UV S M and L cone set,Govardovskii et al. 2000
 Danio rerio,achromatic,supported,Adult light-adapted optomotor response is dominated by the L cone,Krauss & Neumeyer 2003
 Apis mellifera,chromatic,supported,Validated UV blue and green receptor set,Peitsch et al. 1992
 Apis mellifera,achromatic,supported,Green-receptor contrast supports achromatic target detection,Niggebrugge & Hempel de Ibarra 2003

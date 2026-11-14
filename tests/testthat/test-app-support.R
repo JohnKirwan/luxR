@@ -460,7 +460,7 @@ test_that("Species Perception applies optical-density self-screening", {
     expect_match(result$source_checksum_md5, "^[0-9a-f]{32}$")
     expect_identical(result$source_model_version, "solar-legacy-v1")
     expect_match(result$sensitivity_source_checksum_md5, "^[0-9a-f]{32}$")
-    expect_identical(result$sensitivity_model_version, "species-v1")
+    expect_identical(result$sensitivity_model_version, "species-v2")
     expect_match(result$sensitivity_citation_keys, "bowmakerDartnall1980")
     rendered <- paste(unlist(output$sp_qcatch), collapse = " ")
     expect_match(rendered, "photons m\u207b\u00b2 s\u207b\u00b9")
@@ -510,7 +510,7 @@ test_that("each tab renders a data-sources caption with the right citations", {
     # Species Perception: per-species source + Govardovskii template
     session$setInputs(sp_species = "Danio rerio")
     sp <- flat(output$sp_refs)
-    expect_match(sp, "Robinson")          # Danio rerio lambda_max source
+    expect_match(sp, "Govardovskii et al. 2000", fixed = TRUE)  # Danio lambda_max source label
     expect_match(sp, "Govardovskii")
 
     # Colour discrimination: Vorobyev-Osorio model citation
