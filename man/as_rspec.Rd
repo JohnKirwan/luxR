@@ -40,12 +40,9 @@ default, interpolates onto a 1 nm grid, so the result is a genuine
 \code{rspec} object. \pkg{pavo} is an optional (\code{Suggests}) dependency.
 }
 \examples{
-\dontrun{
+if (requireNamespace("pavo", quietly = TRUE)) {
   # A bundled solar spectrum as an rspec, ready for the pavo toolkit:
   r <- as_rspec(from_solar("clear_noon"))
-
-  # Several spectra at once (e.g. TriOS radiance scans):
-  r2 <- as_rspec(from_trios(system.file("extdata/trios.dat", package = "luxR")))
 }
 }
 \seealso{

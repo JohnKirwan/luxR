@@ -20,3 +20,7 @@ axis. Line colours cycle through the default palette. Names of the list
 (or \code{meta$label} if present) are used for the legend. Additional
 arguments in \code{...} are passed to the initial \code{plot()} call.
 }
+\examples{
+plot_spectra(list(noon = from_solar("clear_noon"),
+                  overcast = from_solar("overcast")))
+}

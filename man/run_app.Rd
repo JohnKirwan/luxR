@@ -32,7 +32,7 @@ environments. It has five guided tabs:
 Requires the \code{shiny} package.
 }
 \examples{
-\dontrun{
-run_app()
+if (interactive() && requireNamespace("shiny", quietly = TRUE)) {
+  run_app()
 }
 }

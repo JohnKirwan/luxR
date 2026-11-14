@@ -428,11 +428,30 @@ plot.lux_spectrum <- function(x, main = x$quantity, ...) {
 #' @param x   A named or unnamed list of \code{lux_spectrum} objects.
 #' @param ... Additional arguments passed to \code{plot} and \code{lines}.
 #' @return \code{invisible(x)} — called for its side effect (plot).
+#' @examples
+#' plot_spectra(list(noon = from_solar("clear_noon"),
+#'                   overcast = from_solar("overcast")))
 #' @export
 plot_spectra <- function(x, ...) {
-  if (!is.list(x) || length(x) == 0L) {
+  if (!is.list(x) || inherits(x, "lux_spectrum")) {
     .luxr_abort("`x` must be a non-empty list of lux_spectrum objects.",
-                if (is.list(x)) "value" else "type", field = "x")
+                "type", field = "x")
+  }
+  if (length(x) == 0L) {
+    .luxr_abort("`x` must be a non-empty list of lux_spectrum objects.",
+                "value", field = "x")
+  }
+  for (i in seq_along(x)) {
+    if (!inherits(x[[i]], "lux_spectrum"))
+      .luxr_abort(sprintf("`x` element %d is not a lux_spectrum.", i),
+                  "type", field = "x", index = i)
+  }
+  units <- vapply(x, function(s) s$unit, character(1))
+  if (length(unique(units)) > 1L) {
+    .luxr_abort(paste0("All spectra must share the same unit to be plotted ",
+                       "on one axis; got ",
+                       paste(unique(units), collapse = ", "), "."),
+                "unit", field = "x")
   }
   labels <- if (!is.null(names(x))) names(x) else as.character(seq_along(x))
   for (i in seq_along(x))

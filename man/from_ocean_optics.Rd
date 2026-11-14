@@ -23,6 +23,17 @@ Ocean Optics text files do not contain a standardized machine-readable unit
 or calibration state. All physical declarations are therefore required.
 Use \code{\link{read_ocean_optics}} to inspect raw or relative values.
 }
+\examples{
+# A synthetic three-pixel Ocean Optics text export:
+f <- tempfile(fileext = ".txt")
+writeLines(c("Spectrometer: USB2E0034", "Integration Time (usec): 10000",
+             "Number of Pixels in Spectrum: 3", ">>>>>Begin Spectral Data<<<<<",
+             "400.0\t0.0012", "450.0\t0.0024", "500.0\t0.0036"), f)
+x <- from_ocean_optics(f, quantity = "irradiance", unit = "W/m2/nm",
+                       calibration = "example")
+x$E
+unlink(f)
+}
 \seealso{
 \code{\link{read_ocean_optics}}, \code{\link{from_trios}},
   \code{\link{read_spectrum}}

@@ -21,8 +21,8 @@
 #' @param ... Arguments passed to \code{\link[shiny]{runApp}}.
 #' @return Invisible \code{NULL}; called for its side effect of starting the app.
 #' @examples
-#' \dontrun{
-#' run_app()
+#' if (interactive() && requireNamespace("shiny", quietly = TRUE)) {
+#'   run_app()
 #' }
 #' @export
 run_app <- function(...) {

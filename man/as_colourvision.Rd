@@ -44,8 +44,8 @@ model time, so the converter is a pure reshape with no hidden resampling.
 \pkg{colourvision} is an optional (\code{Suggests}) dependency.
 }
 \examples{
-\dontrun{
-  I  <- as_colourvision(from_solar("clear_noon"), name = "I")
+if (requireNamespace("colourvision", quietly = TRUE)) {
+  I <- as_colourvision(from_solar("clear_noon"), name = "I")
 }
 }
 \seealso{

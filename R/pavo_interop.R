@@ -36,12 +36,9 @@
 #' @seealso \code{\link{as_lux_spectrum}} for the reverse conversion;
 #'   \code{pavo::as.rspec}, \code{pavo::vismodel}
 #' @examples
-#' \dontrun{
+#' if (requireNamespace("pavo", quietly = TRUE)) {
 #'   # A bundled solar spectrum as an rspec, ready for the pavo toolkit:
 #'   r <- as_rspec(from_solar("clear_noon"))
-#'
-#'   # Several spectra at once (e.g. TriOS radiance scans):
-#'   r2 <- as_rspec(from_trios(system.file("extdata/trios.dat", package = "luxR")))
 #' }
 #' @export
 as_rspec <- function(x, ...) UseMethod("as_rspec")

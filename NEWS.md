@@ -183,6 +183,10 @@ These fixes change returned numbers or turn silent results into errors.
   It is now read from the installed package (`RemoteSha` or `GithubSHA1`,
   set by r-universe, pak and remotes) and is `NA` for CRAN or local source
   installs.
+- `plot_spectra()` now rejects a single `lux_spectrum` (it needs a list),
+  non-spectrum list elements, and spectra in different units. Previously a
+  bare spectrum failed with "$ operator is invalid for atomic vectors", and
+  mixed units were drawn on one axis labelled with the first spectrum's unit.
 - `citation("luxR")` now takes its version and year from DESCRIPTION. It
   previously failed when the package was not installed and gave the current
   year rather than the release year.

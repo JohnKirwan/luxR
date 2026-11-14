@@ -48,6 +48,15 @@ signed processed values. This function does not claim that processed values
 are a physically valid \code{\link{lux_spectrum}}; use
 \code{\link{as_lux_spectrum}} or \code{\link{read_spectrum}} for that step.
 }
+\examples{
+# An irradiance file from an Ocean Optics Jaz, shipped with lightr:
+f <- system.file("testdata", "irrad.JazIrrad", package = "lightr")
+if (requireNamespace("lightr", quietly = TRUE) && nzchar(f)) {
+  x <- read_instrument_spectrum(f, measurement = "irradiance",
+                                value_scale = "absolute", range = c(400, 700))
+  head(x$value)
+}
+}
 \seealso{
 \code{\link{read_spectrum}}, \code{\link{as_lux_spectrum}}
 }

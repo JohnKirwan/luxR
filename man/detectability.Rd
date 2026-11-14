@@ -132,7 +132,7 @@ red  <- 0.2 + 0.25 * exp(-((lam - 625) / 35)^2)
 d <- detectability(red, grey, sp$irradiance, lam,
                    Kd = jerlov_Kd("IA", lambda = 490), species = "Danio rerio")
 d
-\dontrun{plot(d)}
+plot(d)
 }
 \references{
 Johnsen S (2012) The Optics of Life. Princeton University Press, ch. 5.

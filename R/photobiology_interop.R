@@ -70,7 +70,7 @@
 #'   \code{\link{as_lux_spectrum}} for the reverse conversion,
 #'   \code{\link{as_rspec}} for the \pkg{pavo} bridge
 #' @examples
-#' \dontrun{
+#' if (requireNamespace("photobiology", quietly = TRUE)) {
 #'   # The downwelling light field at 15 m, as a photobiology source_spct:
 #'   # Jerlov Kd data cover 350-700 nm, so trim before propagating.
 #'   surface <- from_solar("clear_noon")[350, 700]
@@ -150,8 +150,10 @@ as_source_spct.list <- function(x, ...) {
 #' @return A \pkg{photobiology} \code{reflector_spct}.
 #' @seealso \code{\link{as_source_spct}}, \code{\link{as_lux_spectrum}}
 #' @examples
-#' \dontrun{
-#'   r <- as_reflector_spct(my_reflectance, Rfr.type = "total")
+#' if (requireNamespace("photobiology", quietly = TRUE)) {
+#'   refl <- lux_spectrum(E = seq(0.1, 0.6, length.out = 301), lambda = 400:700,
+#'                        quantity = "reflectance", unit = "dimensionless")
+#'   r <- as_reflector_spct(refl, Rfr.type = "total")
 #' }
 #' @export
 as_reflector_spct <- function(x, ...) UseMethod("as_reflector_spct")

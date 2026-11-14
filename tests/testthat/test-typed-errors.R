@@ -27,6 +27,13 @@ test_that("lux_spectrum.R: subsetting, arithmetic and conversion are typed", {
                class = "luxR_unit_error")
   expect_error(plot_spectra("x"), class = "luxR_type_error")
   expect_error(plot_spectra(list()), class = "luxR_value_error")
+  # A bare lux_spectrum is itself a list; it must not reach `$` on its fields.
+  expect_error(plot_spectra(irr), "list of lux_spectrum",
+               class = "luxR_type_error")
+  expect_error(plot_spectra(list(irr, 1:3)), "element 2",
+               class = "luxR_type_error")
+  expect_error(plot_spectra(list(irr, convert_unit(irr, "umol/m2/s/nm"))),
+               "same unit", class = "luxR_unit_error")
 })
 
 test_that("converters.R errors are typed", {
