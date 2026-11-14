@@ -280,9 +280,9 @@ library(pavo)
 
 lam <- 300:700
 s1  <- approx(solar_spectra$clear_noon$wavelength,
-              solar_spectra$clear_noon$irradiance, lam, rule = 2)$y
+              solar_spectra$clear_noon$irradiance, lam)$y
 s2  <- approx(solar_spectra$underwater_10m$wavelength,
-              solar_spectra$underwater_10m$irradiance, lam, rule = 2)$y
+              solar_spectra$underwater_10m$irradiance, lam)$y
 w   <- 0.05
 
 pavo_dS <- function(species) {
@@ -333,17 +333,33 @@ luxR spectra into pavo's `rspec` class, after which the whole pavo toolkit
 
 The pipeline below propagates daylight to 15 m in Jerlov II water with luxR, then
 uses that **in-water light field as the illuminant** for a pavo visual model of
-two substrates — a calculation neither package does alone.
+two substrates seen by a reef triggerfish, *Rhinecanthus aculeatus* — a
+calculation neither package does alone.
+
+The Jerlov light field starts at 350 nm, so the model runs over 350–700 nm and
+nothing is extrapolated below it. pavo's built-in triggerfish sensitivities are
+zero below about 400 nm, so restricting them to 350–700 nm drops nothing from
+pavo's data. A UV-sensitive viewer such as the
+honeybee would need light data below 350 nm, which the Jerlov tables do not
+provide.
 
 ```{r pavo-interop, eval = requireNamespace("pavo", quietly = TRUE)}
 library(pavo)
 
-# luxR: the downwelling light field at 15 m (this becomes pavo's illuminant)
-Ld  <- light_at_depth("clear_noon", "II", depth = 15,
-                      wavelength_policy = "trim")
+lam <- 350:700
 
-# Two object reflectances, bridged into pavo via as_rspec() (interpolated to 1 nm)
-lam   <- Ld$lambda
+# luxR: the downwelling light field at 15 m, on a 1 nm grid within its measured
+# range, in the photon units pavo expects for an illuminant.
+Ld    <- light_at_depth("clear_noon", "II", depth = 15,
+                        wavelength_policy = "trim")
+illum <- convert_unit(
+  resample_spectrum(
+    as_lux_spectrum(Ld, quantity = "irradiance", unit = "W/m2/nm"), lam
+  ),
+  "umol/m2/s/nm"
+)
+
+# Two object reflectances, bridged into pavo via as_rspec()
 gauss <- function(centre) 0.2 + 0.25 * exp(-((lam - centre) / 35)^2)
 refl  <- as_rspec(list(
   red_substrate  = as_lux_spectrum(
@@ -354,14 +370,17 @@ refl  <- as_rspec(list(
     rep(0.3, length(lam)), lambda = lam,
     quantity = "reflectance", unit = "dimensionless"
   )
-), lim = c(300, 700))   # match pavo's built-in honeybee visual system
+))
 
-# Put luxR's light field on the rspec's (1 nm) grid so it can serve as the illuminant
-illum <- approx(Ld$lambda, Ld$irradiance, refl$wl, rule = 2)$y
+# pavo's triggerfish receptors, restricted to the light field's band
+fish <- sensdata(visual = "rhinecanthus")
+stopifnot(all(fish[fish$wl < 350, -1] == 0))  # nothing dropped below 350 nm
+fish <- fish[fish$wl >= 350, ]
 
-# pavo: model a honeybee viewing those substrates UNDER luxR's underwater light
-vm <- vismodel(refl, visual = "apis", illum = illum,
+# pavo: model the triggerfish viewing those substrates UNDER luxR's light
+vm <- vismodel(refl, visual = fish, illum = illum$E,
                qcatch = "Qi", relative = FALSE)
+# Equal receptor ratios, for illustration only
 coldist(vm, n = c(1, 1, 1), achromatic = FALSE)[, c("patch1", "patch2", "dS")]
 ```
 
@@ -378,18 +397,29 @@ plain data frame whose first column is wavelength. `as_colourvision()` produces
 that shape, and `species_sensitivity_matrix()` builds the receptor matrix `C`
 from luxR's own Govardovskii templates.
 
+```{r cv-uv-share, include = FALSE}
+C_full   <- species_sensitivity_matrix("Homo sapiens", lambda = 300:700)
+uv_share <- sum(C_full[C_full[[1]] < 350, 2]) / sum(C_full[[2]])
+```
+
+The example below models a diver's view (*Homo sapiens*) over 350–700 nm, the
+band the Jerlov light field covers. luxR's templates omit the lens, so
+`r round(100 * uv_share)`% of the S-cone's photon-weighted 300–700 nm
+sensitivity lies below
+350 nm and is excluded; in a real human eye
+the lens absorbs most light below 400 nm anyway.
+
 ```{r cv-interop, eval = requireNamespace("colourvision", quietly = TRUE)}
 library(colourvision)
 
-lam <- 300:700
+lam <- 350:700
 
-# luxR: the downwelling light field at 15 m in Jerlov II water becomes
-# colourvision's illuminant I.
+# luxR: the downwelling light field at 15 m in Jerlov II water, on a 1 nm grid
+# within its measured range, becomes colourvision's illuminant I.
 Ld <- light_at_depth("clear_noon", "II", depth = 15, wavelength_policy = "trim")
 I <- as_colourvision(
-  as_lux_spectrum(
-    stats::approx(Ld$lambda, Ld$irradiance, lam, rule = 2)$y,
-    lambda = lam, quantity = "irradiance", unit = "W/m2/nm"
+  resample_spectrum(
+    as_lux_spectrum(Ld, quantity = "irradiance", unit = "W/m2/nm"), lam
   ),
   name = "I")
 
@@ -399,7 +429,7 @@ R2 <- data.frame(wl = lam, R = 0.2 + 0.25 * exp(-((lam - 600) / 30)^2))
 Rb <- data.frame(wl = lam, R = rep(0.1, length(lam)))
 
 # luxR's own receptors as colourvision's C (photon-weighted).
-C <- species_sensitivity_matrix("Apis mellifera", lambda = lam)
+C <- species_sensitivity_matrix("Homo sapiens", lambda = lam)
 
 RNLmodel(model = "log", R1 = R1, R2 = R2, Rb = Rb, I = I, C = C,
          noise = TRUE, e = rep(0.05, ncol(C) - 1),
