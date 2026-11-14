@@ -341,11 +341,12 @@ test_that("spectral chromatic catches are recomputed rather than scaling JND", {
   initial <- inherent_contrast(red, grey, sp$irradiance, lam,
                                species = "Danio rerio",
                                channel = "chromatic")$chromatic
-  propagated <- luxR:::.spectral_signals(
-    distance, red * sp$irradiance, grey * sp$irradiance,
-    grey * sp$irradiance, lam, c_lambda, "Danio rerio", NULL, 0.05,
-    "chromatic", diff(lam)[1], c(300, 700)
-  )$chromatic
+  # "collimated" leaves the illuminant unchanged, so the radiances are R * E.
+  propagated <- luxR:::.spectral_signal_fn(
+    red, grey, sp$irradiance, lam, grey * sp$irradiance, c_lambda,
+    "Danio rerio", NULL, 0.05, "chromatic", diff(lam)[1], c(300, 700),
+    "collimated", NULL
+  )(distance, "chromatic")
   expect_false(isTRUE(all.equal(propagated, initial * exp(-0.2 * distance),
                                 tolerance = 1e-6)))
   expect_gt(propagated, 0)
@@ -463,4 +464,22 @@ test_that("band is validated even without a species model", {
                       band = 300),
     "must be c\\(lower, upper\\)", class = "luxR_dimension_error"
   )
+})
+
+test_that("spectral-path 'both' matches the two single-channel searches", {
+  sp <- solar_irradiance("clear_noon")
+  keep <- sp$wavelength >= 300 & sp$wavelength <= 700
+  lam <- sp$wavelength[keep]
+  E <- sp$irradiance[keep]
+  grey <- rep(0.3, length(lam))
+  red <- 0.2 + 0.25 * exp(-((lam - 600) / 30)^2)
+  run <- function(channel)
+    detection_range(red, grey, E, lam, Kd = 0.06,
+                    beam_c = 0.15 + 0.1 * (lam - 300) / 400,
+                    model = "spectral_path", veiling = grey * E / pi,
+                    species = "Apis mellifera", channel = channel,
+                    search_points = 51)
+  both <- run("both")
+  expect_identical(both$achromatic, run("achromatic")$achromatic)
+  expect_identical(both$chromatic, run("chromatic")$chromatic)
 })

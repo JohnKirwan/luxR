@@ -68,6 +68,12 @@ colour_jnd <- function(stim1, stim2, lambda, species,
                        noise    = 0.05,
                        binwidth = NULL,
                        band     = c(300, 700)) {
+  .colour_jnd_fn(lambda, species, receptor, noise, binwidth, band)(stim1, stim2)
+}
+
+# Validates the species, receptors, band and noise once and returns
+# function(stim1, stim2) giving delta S, for callers that compare many pairs.
+.colour_jnd_fn <- function(lambda, species, receptor, noise, binwidth, band) {
 
   # ---- validate species and chromatic channel -----------------------------
   sp_data <- .default_channel_receptors(
@@ -94,45 +100,57 @@ colour_jnd <- function(stim1, stim2, lambda, species,
       receptor = sp_data$receptor
     )
 
-  # ---- quantum catches for each receptor ----------------------------------
-  q1 <- .receptor_catches(stim1, lambda, sp_data, binwidth, band,
-                         "colour_jnd()")
-  q2 <- .receptor_catches(stim2, lambda, sp_data, binwidth, band,
-                         "colour_jnd()")
-  names(q1) <- names(q2) <- sp_data$receptor
-
-  invalid_q1 <- !is.finite(q1) | q1 <= 0
-  invalid_q2 <- !is.finite(q2) | q2 <= 0
-  if (any(invalid_q1) || any(invalid_q2)) {
-    details <- c(
-      if (any(invalid_q1)) {
-        paste0("stim1:", paste(names(q1)[invalid_q1], collapse = ","))
-      },
-      if (any(invalid_q2)) {
-        paste0("stim2:", paste(names(q2)[invalid_q2], collapse = ","))
-      }
-    )
-    .luxr_abort(
-      paste(
-        "Chromatic modelling requires finite, strictly positive quantum catches;",
-        paste(details, collapse = "; "),
-        "were invalid."
-      ),
-      "value",
-      species = species,
-      channel_role = "chromatic",
-      channel = channel,
-      receptor = sp_data$receptor,
-      q1 = q1,
-      q2 = q2
-    )
-  }
-
-  # ---- log-ratio differences ----------------------------------------------
-  delta_f <- log(q2) - log(q1)
-
-  # ---- noise vector -------------------------------------------------------
+  catches <- .receptor_catcher(lambda, sp_data, binwidth, band, "colour_jnd()")
   recs <- sp_data$receptor
+  e <- .rnl_noise(noise, recs, species, channel)
+  inv_e2 <- 1 / e^2
+
+  function(stim1, stim2) {
+    q1 <- catches(stim1)
+    q2 <- catches(stim2)
+    names(q1) <- names(q2) <- recs
+
+    invalid_q1 <- !is.finite(q1) | q1 <= 0
+    invalid_q2 <- !is.finite(q2) | q2 <= 0
+    if (any(invalid_q1) || any(invalid_q2)) {
+      details <- c(
+        if (any(invalid_q1)) {
+          paste0("stim1:", paste(names(q1)[invalid_q1], collapse = ","))
+        },
+        if (any(invalid_q2)) {
+          paste0("stim2:", paste(names(q2)[invalid_q2], collapse = ","))
+        }
+      )
+      .luxr_abort(
+        paste(
+          "Chromatic modelling requires finite, strictly positive quantum catches;",
+          paste(details, collapse = "; "),
+          "were invalid."
+        ),
+        "value",
+        species = species,
+        channel_role = "chromatic",
+        channel = channel,
+        receptor = sp_data$receptor,
+        q1 = q1,
+        q2 = q2
+      )
+    }
+
+    # ---- log-ratio differences ----------------------------------------------
+    delta_f <- log(q2) - log(q1)
+
+    # ---- Vorobyev-Osorio distance (general n-receptor formula) --------------
+    # ΔS² = Δf' Σ⁻¹ Δf  -  (1' Σ⁻¹ Δf)² / (1' Σ⁻¹ 1)
+    term1   <- sum(delta_f^2 * inv_e2)
+    term2   <- sum(delta_f   * inv_e2)^2 / sum(inv_e2)
+    sqrt(max(term1 - term2, 0))
+  }
+}
+
+# Receptor noise (Weber fractions) aligned to `recs`: one shared value, or a
+# vector named exactly by the receptors.
+.rnl_noise <- function(noise, recs, species, channel) {
   if (!is.numeric(noise) || length(noise) == 0L ||
       anyNA(noise) || any(!is.finite(noise)) || any(noise <= 0)) {
     .luxr_abort(
@@ -185,10 +203,5 @@ colour_jnd <- function(stim1, stim2, lambda, species,
     e <- noise[recs]
   }
 
-  # ---- Vorobyev-Osorio distance (general n-receptor formula) --------------
-  # ΔS² = Δf' Σ⁻¹ Δf  -  (1' Σ⁻¹ Δf)² / (1' Σ⁻¹ 1)
-  inv_e2  <- 1 / e^2
-  term1   <- sum(delta_f^2 * inv_e2)
-  term2   <- sum(delta_f   * inv_e2)^2 / sum(inv_e2)
-  sqrt(max(term1 - term2, 0))
+  e
 }

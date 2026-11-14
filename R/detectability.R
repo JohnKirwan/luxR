@@ -137,19 +137,21 @@
 # catch of a validated achromatic channel over the visual `band`, or photon
 # radiance over 400-700 nm (PAR) when no species model is requested. Fixed
 # bands keep the result independent of the grid's extent.
-.viewer_brightness <- function(L, lambda, species, receptor, binwidth, band,
-                               operation) {
+.viewer_brightness_fn <- function(lambda, species, receptor, binwidth, band,
+                                  operation) {
   .check_band(band, operation)
-  if (is.null(species))
-    return(sum(W2photon(L, lambda) *
-                 .band_widths(lambda, binwidth, 400, 700, operation)))
+  if (is.null(species)) {
+    w <- .band_widths(lambda, binwidth, 400, 700, operation)
+    return(function(L) sum(W2photon(L, lambda) * w))
+  }
   rows <- .default_channel_receptors(
     species = species,
     channel_role = "achromatic",
     receptor = receptor
   )
-  sum(.receptor_catches(L, lambda, rows, binwidth, band, operation) *
-        attr(rows, "channel_weights"))
+  catches <- .receptor_catcher(lambda, rows, binwidth, band, operation)
+  weights <- attr(rows, "channel_weights")
+  function(L) sum(catches(L) * weights)
 }
 
 
@@ -246,10 +248,10 @@ inherent_contrast <- function(object, background, illuminant, lambda,
 
   out <- list(achromatic = NA_real_, chromatic = NA_real_)
   if (channel %in% c("both", "achromatic")) {
-    Bo <- .viewer_brightness(Lo, lambda, species, receptor, binwidth,
-                             band, "inherent_contrast")
-    Bb <- .viewer_brightness(Lb, lambda, species, receptor, binwidth,
-                             band, "inherent_contrast")
+    brightness <- .viewer_brightness_fn(lambda, species, receptor, binwidth,
+                                        band, "inherent_contrast")
+    Bo <- brightness(Lo)
+    Bb <- brightness(Lb)
     if (!is.finite(Bo) || !is.finite(Bb) || Bo < 0 || Bb <= 0)
       .stop_detection(
         paste0(
@@ -351,26 +353,51 @@ contrast_at_distance <- function(C0, distance, Kd, kd_to_c = 1.5,
   list(range = value, status = "crossed")
 }
 
-.spectral_signals <- function(distance, object_radiance, background_radiance,
-                              veiling_radiance, lambda, effective_c, species,
-                              receptor, noise, channel, binwidth,
-                              band) {
-  transmission <- exp(-effective_c * distance)
-  object_seen <- veiling_radiance +
-    (object_radiance - veiling_radiance) * transmission
-  background_seen <- veiling_radiance +
-    (background_radiance - veiling_radiance) * transmission
+# Spectral-path setup shared by detection_range() and detectability(): the
+# receptor templates and radiances are built once, and the returned
+# function(distance, channel) gives that one channel's signal at `distance`.
+.spectral_signal_fn <- function(object, background, illuminant, lambda,
+                                veiling, effective_c, species, receptor, noise,
+                                channel, binwidth, band, geometry,
+                                solid_angle) {
+  Ro <- .spec_vals(object, lambda, "object")
+  Rb <- .spec_vals(background, lambda, "background")
+  E <- .spec_vals(illuminant, lambda, "illuminant")
+  Lv <- .spec_vals(veiling, lambda, "veiling")
+  if (!any(Lv > 0))
+    .stop_detection(
+      "`veiling` must contain at least one strictly positive value.",
+      kind = "value",
+      field = "veiling", value = Lv, operation = "detection_range"
+    )
+  if (is.null(binwidth)) binwidth <- diff(lambda)[1L]
+  illuminant_radiance <- irradiance2radiance(
+    E, geometry = geometry, solid_angle = solid_angle
+  )
+  object_radiance <- Ro * illuminant_radiance
+  background_radiance <- Rb * illuminant_radiance
 
-  out <- list(achromatic = NA_real_, chromatic = NA_real_)
-  if (channel %in% c("both", "achromatic")) {
-    object_catch <- .viewer_brightness(
-      object_seen, lambda, species, receptor, binwidth, band,
-      "spectral_path"
-    )
-    background_catch <- .viewer_brightness(
-      background_seen, lambda, species, receptor, binwidth, band,
-      "spectral_path"
-    )
+  if (channel %in% c("both", "achromatic"))
+    brightness <- .viewer_brightness_fn(lambda, species, receptor, binwidth,
+                                        band, "spectral_path")
+  if (channel %in% c("both", "chromatic")) {
+    if (is.null(species))
+      .stop_detection(
+        "Chromatic spectral-path modelling requires a `species`.",
+        kind = "value",
+        field = "species", value = species, operation = "spectral_path"
+      )
+    jnd <- .colour_jnd_fn(lambda, species, receptor, noise, binwidth, band)
+  }
+
+  function(distance, channel) {
+    transmission <- exp(-effective_c * distance)
+    object_seen <- Lv + (object_radiance - Lv) * transmission
+    background_seen <- Lv + (background_radiance - Lv) * transmission
+    if (identical(channel, "chromatic"))
+      return(jnd(object_seen, background_seen))
+    object_catch <- brightness(object_seen)
+    background_catch <- brightness(background_seen)
     if (!is.finite(object_catch) || !is.finite(background_catch) ||
         object_catch < 0 || background_catch <= 0)
       .stop_detection(
@@ -380,22 +407,8 @@ contrast_at_distance <- function(C0, distance, Kd, kd_to_c = 1.5,
         background_catch = background_catch, species = species,
         receptor = receptor
       )
-    out$achromatic <- weber_contrast(object_catch, background_catch)
+    weber_contrast(object_catch, background_catch)
   }
-  if (channel %in% c("both", "chromatic")) {
-    if (is.null(species))
-      .stop_detection(
-        "Chromatic spectral-path modelling requires a `species`.",
-        kind = "value",
-        field = "species", value = species, operation = "spectral_path"
-      )
-    out$chromatic <- colour_jnd(
-      object_seen, background_seen, lambda = lambda, species = species,
-      receptor = receptor, noise = noise, binwidth = binwidth,
-      band = band
-    )
-  }
-  out
 }
 
 .spectral_detection_limit <- function(signal, threshold, max_distance,
@@ -608,36 +621,19 @@ detection_range <- function(object, background, illuminant, lambda, Kd,
                               max_distance) else
         list(range = NA_real_, status = "not_requested")
   } else {
-    Ro <- .spec_vals(object, lambda, "object")
-    Rb <- .spec_vals(background, lambda, "background")
-    E <- .spec_vals(illuminant, lambda, "illuminant")
-    Lv <- .spec_vals(veiling, lambda, "veiling")
-    if (!any(Lv > 0))
-      .stop_detection(
-        "`veiling` must contain at least one strictly positive value.",
-        kind = "value",
-        field = "veiling", value = Lv, operation = "detection_range"
-      )
-    if (is.null(binwidth)) binwidth <- diff(lambda)[1L]
-    illuminant_radiance <- irradiance2radiance(
-      E, geometry = geometry, solid_angle = solid_angle
+    signal_at <- .spectral_signal_fn(
+      object, background, illuminant, lambda, veiling, ceff, species,
+      receptor, noise, channel, binwidth, band, geometry, solid_angle
     )
-    signal_at <- function(distance) {
-      .spectral_signals(
-        distance, Ro * illuminant_radiance, Rb * illuminant_radiance,
-        Lv, lambda, ceff, species, receptor,
-        noise, channel, binwidth, band
-      )
-    }
     ach <- if (channel %in% c("both", "achromatic"))
       .spectral_detection_limit(
-        function(distance) signal_at(distance)$achromatic,
+        function(distance) signal_at(distance, "achromatic"),
         contrast_threshold, max_distance, as.integer(search_points),
         "achromatic"
       ) else list(range = NA_real_, status = "not_requested")
     chr <- if (channel %in% c("both", "chromatic"))
       .spectral_detection_limit(
-        function(distance) signal_at(distance)$chromatic,
+        function(distance) signal_at(distance, "chromatic"),
         jnd_threshold, max_distance, as.integer(search_points), "chromatic"
       ) else list(range = NA_real_, status = "not_requested")
   }
@@ -725,26 +721,16 @@ detectability <- function(object, background, illuminant, lambda, Kd,
       curve$chromatic <- contrast_at_distance(ic$chromatic, distances, Kd,
                                               kd_to_c, direction, beam_c)
   } else {
-    Ro <- .spec_vals(object, lambda, "object")
-    Rb <- .spec_vals(background, lambda, "background")
-    E <- .spec_vals(illuminant, lambda, "illuminant")
-    Lv <- .spec_vals(veiling, lambda, "veiling")
-    ceff <- .effective_c(Kd, kd_to_c, direction, beam_c)
-    if (is.null(binwidth)) binwidth <- diff(lambda)[1L]
-    illuminant_radiance <- irradiance2radiance(
-      E, geometry = geometry, solid_angle = solid_angle
+    signal_at <- .spectral_signal_fn(
+      object, background, illuminant, lambda, veiling,
+      .effective_c(Kd, kd_to_c, direction, beam_c), species, receptor, noise,
+      channel, binwidth, band, geometry, solid_angle
     )
-    signals <- lapply(distances, function(distance) {
-      .spectral_signals(
-        distance, Ro * illuminant_radiance, Rb * illuminant_radiance,
-        Lv, lambda, ceff, species, receptor,
-        noise, channel, binwidth, band
-      )
-    })
     if (channel %in% c("both", "achromatic"))
-      curve$achromatic <- vapply(signals, `[[`, numeric(1), "achromatic")
+      curve$achromatic <- vapply(distances, signal_at, numeric(1),
+                                 "achromatic")
     if (channel %in% c("both", "chromatic"))
-      curve$chromatic <- vapply(signals, `[[`, numeric(1), "chromatic")
+      curve$chromatic <- vapply(distances, signal_at, numeric(1), "chromatic")
   }
 
   structure(
