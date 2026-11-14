@@ -46,7 +46,13 @@ Use <code><a href="read_ocean_optics.html">read_ocean_optics</a></code> to inspe
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">from_ocean_optics</span><span class="op">(</span><span class="va">path</span>, quantity <span class="op">=</span> <span class="cn">NULL</span>, unit <span class="op">=</span> <span class="cn">NULL</span>, calibration <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">from_ocean_optics</span><span class="op">(</span></span>
+<span>  <span class="va">path</span>,</span>
+<span>  quantity <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  unit <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  calibration <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  check_pixels <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -67,6 +73,14 @@ Use <code><a href="read_ocean_optics.html">read_ocean_optics</a></code> to inspe
 
 <dt id="arg-calibration">calibration<a class="anchor" aria-label="anchor" href="#arg-calibration"></a></dt>
 <dd><p>Non-empty calibration identifier or description.</p></dd>
+
+
+<dt id="arg-check-pixels">check_pixels<a class="anchor" aria-label="anchor" href="#arg-check-pixels"></a></dt>
+<dd><p>If <code>TRUE</code> (default), error when the header's
+declared pixel count differs from the number of spectral rows. Set
+<code>FALSE</code> only for spliced or multi-spectrometer exports, whose header
+gives one detector's pixel count; the choice is recorded in the import
+provenance.</p></dd>
 
 </dl></div>
     <div class="section level2">

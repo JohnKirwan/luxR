@@ -46,7 +46,7 @@ values, including negatives, are preserved without clipping.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read_ocean_optics</span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read_ocean_optics</span><span class="op">(</span><span class="va">path</span>, check_pixels <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -55,6 +55,14 @@ values, including negatives, are preserved without clipping.</p>
 
 <dl><dt id="arg-path">path<a class="anchor" aria-label="anchor" href="#arg-path"></a></dt>
 <dd><p>Path to the Ocean Optics <code>.txt</code> file.</p></dd>
+
+
+<dt id="arg-check-pixels">check_pixels<a class="anchor" aria-label="anchor" href="#arg-check-pixels"></a></dt>
+<dd><p>If <code>TRUE</code> (default), error when the header's
+declared pixel count differs from the number of spectral rows. Set
+<code>FALSE</code> only for spliced or multi-spectrometer exports, whose header
+gives one detector's pixel count; the choice is recorded in the import
+provenance.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -71,8 +79,11 @@ values, including negatives, are preserved without clipping.</p>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Spectrometer: USB2E0034"</span>, <span class="st">"Integration Time (usec): 10000"</span>,</span></span>
 <span class="r-in"><span>             <span class="st">"Number of Pixels in Spectrum: 3"</span>, <span class="st">"&gt;&gt;&gt;&gt;&gt;Begin Spectral Data&lt;&lt;&lt;&lt;&lt;"</span>,</span></span>
 <span class="r-in"><span>             <span class="st">"400.0\t0.0012"</span>, <span class="st">"450.0\t0.0024"</span>, <span class="st">"500.0\t0.0036"</span><span class="op">)</span>, <span class="va">f</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">read_ocean_optics</span><span class="op">(</span><span class="va">f</span><span class="op">)</span><span class="op">$</span><span class="va">data</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-in"><span><span class="fu">read_ocean_optics</span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   lambda signal</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1    400 0.0012</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2    450 0.0024</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3    500 0.0036</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>

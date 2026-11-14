@@ -52,8 +52,8 @@ An S3 object of class `"lux_spectrum"`.
 
 ## Details
 
-Valid unit strings: `"W/m2/nm"`, `"W/m2/sr/nm"`, `"mW/m2/sr/nm"`,
-`"umol/m2/s/nm"`, `"mmol/m2/s/nm"`, `"mol/m2/s/nm"`,
+Valid unit strings: `"W/m2/nm"`, `"uW/cm2/nm"`, `"W/m2/sr/nm"`,
+`"mW/m2/sr/nm"`, `"umol/m2/s/nm"`, `"mmol/m2/s/nm"`, `"mol/m2/s/nm"`,
 `"umol/m2/s/sr/nm"`, `"mmol/m2/s/sr/nm"`, `"mol/m2/s/sr/nm"`,
 `"dimensionless"`.
 

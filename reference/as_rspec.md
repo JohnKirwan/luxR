@@ -26,8 +26,9 @@ as_rspec(x, ...)
   [`lux_spectrum`](https://johnkirwan.github.io/luxR/reference/lux_spectrum.md),
   or a (named) list of them — for example the output of
   [`from_trios`](https://johnkirwan.github.io/luxR/reference/from_trios.md).
-  List elements are interpolated onto the first spectrum's wavelength
-  grid before merging.
+  List elements are must share one wavelength grid (use
+  [`resample_spectrum`](https://johnkirwan.github.io/luxR/reference/resample_spectrum.md)
+  first); differing grids are an error, never silently extrapolated.
 
 - ...:
 

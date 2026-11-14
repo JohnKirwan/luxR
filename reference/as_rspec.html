@@ -68,7 +68,8 @@ optical properties, the in-water light field); pavo handles the colour space.</p
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
 <dd><p>A <code><a href="lux_spectrum.html">lux_spectrum</a></code>, or a (named) list of them — for
 example the output of <code><a href="from_trios.html">from_trios</a></code>. List elements are
-interpolated onto the first spectrum's wavelength grid before merging.</p></dd>
+must share one wavelength grid (use <code><a href="resample_spectrum.html">resample_spectrum</a></code>
+first); differing grids are an error, never silently extrapolated.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

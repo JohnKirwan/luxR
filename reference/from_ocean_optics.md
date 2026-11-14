@@ -9,7 +9,13 @@ to inspect raw or relative values.
 ## Usage
 
 ``` r
-from_ocean_optics(path, quantity = NULL, unit = NULL, calibration = NULL)
+from_ocean_optics(
+  path,
+  quantity = NULL,
+  unit = NULL,
+  calibration = NULL,
+  check_pixels = TRUE
+)
 ```
 
 ## Arguments
@@ -29,6 +35,13 @@ from_ocean_optics(path, quantity = NULL, unit = NULL, calibration = NULL)
 - calibration:
 
   Non-empty calibration identifier or description.
+
+- check_pixels:
+
+  If `TRUE` (default), error when the header's declared pixel count
+  differs from the number of spectral rows. Set `FALSE` only for spliced
+  or multi-spectrometer exports, whose header gives one detector's pixel
+  count; the choice is recorded in the import provenance.
 
 ## Value
 

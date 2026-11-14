@@ -1,11 +1,11 @@
 # Convert a lux_spectrum to a different unit
 
 Converts the spectral values in a `lux_spectrum` between energy and
-photon-flux units, or between mW and W for radiance spectra. Supported
-conversions: `"W/m2/nm"` \\\leftrightarrow\\ `"umol/m2/s/nm"` /
-`"mmol/m2/s/nm"` / `"mol/m2/s/nm"`, and the corresponding `"/sr"`
-photonic units. Energy radiance units `"W/m2/sr/nm"` and `"mW/m2/sr/nm"`
-are also interchangeable.
+photon-flux units, or between scaled energy units. Supported
+conversions: `"W/m2/nm"` / `"uW/cm2/nm"` \\\leftrightarrow\\
+`"umol/m2/s/nm"` / `"mmol/m2/s/nm"` / `"mol/m2/s/nm"`, and the
+corresponding `"/sr"` photonic units. Energy radiance units
+`"W/m2/sr/nm"` and `"mW/m2/sr/nm"` are also interchangeable.
 
 ## Usage
 

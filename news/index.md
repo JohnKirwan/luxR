@@ -4,6 +4,12 @@
 
 ### Breaking changes
 
+- [`as_rspec()`](https://johnkirwan.github.io/luxR/reference/as_rspec.md)
+  on a list of spectra now requires one shared wavelength grid and
+  raises a `luxR_value_error` otherwise; use
+  [`resample_spectrum()`](https://johnkirwan.github.io/luxR/reference/resample_spectrum.md)
+  first. It previously extended shorter spectra by repeating their end
+  values.
 - Achromatic contrast and receptor catches no longer depend on how far
   the wavelength grid extends. Previously they summed over whatever grid
   was supplied, so the same object gave a species-free Weber contrast of
@@ -179,8 +185,17 @@
   rejected.
 
 - Unit conversion is driven by one internal unit table and one pair of
-  physical constants. \## Numerical correctness These fixes change
-  returned numbers or turn silent results into errors.
+  physical constants.
+
+- New irradiance unit `"uW/cm2/nm"` (1e-2 W m^-2 nm^-1), the unit Ocean
+  Optics software writes for absolute irradiance.
+  [`read_spectrum()`](https://johnkirwan.github.io/luxR/reference/read_spectrum.md),
+  [`from_ocean_optics()`](https://johnkirwan.github.io/luxR/reference/from_ocean_optics.md),
+  [`convert_unit()`](https://johnkirwan.github.io/luxR/reference/convert_unit.md)
+  and
+  [`as_source_spct()`](https://johnkirwan.github.io/luxR/reference/as_source_spct.md)
+  accept it. \## Numerical correctness These fixes change returned
+  numbers or turn silent results into errors.
 
 - [`par_irradiance()`](https://johnkirwan.github.io/luxR/reference/par_irradiance.md),
   [`par_fraction()`](https://johnkirwan.github.io/luxR/reference/par_fraction.md),
@@ -235,6 +250,20 @@
 
 ### Bug fixes
 
+- [`read_ocean_optics()`](https://johnkirwan.github.io/luxR/reference/read_ocean_optics.md)
+  and
+  [`from_ocean_optics()`](https://johnkirwan.github.io/luxR/reference/from_ocean_optics.md)
+  now read SpectraSuite processed exports: the `Spectrometers:` line, an
+  integration time with a `(serial)` suffix (which must name that
+  spectrometer) and the `Number of Pixels in Processed Spectrum:` count,
+  which was previously not checked. OceanView’s
+  `Integration Time (sec):` is parsed and converted to microseconds; it
+  was previously dropped. A new `check_pixels` argument (default `TRUE`)
+  lets spliced or multi-spectrometer exports, whose header gives one
+  detector’s pixel count, be read on explicit request; the choice is
+  recorded in the import provenance.
+- The Shiny app’s spectral-sensitivity plot no longer extends the light
+  spectrum beyond its measured range; the curve stops at the data.
 - Functions that use bundled datasets
   ([`jerlov_Kd()`](https://johnkirwan.github.io/luxR/reference/jerlov_Kd.md),
   [`irradiance2lux()`](https://johnkirwan.github.io/luxR/reference/irradiance2lux.md),
