@@ -33,6 +33,11 @@
     `luxR_import_error`.
 - Detection and polarization errors no longer carry `random_seed`; neither
   model uses random numbers.
+- Errors from spectrum arithmetic and subsetting, unit conversion, the
+  optical-property helpers, species lookups and the pavo, photobiology and
+  colourvision bridges, previously untyped, now carry kind classes. A
+  missing suggested package (shiny, pavo, photobiology) raises
+  `luxR_dependency_error`.
 - The A2 `govardovskii_template()` now follows Govardovskii et al. (2000):
   - The α-band uses eqns 6a/6b with B = 20.85, b = 0.9101, C = -10.37,
     c = 1.1123 and D = 0.5343.

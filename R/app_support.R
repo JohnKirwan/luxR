@@ -42,8 +42,7 @@
   )
   if (!is.list(jerlov_metadata) ||
       any(!required_jerlov %in% names(jerlov_metadata))) {
-    stop("Jerlov metadata is missing required propagation context.",
-         call. = FALSE)
+    .luxr_abort("Jerlov metadata is missing required propagation context.", "internal")
   }
   range_fields <- c(
     "supported_wavelength_range_nm", "input_wavelength_range_nm",
@@ -52,8 +51,7 @@
   if (any(vapply(jerlov_metadata[range_fields], function(x) {
     !is.numeric(x) || length(x) != 2L || any(!is.finite(x)) || x[[1L]] > x[[2L]]
   }, logical(1)))) {
-    stop("Jerlov wavelength metadata must contain finite, ordered ranges.",
-         call. = FALSE)
+    .luxr_abort("Jerlov wavelength metadata must contain finite, ordered ranges.", "internal")
   }
   .validate_source_target_depths(
     reference_depth_m = reference_depth_m,
@@ -87,7 +85,7 @@
   if (!is.null(source_import)) {
     if (!is.list(source_import) ||
         any(!names(import_defaults) %in% names(source_import))) {
-      stop("Uploaded source import metadata is incomplete.", call. = FALSE)
+      .luxr_abort("Uploaded source import metadata is incomplete.", "internal")
     }
     import_defaults <- source_import[names(import_defaults)]
   }
@@ -230,15 +228,13 @@
   )
   if (!is.data.frame(metadata) || nrow(metadata) < 1L ||
       !all(required %in% names(metadata))) {
-    stop("Depth-output metadata is missing required fields.",
-         call. = FALSE)
+    .luxr_abort("Depth-output metadata is missing required fields.", "internal")
   }
   constant_fields <- setdiff(required, "target_depth_m")
   if (any(vapply(metadata[constant_fields], function(x) {
     length(unique(x)) != 1L
   }, logical(1)))) {
-    stop("Depth-output metadata contains inconsistent run-level fields.",
-         call. = FALSE)
+    .luxr_abort("Depth-output metadata contains inconsistent run-level fields.", "internal")
   }
 
   targets <- metadata$target_depth_m
@@ -291,15 +287,14 @@
 #' @noRd
 .depth_download_df <- function(summary, metadata) {
   if (!is.data.frame(summary) || !"Depth (m)" %in% names(summary)) {
-    stop("Depth summary is missing the `Depth (m)` field.", call. = FALSE)
+    .luxr_abort("Depth summary is missing the `Depth (m)` field.", "internal")
   }
   if (!is.data.frame(metadata) ||
       !"target_depth_m" %in% names(metadata) ||
       nrow(summary) != nrow(metadata) ||
       !identical(as.numeric(summary[["Depth (m)"]]),
                  as.numeric(metadata$target_depth_m))) {
-    stop("Depth summary and output metadata target depths are misaligned.",
-         call. = FALSE)
+    .luxr_abort("Depth summary and output metadata target depths are misaligned.", "internal")
   }
 
   names(metadata) <- c(

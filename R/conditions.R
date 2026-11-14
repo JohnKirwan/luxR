@@ -101,3 +101,11 @@ NULL
   }
   kind
 }
+
+# Wraps requireNamespace() so tests can mock a missing suggested package.
+.is_installed <- function(pkg) requireNamespace(pkg, quietly = TRUE)
+
+.require_suggested <- function(pkg, message) {
+  if (!.is_installed(pkg)) .luxr_abort(message, "dependency", package = pkg)
+  invisible(TRUE)
+}

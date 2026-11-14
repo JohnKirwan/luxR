@@ -45,3 +45,11 @@ jobs:
         with:
           upload-snapshots: true
           build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
+
+  conditions-guard:
+    runs-on: ubuntu-latest
+    name: typed errors only
+    steps:
+      - uses: actions/checkout@v4
+      - name: No untyped stop() or stopifnot() in R/
+        run: "! grep -rnE '\\bstop\\(\"|stopifnot\\(' R/"

@@ -26,11 +26,11 @@
 #' }
 #' @export
 run_app <- function(...) {
-  if (!requireNamespace("shiny", quietly = TRUE))
-    stop("Install shiny to use the interactive explorer:\n",
-         "  install.packages(\"shiny\")")
+  .require_suggested("shiny", paste0(
+    "Install shiny to use the interactive explorer:\n",
+    "  install.packages(\"shiny\")"))
   app_dir <- system.file("app", package = "luxR")
   if (!nzchar(app_dir))
-    stop("App directory not found. Reinstall luxR.")
+    .luxr_abort("App directory not found. Reinstall luxR.", "internal")
   invisible(shiny::runApp(app_dir, ...))
 }

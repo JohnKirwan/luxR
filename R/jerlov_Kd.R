@@ -49,8 +49,8 @@
     ))
   )
   if (length(lambda) != length(values)) {
-    stop("Internal Jerlov domain preparation received misaligned wavelengths ",
-         "and values in `", operation, "`.", call. = FALSE)
+    .luxr_abort(paste0("Internal Jerlov domain preparation received misaligned wavelengths ",
+                       "and values in `", operation, "`."), "internal")
   }
   supported <- .jerlov_dataset_context()$supported_wavelength_range_nm
   input_range <- range(lambda)

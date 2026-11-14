@@ -612,3 +612,34 @@ test_that("the app sources carry no un-superscripted squared metres", {
   expect_false(any(grepl("/ m\u00b2 /", display, fixed = TRUE)),
                info = "solidus unit style left in the app; use exponents")
 })
+
+test_that("broken app metadata raises internal errors", {
+  meta <- function(...) {
+    args <- list(source_condition = "clear_noon", reference_depth_m = 0,
+                 reference_medium = "air", water_type = "II",
+                 target_depth_m = c(0, 10),
+                 jerlov_metadata = jerlov_test_metadata("II"))
+    dots <- list(...)
+    args[names(dots)] <- dots
+    do.call(luxR:::.depth_output_metadata, args)
+  }
+  expect_error(meta(jerlov_metadata = list()), "propagation context",
+               class = "luxR_internal_error")
+  bad <- jerlov_test_metadata("II")
+  bad$supported_wavelength_range_nm <- c(700, 350)
+  expect_error(meta(jerlov_metadata = bad), "ordered ranges",
+               class = "luxR_internal_error")
+  expect_error(meta(source_import = list(a = 1)), "incomplete",
+               class = "luxR_internal_error")
+  expect_error(luxR:::.format_depth_output_metadata(data.frame()),
+               "missing required fields", class = "luxR_internal_error")
+  md <- meta()
+  md$jerlov_type[2] <- "IA"
+  expect_error(luxR:::.format_depth_output_metadata(md), "inconsistent",
+               class = "luxR_internal_error")
+  expect_error(luxR:::.depth_download_df(data.frame(), meta()), "Depth \\(m\\)",
+               class = "luxR_internal_error")
+  summary <- data.frame(`Depth (m)` = c(1, 2), check.names = FALSE)
+  expect_error(luxR:::.depth_download_df(summary, meta()), "misaligned",
+               class = "luxR_internal_error")
+})

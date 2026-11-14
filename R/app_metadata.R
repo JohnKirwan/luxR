@@ -17,10 +17,17 @@
     stringsAsFactors = FALSE
   )
 
+  .validate_app_tabs(tabs)
+  tabs
+}
+
+.validate_app_tabs <- function(tabs) {
   if (anyDuplicated(tabs$id) || anyDuplicated(tabs$title) ||
       any(!nzchar(tabs$id)) || any(!nzchar(tabs$title))) {
-    stop("The Shiny tab registry must contain unique, non-empty IDs and titles.",
-         call. = FALSE)
+    .luxr_abort(
+      "The Shiny tab registry must contain unique, non-empty IDs and titles.",
+      "internal"
+    )
   }
-  tabs
+  invisible(tabs)
 }

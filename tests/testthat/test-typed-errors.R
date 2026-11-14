@@ -114,3 +114,68 @@ test_that("broken bundled provenance is a data error", {
   expect_error(luxR:::.bundled_source_import(list()),
                "provenance is incomplete", class = "luxR_data_error")
 })
+
+test_that("missing suggested packages raise dependency errors", {
+  local_mocked_bindings(.is_installed = function(pkg) FALSE)
+  expect_error(run_app(), "install.packages", class = "luxR_dependency_error")
+  expect_error(as_rspec(irr), "'pavo'", class = "luxR_dependency_error")
+  expect_error(as_source_spct(irr), "'photobiology'",
+               class = "luxR_dependency_error")
+})
+
+test_that("colourvision bridge errors are typed", {
+  expect_error(luxR:::.check_cv_colname(1), class = "luxR_type_error")
+  expect_error(luxR:::.check_cv_colname("wl"), "reserved",
+               class = "luxR_value_error")
+  expect_error(as_colourvision(list()), "non-empty list",
+               class = "luxR_value_error")
+  expect_error(as_colourvision(list(1)), "non-empty list",
+               class = "luxR_type_error")
+  expect_error(as_colourvision(list(wl = irr)), "reserved",
+               class = "luxR_value_error")
+  expect_error(as_colourvision(list(a = irr, a = irr)), "must be unique",
+               class = "luxR_value_error")
+  shifted <- lux_spectrum(rep(1, 31), lam + 1, "irradiance", "W/m2/nm")
+  expect_error(as_colourvision(list(a = irr, b = shifted)), "wavelength grid",
+               class = "luxR_grid_error")
+  expect_error(species_sensitivity_matrix("Homo sapiens", lambda = "a"),
+               class = "luxR_type_error")
+  expect_error(species_sensitivity_matrix("Homo sapiens", lambda = 400),
+               "length >= 2", class = "luxR_value_error")
+  expect_error(species_sensitivity_matrix("Homo sapiens", lambda = c(500, 400)),
+               "strictly increasing", class = "luxR_grid_error")
+})
+
+test_that("pavo bridge rejects bad lists with typed errors", {
+  skip_if_not_installed("pavo")
+  expect_error(as_rspec(list()), "non-empty list", class = "luxR_value_error")
+  expect_error(as_rspec(list(1)), "non-empty list", class = "luxR_type_error")
+})
+
+test_that("photobiology bridge errors are typed", {
+  skip_if_not_installed("photobiology")
+  rad <- lux_spectrum(rep(1, 31), lam, "radiance", "W/m2/sr/nm")
+  refl <- lux_spectrum(rep(0.5, 31), lam, "reflectance", "dimensionless")
+  expect_error(as_source_spct(rad), "requires an irradiance",
+               class = "luxR_unit_error")
+  expect_error(as_source_spct(list()), "non-empty list",
+               class = "luxR_value_error")
+  expect_error(as_source_spct(list(1)), "non-empty list",
+               class = "luxR_type_error")
+  expect_error(as_reflector_spct(irr), "requires a reflectance",
+               class = "luxR_unit_error")
+  expect_error(as_reflector_spct(refl), "is required",
+               class = "luxR_value_error")
+  expect_error(as_reflector_spct(refl, Rfr.type = "x"), "either",
+               class = "luxR_value_error")
+  expect_error(as_reflector_spct(list()), "non-empty list",
+               class = "luxR_value_error")
+})
+
+test_that("broken internal invariants are internal errors", {
+  expect_error(luxR:::.prepare_jerlov_domain(c(400, 500), 1, operation = "x"),
+               "misaligned", class = "luxR_internal_error")
+  tabs <- data.frame(id = c("a", "a"), title = c("x", "y"))
+  expect_error(luxR:::.validate_app_tabs(tabs), "unique",
+               class = "luxR_internal_error")
+})

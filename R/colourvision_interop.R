@@ -41,11 +41,9 @@ as_colourvision <- function(x, ...) UseMethod("as_colourvision")
 
 .check_cv_colname <- function(name) {
   if (!is.character(name) || length(name) != 1 || !nzchar(name))
-    stop("as_colourvision(): column name must be a single non-empty character string.",
-         call. = FALSE)
+    .luxr_abort("as_colourvision(): column name must be a single non-empty character string.", if (is.character(name)) "value" else "type")
   if (name == "wl")
-    stop("as_colourvision(): \"wl\" is reserved for the wavelength column; rename that spectrum.",
-         call. = FALSE)
+    .luxr_abort("as_colourvision(): \"wl\" is reserved for the wavelength column; rename that spectrum.", "value")
   name
 }
 
@@ -68,8 +66,8 @@ as_colourvision.lux_spectrum <- function(x, name = NULL, ...) {
 as_colourvision.list <- function(x, ...) {
   if (length(x) == 0 ||
       !all(vapply(x, inherits, logical(1), "lux_spectrum")))
-    stop("as_colourvision() requires a non-empty list of lux_spectrum objects.",
-         call. = FALSE)
+    .luxr_abort("as_colourvision() requires a non-empty list of lux_spectrum objects.",
+                if (length(x) == 0) "value" else "type")
   nms <- names(x)
   if (is.null(nms)) nms <- rep("", length(x))
   blank <- !nzchar(nms)
@@ -77,26 +75,23 @@ as_colourvision.list <- function(x, ...) {
 
   # Validate names: no "wl" (reserved), no duplicates
   if (any(nms == "wl"))
-    stop("as_colourvision(): \"wl\" is reserved for the wavelength column; ",
-         "rename that spectrum.",
-         call. = FALSE)
+    .luxr_abort(paste0("as_colourvision(): \"wl\" is reserved for the wavelength column; ",
+                       "rename that spectrum."), "value")
   dups <- duplicated(nms)
   if (any(dups)) {
     dup_names <- paste0("\"", unique(nms[dups]), "\"", collapse = ", ")
-    stop("as_colourvision(): spectrum names must be unique; duplicated: ",
-         dup_names, ".",
-         call. = FALSE)
+    .luxr_abort(paste0("as_colourvision(): spectrum names must be unique; duplicated: ",
+                       dup_names, "."), "value")
   }
 
   grid <- x[[1]]$lambda
   df <- data.frame(wl = grid)
   for (i in seq_along(x)) {
     if (!identical(x[[i]]$lambda, grid))
-      stop("as_colourvision() requires every spectrum to share the first ",
-           "spectrum's wavelength grid; element ", i, " (\"", nms[i], "\") ",
-           "differs. Resample explicitly (e.g. resample_spectrum()) before ",
-           "conversion rather than relying on silent extrapolation.",
-           call. = FALSE)
+      .luxr_abort(paste0("as_colourvision() requires every spectrum to share the first ",
+                         "spectrum's wavelength grid; element ", i, " (\"", nms[i], "\") ",
+                         "differs. Resample explicitly (e.g. resample_spectrum()) before ",
+                         "conversion rather than relying on silent extrapolation."), "grid")
     df[[nms[i]]] <- x[[i]]$E
   }
   df
@@ -145,10 +140,9 @@ species_sensitivity_matrix <- function(species,
 
   if (!is.numeric(lambda) || length(lambda) < 2L ||
       anyNA(lambda) || any(!is.finite(lambda)))
-    stop("`lambda` must be a finite numeric vector of length >= 2.",
-         call. = FALSE)
+    .luxr_abort("`lambda` must be a finite numeric vector of length >= 2.", if (is.numeric(lambda)) "value" else "type")
   if (any(diff(lambda) <= 0))
-    stop("`lambda` must be strictly increasing and unique.", call. = FALSE)
+    .luxr_abort("`lambda` must be strictly increasing and unique.", "grid")
 
   # Same receptor resolution and templates colour_jnd() uses, so a colourvision
   # model on this matrix reproduces luxR's quantum catches.
@@ -159,8 +153,7 @@ species_sensitivity_matrix <- function(species,
   )
 
   if (any(recs$receptor == "wl"))
-    stop("species_sensitivity_matrix(): a receptor named \"wl\" collides with the reserved wavelength column.",
-         call. = FALSE)
+    .luxr_abort("species_sensitivity_matrix(): a receptor named \"wl\" collides with the reserved wavelength column.", "data")
 
   df <- data.frame(wl = lambda)
   for (i in seq_len(nrow(recs))) {
