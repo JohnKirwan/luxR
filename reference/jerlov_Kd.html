@@ -78,8 +78,9 @@ wavelength range.</p></dd>
 
 <dt id="arg-extrapolation">extrapolation<a class="anchor" aria-label="anchor" href="#arg-extrapolation"></a></dt>
 <dd><p>Out-of-range policy. The default <code>"error"</code>
-raises a <code>luxR_jerlov_range_error</code>. Set to <code>"constant"</code> to
-explicitly extend the nearest endpoint value; the choice is recorded in
+raises a <code>luxR_value_error</code> (see <a href="luxR-conditions.html">luxR-conditions</a>). Set to
+<code>"constant"</code> to explicitly extend the nearest endpoint value; the
+choice is recorded in
 the returned vector's <code>"luxR.jerlov"</code> attribute.</p></dd>
 
 </dl></div>

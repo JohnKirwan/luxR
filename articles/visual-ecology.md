@@ -48,7 +48,7 @@ x0m_W
     ##    import: 5952acfab4a04ea1b02eb085e6a768d5
     ##    import: naples-legacy-v1
     ##    import: 0.1.1
-    ##    import: d76bc16838cfb4e55ec2edb97e69570042697adf
+    ##    import: 3ec3d85329d9e69b9b0531fbe8d127a1604968cc
     ##    import: parse canonical processed snapshot; validate schema grid and non-negative irradiance
 
 ``` r
@@ -405,9 +405,9 @@ knitr::kable(cmp, digits = c(0, 6, 6, 14),
 
 |                | Species        |  luxR ΔS |  pavo ΔS | \|difference\| |
 |:---------------|:---------------|---------:|---------:|---------------:|
-| Homo sapiens   | Homo sapiens   | 1.780130 | 1.780130 |          5e-14 |
-| Apis mellifera | Apis mellifera | 0.943538 | 0.943538 |          3e-14 |
-| Danio rerio    | Danio rerio    | 2.422568 | 2.422568 |          2e-14 |
+| Homo sapiens   | Homo sapiens   | 1.780130 | 1.780130 |          3e-14 |
+| Apis mellifera | Apis mellifera | 0.943538 | 0.943538 |          4e-14 |
+| Danio rerio    | Danio rerio    | 2.422568 | 2.422568 |          1e-14 |
 
 The agreement is a useful regression guard as well as a check on
 correctness: `tests/testthat/test-pavo-validation.R` asserts it

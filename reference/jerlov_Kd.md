@@ -35,10 +35,12 @@ jerlov_Kd(
 
 - extrapolation:
 
-  Out-of-range policy. The default `"error"` raises a
-  `luxR_jerlov_range_error`. Set to `"constant"` to explicitly extend
-  the nearest endpoint value; the choice is recorded in the returned
-  vector's `"luxR.jerlov"` attribute.
+  Out-of-range policy. The default `"error"` raises a `luxR_value_error`
+  (see
+  [luxR-conditions](https://johnkirwan.github.io/luxR/reference/luxR-conditions.md)).
+  Set to `"constant"` to explicitly extend the nearest endpoint value;
+  the choice is recorded in the returned vector's `"luxR.jerlov"`
+  attribute.
 
 ## Value
 

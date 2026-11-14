@@ -34,8 +34,9 @@ broadcast; incompatible non-scalar lengths are rejected.
 All inputs must be finite numeric vectors. A Stokes vector is physical
 only when \\I \> 0\\ and \\\sqrt{Q^2 + U^2 + V^2} \le I\\. Values
 exceeding this bound by more than 64 machine epsilons are rejected with
-a `luxR_polarization_physicality_error`. Values within that round-off
-tolerance are returned as exactly one.
+a `luxR_value_error` (see
+[luxR-conditions](https://johnkirwan.github.io/luxR/reference/luxR-conditions.md)).
+Values within that round-off tolerance are returned as exactly one.
 
 ## See also
 

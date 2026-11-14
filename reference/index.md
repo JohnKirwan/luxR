@@ -7,6 +7,20 @@ Package overview and the interactive Shiny explorer.
 - [`luxR-package`](https://johnkirwan.github.io/luxR/reference/luxR-package.md)
   [`luxR`](https://johnkirwan.github.io/luxR/reference/luxR-package.md)
   : luxR: Underwater Light Analysis and Visual Ecology
+- [`luxR-conditions`](https://johnkirwan.github.io/luxR/reference/luxR-conditions.md)
+  [`luxR_error`](https://johnkirwan.github.io/luxR/reference/luxR-conditions.md)
+  [`luxR_import_error`](https://johnkirwan.github.io/luxR/reference/luxR-conditions.md)
+  [`luxR_type_error`](https://johnkirwan.github.io/luxR/reference/luxR-conditions.md)
+  [`luxR_value_error`](https://johnkirwan.github.io/luxR/reference/luxR-conditions.md)
+  [`luxR_dimension_error`](https://johnkirwan.github.io/luxR/reference/luxR-conditions.md)
+  [`luxR_grid_error`](https://johnkirwan.github.io/luxR/reference/luxR-conditions.md)
+  [`luxR_unit_error`](https://johnkirwan.github.io/luxR/reference/luxR-conditions.md)
+  [`luxR_numerical_error`](https://johnkirwan.github.io/luxR/reference/luxR-conditions.md)
+  [`luxR_format_error`](https://johnkirwan.github.io/luxR/reference/luxR-conditions.md)
+  [`luxR_data_error`](https://johnkirwan.github.io/luxR/reference/luxR-conditions.md)
+  [`luxR_dependency_error`](https://johnkirwan.github.io/luxR/reference/luxR-conditions.md)
+  [`luxR_internal_error`](https://johnkirwan.github.io/luxR/reference/luxR-conditions.md)
+  : luxR error conditions
 - [`run_app()`](https://johnkirwan.github.io/luxR/reference/run_app.md)
   : Launch the luxR Shiny explorer.
 
