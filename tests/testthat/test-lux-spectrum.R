@@ -562,7 +562,7 @@ test_that("irradiance functions give the same result for W/m2/nm and uW/cm2/nm",
   expect_equal(xu$E, xW$E * 100)
   K <- rep(0.1, length(xW$lambda))
   for (f in list(par_fraction, scotopic_lux, irradiance2lux, par_irradiance,
-                 function(x) W2mol_spec_irradiance(x)$E,
+                 function(x) convert_unit(x, "umol/m2/s/nm")$E,
                  function(x) band_irradiance(x, K, depths = c(0, 5)))) {
     expect_equal(f(xu), f(xW))
   }

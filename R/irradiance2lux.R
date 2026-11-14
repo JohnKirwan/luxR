@@ -32,8 +32,7 @@
 #' @param lambda Wavelength in nm (not needed for \code{lux_spectrum}).
 #' @param photonic Logical; if \code{TRUE}, input is in photon or molar units
 #'   — specify which via \code{molar_unit}. Note: \code{photonic = TRUE} means
-#'   raw photon counts only in \code{\link{par_irradiance}}, and molar units
-#'   only in \code{\link{n2W_spec_irradiance}}.
+#'   raw photon counts only in \code{\link{par_irradiance}}.
 #' @param molar_unit If photonic, unit string such as \code{"umol"}. Defaults to
 #'   \code{"photons"}.
 #' @param total Logical; sum per-bin values into a scalar. Defaults to TRUE.
@@ -240,10 +239,13 @@ irradiance2lux.numeric <- function(irradiance, lambda,
             signif(min(LEF_W), 3), " - ", signif(max(LEF_W), 3),
             " (", nrow(LEF), " bins)")
 
-  if (isTRUE(photonic))
-    irradiance <- n2W_spec_irradiance(irradiance, lambda,
-                                      photonic   = (molar_unit != "photons"),
-                                      molar_unit = molar_unit)
+  if (isTRUE(photonic)) {
+    .validate_scalar_character(molar_unit, "molar_unit",
+                               list(operation = "irradiance2lux"))
+    if (molar_unit != "photons")
+      irradiance <- mol2photon_FUN(irradiance, molar_unit)
+    irradiance <- photon2W(irradiance, lambda)
+  }
 
   lx <- irradiance2lux_FUN(
     W_spec_irradiance = irradiance,

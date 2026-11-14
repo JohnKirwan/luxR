@@ -37,8 +37,6 @@ test_that("lux_spectrum.R: subsetting, arithmetic and conversion are typed", {
 })
 
 test_that("converters.R errors are typed", {
-  expect_error(wavelength_in_medium(500, n = 0.5), "`n` must be >= 1",
-               class = "luxR_value_error")
   expect_error(reflectance_to_radiance(c(0.5, 0.5), 1, 500),
                "same length", class = "luxR_dimension_error")
   expect_error(reflectance_to_radiance(1.5, 1, 500), "\\[0, 1\\]",
@@ -59,11 +57,6 @@ test_that("unit, photon and molar conversions raise unit errors", {
   expect_error(unit_label(1), class = "luxR_type_error")
   expect_error(unit_label(NA_character_), class = "luxR_value_error")
   expect_error(unit_label("furlongs"), "controlled vocabulary",
-               class = "luxR_unit_error")
-  expect_error(n2W_spec_irradiance(irr), "requires a photonic unit",
-               class = "luxR_unit_error")
-  umol <- convert_unit(irr, "umol/m2/s/nm")
-  expect_error(W2mol_spec_irradiance(umol), "energy-based unit",
                class = "luxR_unit_error")
   expect_error(luxR:::mol2photon_FUN(1, "pmol"), "Unrecognised molar_unit",
                class = "luxR_unit_error")

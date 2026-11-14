@@ -34,10 +34,9 @@
 #'   W m\eqn{^{-2}} nm\eqn{^{-1}}. If \code{TRUE}, input is in \emph{raw}
 #'   photon counts (photons m\eqn{^{-2}} s\eqn{^{-1}} nm\eqn{^{-1}}), not
 #'   molar units. For molar-unit (µmol/m²/s/nm) input, either wrap in a
-#'   \code{\link{lux_spectrum}} or convert to W/m²/nm first with
-#'   \code{\link{n2W_spec_irradiance}}. Note: \code{photonic = TRUE} means
-#'   molar units in \code{\link{n2W_spec_irradiance}} and photon-or-molar
-#'   units in \code{\link{irradiance2lux}}.
+#'   \code{\link{lux_spectrum}} or convert it with \code{\link{convert_unit}}
+#'   first. Note: \code{photonic = TRUE} means photon-or-molar units in
+#'   \code{\link{irradiance2lux}}.
 #' @param binwidth   Bin width in nm. Inferred from \code{lambda} if
 #'   \code{NULL}; if supplied it must equal the wavelength spacing.
 #' @return Scalar PAR irradiance in µmol photons m\eqn{^{-2}} s\eqn{^{-1}}.

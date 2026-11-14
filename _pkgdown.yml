@@ -42,12 +42,7 @@ reference:
     contents:
       - photon2W
       - W2photon
-      - n2W_spec_irradiance
-      - W2mol_spec_irradiance
       - reflectance_to_radiance
-      - wavelength_in_medium
-      - ft2m
-      - m2ft
 
   - title: "Photometric quantities"
     desc: "Compute illuminance and PAR from spectral irradiance."

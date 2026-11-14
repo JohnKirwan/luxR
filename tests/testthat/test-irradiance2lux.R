@@ -273,3 +273,20 @@ test_that("photonic irradiance spectra are converted to energy before integratio
                  tolerance = 1e-10)
   }
 })
+
+test_that("photonic irradiance2lux rejects a molar_unit that is not one string", {
+  for (bad in list(NA_character_, NULL, c("umol", "mol"), 1)) {
+    expect_error(
+      irradiance2lux(Naples$depth_0m, Naples$wv, photonic = TRUE,
+                     molar_unit = bad),
+      class = "luxR_type_error"
+    )
+  }
+  err <- tryCatch(
+    irradiance2lux(Naples$depth_0m, Naples$wv, photonic = TRUE,
+                   molar_unit = NA_character_),
+    luxR_type_error = function(e) e
+  )
+  expect_equal(err$field, "molar_unit")
+  expect_equal(err$context$operation, "irradiance2lux")
+})

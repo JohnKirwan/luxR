@@ -22,24 +22,6 @@ test_that("photon2W and W2photon are vectorised", {
   expect_equal(W2photon(W, lam), n, tolerance = 1e-10)
 })
 
-# ---- ft2m / m2ft --------------------------------------------------------
-
-test_that("ft2m and m2ft are exact inverses", {
-  expect_equal(m2ft(ft2m(100)), 100, tolerance = 1e-10)
-  expect_equal(ft2m(m2ft(30)),  30,  tolerance = 1e-10)
-})
-
-test_that("ft2m(1) equals 0.3048", {
-  expect_equal(ft2m(1), 0.3048)
-})
-
-test_that("ft2m and m2ft are vectorised and pass through NA", {
-  x <- c(10, NA, 30)
-  expect_true(is.na(ft2m(x)[2]))
-  expect_true(is.na(m2ft(x)[2]))
-  expect_length(ft2m(x), 3)
-})
-
 # ---- scotopic_lux -------------------------------------------------------
 
 test_that("scotopic_lux is silent by default", {
@@ -261,27 +243,6 @@ test_that("broadband2spectrum requires an explicit out-of-range policy", {
   extension_metadata <- attr(extended, "luxR.assumption")$jerlov
   expect_identical(extension_metadata$extrapolation, "constant")
   expect_true(extension_metadata$extrapolated)
-})
-
-# ---- wavelength_in_medium --------------------------------------------------
-
-test_that("wavelength_in_medium: seawater (n=1.336) shortens 500 nm correctly", {
-  expect_equal(wavelength_in_medium(500, n = 1.336), 500 / 1.336, tolerance = 1e-10)
-})
-
-test_that("wavelength_in_medium: n=1 (vacuum) is identity", {
-  lam <- c(400, 500, 600)
-  expect_equal(wavelength_in_medium(lam, n = 1), lam)
-})
-
-test_that("wavelength_in_medium: vectorised over lambda", {
-  lam    <- c(400, 500, 600)
-  result <- wavelength_in_medium(lam, n = 1.5)
-  expect_equal(result, lam / 1.5, tolerance = 1e-10)
-})
-
-test_that("wavelength_in_medium: errors when n < 1", {
-  expect_error(wavelength_in_medium(500, n = 0.9), "n.*must be")
 })
 
 test_that("broadband2spectrum rejects irregular grids for every unit", {

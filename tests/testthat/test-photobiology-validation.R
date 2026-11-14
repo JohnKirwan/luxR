@@ -138,12 +138,10 @@ test_that("Naples photometry matches photobiology after energy conversion", {
   keep <- Naples$wv >= 380 & Naples$wv <= 780
   lambda <- Naples$wv[keep]
   photon_irradiance <- Naples$depth_5m[keep]
-  energy_irradiance <- n2W_spec_irradiance(
-    photon_irradiance,
-    lambda,
-    photonic = TRUE,
-    molar_unit = "umol"
-  )
+  energy_irradiance <- convert_unit(
+    lux_spectrum(photon_irradiance, lambda, "irradiance", "umol/m2/s/nm"),
+    "W/m2/nm"
+  )$E
 
   expect_equal(
     irradiance2lux(
