@@ -134,24 +134,21 @@
 }
 
 # Viewer "brightness" (achromatic channel) of a radiance spectrum: weighted
-# catch of a validated achromatic channel, or total photon radiance when no
-# species model is requested.
-.viewer_brightness <- function(L, lambda, species, receptor, binwidth) {
+# catch of a validated achromatic channel over the visual `band`, or photon
+# radiance over 400-700 nm (PAR) when no species model is requested. Fixed
+# bands keep the result independent of the grid's extent.
+.viewer_brightness <- function(L, lambda, species, receptor, binwidth, band,
+                               operation) {
   if (is.null(species))
-    return(sum(W2photon(L, lambda) * binwidth))
+    return(sum(W2photon(L, lambda) *
+                 .band_widths(lambda, binwidth, 400, 700, operation)))
   rows <- .default_channel_receptors(
     species = species,
     channel_role = "achromatic",
     receptor = receptor
   )
-  weights <- attr(rows, "channel_weights")
-  lam_s <- seq(300, 750, by = 1)
-  catches <- vapply(seq_len(nrow(rows)), function(i) {
-    S <- govardovskii_template(lam_s, rows$lambda_max[i], rows$chromophore[i])
-    quantum_catch(L, lambda, S, input_unit = "W/m2/nm", total = TRUE,
-                  binwidth = binwidth)
-  }, numeric(1))
-  sum(catches * weights)
+  sum(.receptor_catches(L, lambda, rows, binwidth, band, operation) *
+        attr(rows, "channel_weights"))
 }
 
 
@@ -175,8 +172,8 @@
 #' @param species Species name in \code{species_sensitivities}. Required for the
 #'   chromatic channel. For the achromatic channel, a species must have a cited
 #'   default in \code{\link{species_channels}}. If \code{NULL}, achromatic
-#'   brightness is explicitly treated as total photon radiance without a species
-#'   visual model.
+#'   brightness is photon radiance over 400--700 nm (PAR) without a species
+#'   visual model; the \code{lambda} bins must cover 400--700 nm.
 #' @param receptor Receptor class(es) to include. Default \code{NULL} uses the
 #'   complete validated default for each requested species channel. An explicit
 #'   selection must be valid for every requested channel.
@@ -185,6 +182,14 @@
 #' @param channel  \code{"both"} (default), \code{"achromatic"}, or
 #'   \code{"chromatic"}.
 #' @param binwidth Bin width in nm; inferred from \code{lambda} if \code{NULL}.
+#' @param band Visual band \code{c(lower, upper)} in nm over which receptor
+#'   quantum catches are integrated. Default \code{c(300, 700)}. A fixed band
+#'   makes the result independent of how far the \code{lambda} grid extends;
+#'   the grid's bins must cover it (a typed \code{luxR_grid_error} otherwise),
+#'   and bins straddling an edge count only their in-band width. Narrow it
+#'   explicitly when the light field is shorter, e.g. \code{c(350, 700)} for a
+#'   Jerlov-propagated spectrum; catch below the band is then excluded.
+#'   Used only with a \code{species}; see \code{\link{colour_jnd}}.
 #' @return A list with elements \code{achromatic} (Weber contrast) and
 #'   \code{chromatic} (\eqn{\Delta S} in JNDs); unrequested channels are
 #'   \code{NA}.
@@ -203,7 +208,7 @@
 inherent_contrast <- function(object, background, illuminant, lambda,
                               species = NULL, receptor = NULL, noise = 0.05,
                               channel = c("both", "achromatic", "chromatic"),
-                              binwidth = NULL) {
+                              binwidth = NULL, band = c(300, 700)) {
   channel <- match.arg(channel)
   .validate_detection_grid(lambda, "inherent_contrast")
   widths <- diff(lambda)
@@ -240,8 +245,10 @@ inherent_contrast <- function(object, background, illuminant, lambda,
 
   out <- list(achromatic = NA_real_, chromatic = NA_real_)
   if (channel %in% c("both", "achromatic")) {
-    Bo <- .viewer_brightness(Lo, lambda, species, receptor, binwidth)
-    Bb <- .viewer_brightness(Lb, lambda, species, receptor, binwidth)
+    Bo <- .viewer_brightness(Lo, lambda, species, receptor, binwidth,
+                             band, "inherent_contrast")
+    Bb <- .viewer_brightness(Lb, lambda, species, receptor, binwidth,
+                             band, "inherent_contrast")
     if (!is.finite(Bo) || !is.finite(Bb) || Bo < 0 || Bb <= 0)
       .stop_detection(
         paste0(
@@ -263,7 +270,7 @@ inherent_contrast <- function(object, background, illuminant, lambda,
       )
     out$chromatic <- colour_jnd(Lo, Lb, lambda = lambda, species = species,
                                 receptor = receptor, noise = noise,
-                                binwidth = binwidth)
+                                binwidth = binwidth, band = band)
   }
   out
 }
@@ -345,7 +352,8 @@ contrast_at_distance <- function(C0, distance, Kd, kd_to_c = 1.5,
 
 .spectral_signals <- function(distance, object_radiance, background_radiance,
                               veiling_radiance, lambda, effective_c, species,
-                              receptor, noise, channel, binwidth) {
+                              receptor, noise, channel, binwidth,
+                              band) {
   transmission <- exp(-effective_c * distance)
   object_seen <- veiling_radiance +
     (object_radiance - veiling_radiance) * transmission
@@ -355,10 +363,12 @@ contrast_at_distance <- function(C0, distance, Kd, kd_to_c = 1.5,
   out <- list(achromatic = NA_real_, chromatic = NA_real_)
   if (channel %in% c("both", "achromatic")) {
     object_catch <- .viewer_brightness(
-      object_seen, lambda, species, receptor, binwidth
+      object_seen, lambda, species, receptor, binwidth, band,
+      "spectral_path"
     )
     background_catch <- .viewer_brightness(
-      background_seen, lambda, species, receptor, binwidth
+      background_seen, lambda, species, receptor, binwidth, band,
+      "spectral_path"
     )
     if (!is.finite(object_catch) || !is.finite(background_catch) ||
         object_catch < 0 || background_catch <= 0)
@@ -380,7 +390,8 @@ contrast_at_distance <- function(C0, distance, Kd, kd_to_c = 1.5,
       )
     out$chromatic <- colour_jnd(
       object_seen, background_seen, lambda = lambda, species = species,
-      receptor = receptor, noise = noise, binwidth = binwidth
+      receptor = receptor, noise = noise, binwidth = binwidth,
+      band = band
     )
   }
   out
@@ -510,7 +521,7 @@ detection_range <- function(object, background, illuminant, lambda, Kd,
                             search_points = 1001L,
                             geometry = c("lambertian", "scalar", "collimated",
                                          "custom"),
-                            solid_angle = NULL) {
+                            solid_angle = NULL, band = c(300, 700)) {
   channel   <- match.arg(channel)
   direction <- match.arg(direction)
   model <- match.arg(model)
@@ -583,7 +594,8 @@ detection_range <- function(object, background, illuminant, lambda, Kd,
 
   C0 <- inherent_contrast(object, background, illuminant, lambda,
                           species = species, receptor = receptor, noise = noise,
-                          channel = channel, binwidth = binwidth)
+                          channel = channel, binwidth = binwidth,
+                          band = band)
 
   if (identical(model, "scalar_heuristic")) {
     ach <- if (channel %in% c("both", "achromatic"))
@@ -613,7 +625,7 @@ detection_range <- function(object, background, illuminant, lambda, Kd,
       .spectral_signals(
         distance, Ro * illuminant_radiance, Rb * illuminant_radiance,
         Lv, lambda, ceff, species, receptor,
-        noise, channel, binwidth
+        noise, channel, binwidth, band
       )
     }
     ach <- if (channel %in% c("both", "achromatic"))
@@ -676,7 +688,7 @@ detectability <- function(object, background, illuminant, lambda, Kd,
                           search_points = 1001L,
                           geometry = c("lambertian", "scalar", "collimated",
                                        "custom"),
-                          solid_angle = NULL) {
+                          solid_angle = NULL, band = c(300, 700)) {
   channel   <- match.arg(channel)
   direction <- match.arg(direction)
   model <- match.arg(model)
@@ -684,7 +696,8 @@ detectability <- function(object, background, illuminant, lambda, Kd,
 
   ic <- inherent_contrast(object, background, illuminant, lambda,
                           species = species, receptor = receptor, noise = noise,
-                          channel = channel, binwidth = binwidth)
+                          channel = channel, binwidth = binwidth,
+                          band = band)
   dr <- detection_range(object, background, illuminant, lambda, Kd = Kd,
                         kd_to_c = kd_to_c, species = species, receptor = receptor,
                         channel = channel, contrast_threshold = contrast_threshold,
@@ -693,7 +706,7 @@ detectability <- function(object, background, illuminant, lambda, Kd,
                         model = model, veiling = veiling,
                         max_distance = max_distance,
                         search_points = search_points, geometry = geometry,
-                        solid_angle = solid_angle)
+                        solid_angle = solid_angle, band = band)
 
   if (is.null(distances)) {
     rmax <- suppressWarnings(max(c(dr$achromatic, dr$chromatic), na.rm = TRUE))
@@ -724,7 +737,7 @@ detectability <- function(object, background, illuminant, lambda, Kd,
       .spectral_signals(
         distance, Ro * illuminant_radiance, Rb * illuminant_radiance,
         Lv, lambda, ceff, species, receptor,
-        noise, channel, binwidth
+        noise, channel, binwidth, band
       )
     })
     if (channel %in% c("both", "achromatic"))

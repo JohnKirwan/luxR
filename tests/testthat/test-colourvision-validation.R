@@ -41,6 +41,11 @@ make_stimuli <- function(lam) {
   list(s1 = s1, s2 = s2)
 }
 
+# colour_jnd() integrates over its 300-700 nm band, clipping the edge bins of
+# a 1 nm grid to their in-band width. Catches are linear in the stimulus, so
+# weighting the stimulus the same way makes the comparator integrate that band.
+in_band <- function(s, lam) s * pmax(0, pmin(700, lam + 0.5) - pmax(300, lam - 0.5))
+
 test_that("colour_jnd matches colourvision RNLmodel across receptor counts", {
   skip_if_not_installed("colourvision")
   lam <- 300:700                       # colourvision's default nm grid
@@ -48,7 +53,7 @@ test_that("colour_jnd matches colourvision RNLmodel across receptor counts", {
   w   <- 0.05
   for (sp in c("Homo sapiens", "Apis mellifera", "Danio rerio")) {
     dl <- colour_jnd(st$s1, st$s2, lambda = lam, species = sp, noise = w)
-    dc <- cv_dS(st$s1, st$s2, lam, sp, w)
+    dc <- cv_dS(in_band(st$s1, lam), in_band(st$s2, lam), lam, sp, w)
     expect_equal(dl, dc, tolerance = 1e-6, info = paste("species:", sp))
   }
 })
@@ -59,6 +64,6 @@ test_that("colour_jnd matches colourvision under a different Weber fraction", {
   st  <- make_stimuli(lam)
   w   <- 0.02
   dl <- colour_jnd(st$s1, st$s2, lambda = lam, species = "Homo sapiens", noise = w)
-  dc <- cv_dS(st$s1, st$s2, lam, "Homo sapiens", w)
+  dc <- cv_dS(in_band(st$s1, lam), in_band(st$s2, lam), lam, "Homo sapiens", w)
   expect_equal(dl, dc, tolerance = 1e-6)
 })

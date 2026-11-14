@@ -11,7 +11,8 @@ colour_jnd(
   species,
   receptor = NULL,
   noise = 0.05,
-  binwidth = NULL
+  binwidth = NULL,
+  band = c(300, 700)
 )
 }
 \arguments{
@@ -34,6 +35,14 @@ Default 0.05 (5\% noise), typical for cones in well-lit conditions.}
 
 \item{binwidth}{Wavelength bin width in nm. Inferred from \code{lambda}
 spacing if \code{NULL} (default). The grid must be regularly spaced.}
+
+\item{band}{Visual band \code{c(lower, upper)} in nm over which receptor
+quantum catches are integrated. Default \code{c(300, 700)}. A fixed band
+makes the result independent of how far the \code{lambda} grid extends;
+the grid's bins must cover it (a typed \code{luxR_grid_error} otherwise),
+and bins straddling an edge count only their in-band width. Narrow it
+explicitly when the light field is shorter, e.g. \code{c(350, 700)} for a
+Jerlov-propagated spectrum; catch below the band is then excluded.}
 }
 \value{
 Scalar: chromatic distance \eqn{\Delta S} in just-noticeable

@@ -1,6 +1,26 @@
 # luxR 0.1.1
 
 ## Breaking changes
+- Achromatic contrast and receptor catches no longer depend on how far the
+  wavelength grid extends. Previously they summed over whatever grid was
+  supplied, so the same object gave a species-free Weber contrast of -0.19 on
+  a 300-800 nm grid, -0.15 on 400-700 nm and -0.28 on 300-600 nm; it is
+  now -0.146 on any grid that covers 400-700 nm.
+  - `species = NULL` achromatic brightness in `inherent_contrast()`,
+    `detection_range()` and `detectability()` is now photon radiance over
+    400-700 nm (PAR). The grid must cover 400-700 nm.
+  - Receptor catches in `colour_jnd()` and in the species achromatic and
+    chromatic channels of the detection functions integrate over a new
+    `band` argument, default `c(300, 700)` nm (previously the grid's overlap
+    with 300-750 nm). The grid must cover the band, or a `luxR_grid_error`
+    is raised; edge bins count only their in-band width. Values change
+    slightly (e.g. -0.1596 to -0.1595 for a Danio rerio achromatic contrast).
+  - Jerlov-propagated light fields start at 350 nm, so pass
+    `band = c(350, 700)` to model them; the UV catch below 350 nm, which was
+    previously dropped without notice, is then excluded by choice. The Shiny
+    app does this and states the band it used beside each result.
+  - A `binwidth` that does not match the grid spacing is now rejected by
+    these functions.
 - Every luxR error now inherits `luxR_error` and carries exactly one kind
   class: `luxR_type_error`, `luxR_value_error`, `luxR_dimension_error`,
   `luxR_grid_error`, `luxR_unit_error`, `luxR_numerical_error`,

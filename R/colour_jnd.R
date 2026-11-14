@@ -33,6 +33,13 @@
 #'   Default 0.05 (5\% noise), typical for cones in well-lit conditions.
 #' @param binwidth Wavelength bin width in nm. Inferred from \code{lambda}
 #'   spacing if \code{NULL} (default). The grid must be regularly spaced.
+#' @param band     Visual band \code{c(lower, upper)} in nm over which receptor
+#'   quantum catches are integrated. Default \code{c(300, 700)}. A fixed band
+#'   makes the result independent of how far the \code{lambda} grid extends;
+#'   the grid's bins must cover it (a typed \code{luxR_grid_error} otherwise),
+#'   and bins straddling an edge count only their in-band width. Narrow it
+#'   explicitly when the light field is shorter, e.g. \code{c(350, 700)} for a
+#'   Jerlov-propagated spectrum; catch below the band is then excluded.
 #' @return Scalar: chromatic distance \eqn{\Delta S} in just-noticeable
 #'   differences (JNDs).
 #' @references
@@ -59,7 +66,8 @@
 colour_jnd <- function(stim1, stim2, lambda, species,
                        receptor = NULL,
                        noise    = 0.05,
-                       binwidth = NULL) {
+                       binwidth = NULL,
+                       band     = c(300, 700)) {
 
   # ---- validate species and chromatic channel -----------------------------
   sp_data <- .default_channel_receptors(
@@ -86,24 +94,11 @@ colour_jnd <- function(stim1, stim2, lambda, species,
       receptor = sp_data$receptor
     )
 
-  # ---- binwidth -----------------------------------------------------------
-  binwidth <- .grid_binwidth(lambda, binwidth, "colour_jnd()")
-
   # ---- quantum catches for each receptor ----------------------------------
-  lam_s <- seq(300, 750, by = 1)
-
-  q1 <- q2 <- numeric(nrow(sp_data))
-  for (i in seq_len(nrow(sp_data))) {
-    S  <- govardovskii_template(lam_s,
-                                lambda_max  = sp_data$lambda_max[i],
-                                chromophore = sp_data$chromophore[i])
-    q1[i] <- quantum_catch(stim1, lambda, S,
-                           input_unit = "W/m2/nm", total = TRUE,
-                           binwidth = binwidth)
-    q2[i] <- quantum_catch(stim2, lambda, S,
-                           input_unit = "W/m2/nm", total = TRUE,
-                           binwidth = binwidth)
-  }
+  q1 <- .receptor_catches(stim1, lambda, sp_data, binwidth, band,
+                         "colour_jnd()")
+  q2 <- .receptor_catches(stim2, lambda, sp_data, binwidth, band,
+                         "colour_jnd()")
   names(q1) <- names(q2) <- sp_data$receptor
 
   invalid_q1 <- !is.finite(q1) | q1 <= 0

@@ -337,6 +337,24 @@
   pmin(pmax(out, 0), 1)
 }
 
+# Visual band for the app's receptor catches: the default 300-700 nm, narrowed
+# to the light field's range (Jerlov Kd starts at 350 nm). The app states the
+# band it used next to every result via .app_band_label().
+#' @keywords internal
+#' @noRd
+.app_visual_band <- function(lambda) {
+  c(max(300, min(lambda)), min(700, max(lambda)))
+}
+
+#' @keywords internal
+#' @noRd
+.app_band_label <- function(lambda) {
+  band <- .app_visual_band(lambda)
+  paste0("receptor catches integrate ", format(band[1L]), "-",
+         format(band[2L]), " nm",
+         if (band[1L] > 300) " (light field excludes the UV below this)")
+}
+
 #' @keywords internal
 #' @noRd
 .app_jnd <- function(refl1, refl2, illuminant, lambda, species, receptor,
@@ -344,7 +362,8 @@
   stim1 <- reflectance_to_radiance(refl1, illuminant, lambda)
   stim2 <- reflectance_to_radiance(refl2, illuminant, lambda)
   colour_jnd(stim1 = stim1, stim2 = stim2, lambda = lambda,
-             species = species, receptor = receptor, noise = noise)
+             species = species, receptor = receptor, noise = noise,
+             band = .app_visual_band(lambda))
 }
 
 #' @keywords internal

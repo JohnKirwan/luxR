@@ -591,7 +591,8 @@ function(input, output, session) {
     cat(sprintf("Viewer: %s; chromatic receptors: %s\n",
                 res$species, paste(res$receptors, collapse = ", ")))
     cat(res$light_context, "\n")
-    cat("Model: Vorobyev-Osorio receptor-noise JND.\n")
+    cat("Model: Vorobyev-Osorio receptor-noise JND;",
+        luxR:::.app_band_label(res$lambda), "\n")
     cat(if (isTRUE(res$jnd >= 1))
           "(>= 1 JND: discriminable)\n"
         else
@@ -671,7 +672,8 @@ function(input, output, session) {
     detectability(obj, bg, lf$irradiance, lambda, Kd = Kd_ref,
                   species = input$det_species, channel = chan,
                   contrast_threshold = input$det_contrast,
-                  direction = input$det_dir, beam_c = beam_c)
+                  direction = input$det_dir, beam_c = beam_c,
+                  band = luxR:::.app_visual_band(lambda))
   })
 
   det_context <- reactive({
@@ -688,7 +690,8 @@ function(input, output, session) {
         input$det_wavelength_policy
       ),
       "; sighting wavelength ", format(input$det_lambda), " nm; ",
-      input$det_dir, " viewing; validated channel ", chan, "; ", attenuation
+      input$det_dir, " viewing; validated channel ", chan, "; ", attenuation,
+      "; ", luxR:::.app_band_label(det_light()$lambda)
     )
   })
 

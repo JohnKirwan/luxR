@@ -77,12 +77,13 @@ test_that("colour_jnd dichromat matches the analytic |Δf1-Δf2|/sqrt(e1^2+e2^2)
   recs <- c("L-cone", "M-cone")
   e    <- 0.05
 
-  lam_s <- seq(300, 750, by = 1)
+  # In-band width of each 10 nm bin within the default 300-700 nm band.
+  w <- pmax(0, pmin(700, lam + 5) - pmax(300, lam - 5))
   qc <- function(stim, rec) {
     row <- subset(species_sensitivities,
                   species == "Homo sapiens" & receptor == rec)
-    S <- govardovskii_template(lam_s, row$lambda_max[1], row$chromophore[1])
-    quantum_catch(stim, lam, S, input_unit = "W/m2/nm",
+    S <- govardovskii_template(lam, row$lambda_max[1], row$chromophore[1])
+    quantum_catch(stim * w / 10, lam, S, input_unit = "W/m2/nm",
                   total = TRUE, binwidth = 10)
   }
   df <- vapply(recs, function(r)
@@ -276,4 +277,34 @@ test_that("colour_jnd rejects an irregular wavelength grid", {
   expect_error(colour_jnd(sp$irradiance, sp$irradiance,
                           lambda = sp$wavelength, species = "Danio rerio"),
                class = "luxR_grid_error")
+})
+
+test_that("colour_jnd integrates over the 300-700 nm visual band", {
+  sp1 <- solar_irradiance("clear_noon")
+  sp2 <- solar_irradiance("underwater_10m")
+  jnd <- function(keep) {
+    k <- keep(sp1$wavelength)
+    colour_jnd(sp1$irradiance[k], sp2$irradiance[k],
+               lambda = sp1$wavelength[k], species = "Danio rerio")
+  }
+  expect_equal(jnd(function(l) l > 0), jnd(function(l) l <= 700),
+               tolerance = 1e-12)
+  expect_error(jnd(function(l) l >= 400),
+               "do not cover the band 300-700 nm",
+               class = "luxR_grid_error")
+})
+
+test_that("colour_jnd band can be narrowed explicitly and is validated", {
+  sp1 <- solar_irradiance("clear_noon")
+  sp2 <- solar_irradiance("underwater_10m")
+  k <- sp1$wavelength >= 350
+  jnd <- function(band) colour_jnd(
+    sp1$irradiance[k], sp2$irradiance[k], lambda = sp1$wavelength[k],
+    species = "Danio rerio", band = band
+  )
+  expect_gt(jnd(c(350, 700)), 0)
+  expect_error(jnd(350), "must be c\\(lower, upper\\)",
+               class = "luxR_dimension_error")
+  expect_error(jnd(c(700, 350)), "must be below", class = "luxR_value_error")
+  expect_error(jnd(c(350, NA)), class = "luxR_error")
 })
