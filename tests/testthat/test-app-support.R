@@ -466,6 +466,12 @@ test_that("Species Perception applies optical-density self-screening", {
     expect_match(rendered, "photons m\u207b\u00b2 s\u207b\u00b9")
     expect_match(rendered, "Not an absolute photons per receptor per second rate")
     expect_match(paste(unlist(output$sp_refs), collapse = " "), "Self-screening")
+
+    # Non-integer bundled peaks (Bowmaker & Dartnall 1980) print exactly
+    session$setInputs(sp_species = "Homo sapiens", sp_receptor = "S-cone",
+                      sp_calc = 2)
+    expect_match(paste(unlist(output$sp_qcatch), collapse = " "),
+                 "lambda_max = 420.3 nm  (A1 chromophore)", fixed = TRUE)
   })
 })
 
