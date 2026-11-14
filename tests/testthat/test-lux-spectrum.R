@@ -43,7 +43,7 @@ test_that("lux_spectrum: error on length mismatch", {
   expect_error(
     lux_spectrum(E, lam[-1]),
     "equal length",
-    class = "luxR_value_error"
+    class = "luxR_dimension_error"
   )
 })
 

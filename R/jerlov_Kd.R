@@ -21,8 +21,7 @@
 
 .stop_jerlov <- function(message, kind, field, value = NULL, index = NULL,
                          context = list()) {
-  do.call(.luxr_abort, c(
-    list(message, kind),
+  .luxr_abort(message, kind, .fields = c(
     list(field = field, value = value, index = index),
     context
   ))
@@ -166,7 +165,7 @@ jerlov_Kd <- function(type = "IA", lambda = NULL,
       !nzchar(type)) {
     .stop_jerlov(
       "`type` must be one non-empty, non-missing Jerlov water-type string.",
-      kind = if (is.character(type)) "value" else "type",
+      kind = if (is.null(type) || is.character(type)) "value" else "type",
       field = "type", value = type,
       context = dataset_context
     )

@@ -115,7 +115,7 @@ lux_spectrum <- function(E, lambda,
       paste0("`E` and `lambda` must have equal length; got ",
              length(E), " and ", length(lambda), "."),
       field = c("E", "lambda"), value = c(length(E), length(lambda)),
-      kind = "value", context = context
+      kind = "dimension", context = context
     )
   }
 

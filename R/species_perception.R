@@ -484,7 +484,7 @@ quantum_catch <- function(irradiance, lambda, S,
   if (!is.data.frame(S)) {
     .luxr_abort(
       "'S' must be a data frame with numeric 'lambda' and 'S' columns.",
-      "value",
+      "type",
       field = "S", value = S
     )
   }
@@ -500,7 +500,7 @@ quantum_catch <- function(irradiance, lambda, S,
   if (nrow(S) < 2L) {
     .luxr_abort(
       "'S' must contain at least two rows for interpolation.",
-      "value",
+      "dimension",
       field = "S", value = S
     )
   }
@@ -510,7 +510,7 @@ quantum_catch <- function(irradiance, lambda, S,
         !is.null(dim(values)) || any(!is.finite(values))) {
       .luxr_abort(
         paste0("'S$", field, "' must be a finite numeric vector."),
-        "value",
+        if (is.numeric(values)) "value" else "type",
         field = paste0("S$", field), value = values
       )
     }
@@ -518,7 +518,7 @@ quantum_catch <- function(irradiance, lambda, S,
   if (any(diff(S$lambda) <= 0)) {
     .luxr_abort(
       "'S$lambda' must be strictly increasing and unique.",
-      "value",
+      "grid",
       field = "S$lambda", value = S$lambda
     )
   }

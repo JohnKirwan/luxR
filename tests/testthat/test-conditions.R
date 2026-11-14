@@ -39,8 +39,38 @@ test_that(".luxr_abort rejects misuse as an internal error", {
                class = "luxR_internal_error")
   expect_error(luxR:::.luxr_abort("m", "value", import = NA),
                class = "luxR_internal_error")
-  expect_error(luxR:::.luxr_abort(c("a", "b"), "value"),
+  expect_error(luxR:::.luxr_abort(1, "value"), class = "luxR_internal_error")
+  expect_error(luxR:::.luxr_abort("m", "value", .fields = list(message = "x")),
+               class = "luxR_internal_error")
+  expect_error(luxR:::.luxr_abort("m", "value", .fields = list(1)),
                class = "luxR_internal_error")
   expect_error(luxR:::.luxr_error_kind(simpleError("x")),
                class = "luxR_internal_error")
+})
+
+test_that(".luxr_abort collapses a vector message as stop() would", {
+  expect_error(luxR:::.luxr_abort(c("a", "b"), "value"), "^ab$",
+               class = "luxR_value_error")
+})
+
+test_that(".fields are stored verbatim and cannot rebind arguments", {
+  err <- tryCatch(
+    luxR:::.luxr_abort("m", "format", import = TRUE,
+                       .fields = list(kind = "zzz", value = quote(nope))),
+    error = identity
+  )
+  expect_s3_class(err, "luxR_format_error")
+  expect_identical(err$kind, "zzz")
+  expect_identical(err$value, quote(nope))
+})
+
+test_that("quoted inputs give typed errors and are never evaluated", {
+  hit <- new.env()
+  expect_error(jerlov_Kd(quote(nope), 500), class = "luxR_type_error")
+  expect_error(jerlov_Kd(quote(assign("x", TRUE, envir = hit)), 500),
+               class = "luxR_type_error")
+  expect_false(exists("x", envir = hit, inherits = FALSE))
+  expect_error(degree_of_polarization(quote(nope), 0, 0),
+               class = "luxR_type_error")
+  expect_error(from_ocean_optics(quote(nope)), class = "luxR_type_error")
 })

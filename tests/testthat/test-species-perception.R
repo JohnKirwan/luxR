@@ -238,7 +238,7 @@ test_that("quantum_catch rejects ambiguous units and malformed sensitivity", {
       input_unit = "photon/m2/s/nm"
     ),
     "strictly increasing",
-    class = "luxR_value_error"
+    class = "luxR_grid_error"
   )
 })
 

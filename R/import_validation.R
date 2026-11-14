@@ -33,8 +33,7 @@
                                   field = NULL, value = NULL,
                                   row = NULL, line = NULL,
                                   spectrum = NULL) {
-  do.call(.luxr_abort, c(
-    list(message, kind, import = TRUE),
+  .luxr_abort(message, kind, import = TRUE, .fields = c(
     list(field = field, value = value, row = row, line = line,
          spectrum = spectrum),
     context
@@ -48,7 +47,8 @@
       !nzchar(path)) {
     .stop_spectrum_import(
       "`path` must be one non-empty, non-missing string.", context,
-      kind = if (is.character(path)) "value" else "type", field = "path", value = path
+      kind = if (is.null(path) || is.character(path)) "value" else "type",
+      field = "path", value = path
     )
   }
   if (!file.exists(path)) {
@@ -71,7 +71,7 @@
   if (!is.character(x) || length(x) != 1L || is.na(x) || !nzchar(trimws(x))) {
     .stop_spectrum_import(
       paste0("`", field, "` must be one non-empty, non-missing string."),
-      context, kind = if (is.character(x)) "value" else "type",
+      context, kind = if (is.null(x) || is.character(x)) "value" else "type",
       field = field, value = x
     )
   }

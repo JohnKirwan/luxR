@@ -64,10 +64,13 @@ NULL
   ))
 }
 
-.luxr_abort <- function(message, kind, ..., import = FALSE) {
-  if (!is.character(message) || length(message) != 1L || is.na(message)) {
-    .luxr_internal_error("`message` must be one string.")
+.luxr_abort <- function(message, kind, ..., import = FALSE,
+                        .fields = list()) {
+  if (!is.character(message) || length(message) == 0L || anyNA(message)) {
+    .luxr_internal_error("`message` must be a non-missing character vector.")
   }
+  # Collapse as stop() does when a user argument is a vector.
+  message <- paste(message, collapse = "")
   if (!is.character(kind) || length(kind) != 1L ||
       !kind %in% .LUXR_ERROR_KINDS) {
     .luxr_internal_error(paste0("unknown error kind '",
@@ -76,13 +79,20 @@ NULL
   if (!isTRUE(import) && !isFALSE(import)) {
     .luxr_internal_error("`import` must be TRUE or FALSE.")
   }
-  fields <- list(...)
+  if (!is.list(.fields)) {
+    .luxr_internal_error("`.fields` must be a list.")
+  }
+  # `.fields` carries context assembled elsewhere: it is stored verbatim,
+  # never evaluated and never matched to this function's arguments.
+  fields <- c(list(...), .fields)
   nms <- names(fields)
   if (length(fields) > 0L && (is.null(nms) || any(!nzchar(nms)))) {
     .luxr_internal_error("every condition field must be named.")
   }
   if (any(nms %in% c("message", "call", "call."))) {
-    .luxr_internal_error("condition fields may not be named `call` or `call.`.")
+    .luxr_internal_error(
+      "condition fields may not be named `message`, `call` or `call.`."
+    )
   }
   stop(structure(
     c(list(message = message, call = NULL), fields),

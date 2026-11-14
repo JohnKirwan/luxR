@@ -226,7 +226,7 @@ test_that("from_ocean_optics: stores date in meta", {
 
 test_that("from_ocean_optics: requires physical and calibration declarations", {
   expect_error(from_ocean_optics(get_oo_fixture()),
-               class = "luxR_type_error")
+               class = "luxR_value_error")
   expect_error(
     from_ocean_optics(get_oo_fixture(), "irradiance", "W/m2/nm", ""),
     class = "luxR_value_error"

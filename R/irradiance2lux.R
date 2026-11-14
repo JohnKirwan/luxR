@@ -159,7 +159,7 @@ irradiance2lux.default <- function(irradiance, ...) {
              length(irradiance), " and ", length(lambda), "."),
       field = c("irradiance", "lambda"),
       value = c(length(irradiance), length(lambda)),
-      kind = "value"
+      kind = "dimension"
     )
   }
 

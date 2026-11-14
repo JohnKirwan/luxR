@@ -24,7 +24,7 @@ irradiance2lux_FUN <- function(W_spec_irradiance, lambda_measured,
              length(lambda_measured), "."),
       field = c("W_spec_irradiance", "lambda_measured"),
       value = c(length(W_spec_irradiance), length(lambda_measured)),
-      kind = "value"
+      kind = "dimension"
     )
   }
   if (!is.numeric(integration_weights) || is.complex(integration_weights) ||

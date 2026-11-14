@@ -360,7 +360,7 @@ attenuate_spectrum.numeric <- function(E0_lambda, Kd_lambda, depths,
              length(E0_lambda), " and ", length(Kd_lambda), "."),
       field = c("E0_lambda", "Kd_lambda"),
       value = c(length(E0_lambda), length(Kd_lambda)),
-      kind = "value",
+      kind = "dimension",
       context = list(operation = operation)
     )
   }
@@ -372,7 +372,7 @@ attenuate_spectrum.numeric <- function(E0_lambda, Kd_lambda, depths,
                length(lambda), " and ", length(E0_lambda), "."),
         field = c("lambda", "E0_lambda"),
         value = c(length(lambda), length(E0_lambda)),
-        kind = "value",
+        kind = "dimension",
         context = list(operation = operation)
       )
     }
@@ -486,7 +486,7 @@ propagate_spectrum.numeric <- function(E_lambda, Kd_lambda, from = 0, to,
              length(E_lambda), " and ", length(Kd_lambda), "."),
       field = c("E_lambda", "Kd_lambda"),
       value = c(length(E_lambda), length(Kd_lambda)),
-      kind = "value",
+      kind = "dimension",
       context = list(operation = operation)
     )
   }
@@ -507,7 +507,7 @@ propagate_spectrum.numeric <- function(E_lambda, Kd_lambda, from = 0, to,
                length(lambda), " and ", length(E_lambda), "."),
         field = c("lambda", "E_lambda"),
         value = c(length(lambda), length(E_lambda)),
-        kind = "value",
+        kind = "dimension",
         context = list(operation = operation)
       )
     }

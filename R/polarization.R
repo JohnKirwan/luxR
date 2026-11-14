@@ -20,8 +20,7 @@
 .stop_polarization <- function(message, operation, kind,
                                field = NULL, value = NULL, index = NULL,
                                configuration = list()) {
-  do.call(.luxr_abort, c(
-    list(message, kind),
+  .luxr_abort(message, kind, .fields = c(
     list(field = field, value = value, index = index),
     .polarization_runtime_context(operation, configuration)
   ))

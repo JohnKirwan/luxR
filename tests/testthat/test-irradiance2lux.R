@@ -202,7 +202,7 @@ test_that("irradiance2lux_FUN rejects mismatched internal shapes", {
       integration_weights = c(5, 5)
     ),
     "equal length",
-    class = "luxR_value_error"
+    class = "luxR_dimension_error"
   )
 })
 

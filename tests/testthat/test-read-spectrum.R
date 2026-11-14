@@ -199,7 +199,7 @@ test_that("read_spectrum validates required declarations and paths", {
   f <- lightr_file("compare", "OceanInsight", "BB_PF21_4.txt")
   expect_error(
     read_spectrum(f),
-    class = "luxR_type_error"
+    class = "luxR_value_error"
   )
   expect_error(
     read_spectrum(

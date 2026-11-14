@@ -179,3 +179,40 @@ test_that("broken internal invariants are internal errors", {
   expect_error(luxR:::.validate_app_tabs(tabs), "unique",
                class = "luxR_internal_error")
 })
+
+test_that("vector arguments in messages stay typed user errors", {
+  expect_error(species_LEF(c("zz", "yy")), "unknown species",
+               class = "luxR_value_error")
+  expect_error(irr[c(800, 801), c(900, 901)], "No wavelengths",
+               class = "luxR_grid_error")
+})
+
+test_that("length mismatches are dimension errors everywhere", {
+  expect_error(irradiance2lux(c(1, 1), 500), "equal length",
+               class = "luxR_dimension_error")
+  expect_error(attenuate_spectrum(c(1, 2), c(0.1, 0.2, 0.3), depths = 10),
+               "equal length", class = "luxR_dimension_error")
+  expect_error(propagate_spectrum(c(1, 2), c(0.1, 0.2, 0.3), to = 5),
+               "equal length", class = "luxR_dimension_error")
+})
+
+test_that("quantum_catch sensitivity checks match the LEF checks", {
+  lam <- c(500, 510)
+  qc <- function(S) quantum_catch(c(1, 1), lam, S,
+                                  input_unit = "photon/m2/s/nm")
+  expect_error(qc(1), "must be a data frame", class = "luxR_type_error")
+  expect_error(qc(data.frame(lambda = lam)), "missing required",
+               class = "luxR_value_error")
+  expect_error(qc(data.frame(lambda = 500, S = 1)), "at least two rows",
+               class = "luxR_dimension_error")
+  expect_error(qc(data.frame(lambda = lam, S = c("a", "b"))),
+               "finite numeric", class = "luxR_type_error")
+  expect_error(qc(data.frame(lambda = lam, S = c(1, NA))),
+               "finite numeric", class = "luxR_value_error")
+  expect_error(qc(data.frame(lambda = rev(lam), S = c(1, 1))),
+               "strictly increasing", class = "luxR_grid_error")
+})
+
+test_that("an omitted required declaration is a value error", {
+  expect_error(jerlov_Kd(NULL, 500), class = "luxR_value_error")
+})
