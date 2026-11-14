@@ -8,7 +8,14 @@ across 400–700 nm before applying the approximation.
 ## Usage
 
 ``` r
-secchi_depth(Kd, lambda = NULL, irradiance = NULL, spectrum = NULL)
+secchi_depth(
+  Kd,
+  lambda = NULL,
+  irradiance = NULL,
+  spectrum = NULL,
+  photonic = FALSE,
+  basis = c("photon", "energy")
+)
 ```
 
 ## Arguments
@@ -29,7 +36,18 @@ secchi_depth(Kd, lambda = NULL, irradiance = NULL, spectrum = NULL)
 - spectrum:
 
   Optional `lux_spectrum`; when supplied its `E` and `lambda` slots
-  replace the `irradiance` and `lambda` arguments.
+  replace the `irradiance` and `lambda` arguments. Its unit is read from
+  the object; setting `photonic` as well is an error.
+
+- photonic:
+
+  Logical. `FALSE` (default): numeric `irradiance` is in energy units
+  (e.g. W m\\^{-2}\\ nm\\^{-1}\\). `TRUE`: it is a photon or molar flux
+  per nm.
+
+- basis:
+
+  `"photon"` (default) or `"energy"`: what weights Kd.
 
 ## Value
 
@@ -37,10 +55,12 @@ Secchi depth in metres.
 
 ## Details
 
+By default Kd is weighted by photon flux, because vision responds to
+photons absorbed. Use `basis = "energy"` to weight by radiant energy;
+this gives more weight to short wavelengths.
+
 Each sample is a bin centred on its wavelength on a regular grid; a bin
 straddling 400 or 700 nm is weighted by its part inside the window.
-Numeric irradiance is used as given; a `lux_spectrum` is converted to W
-m\\^{-2}\\ nm\\^{-1}\\ first.
 
 ## References
 

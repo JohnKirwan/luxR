@@ -47,6 +47,12 @@
   finite, `lambda` and `irradiance` come together and match `Kd` in
   length, irradiance is non-negative with some in the window, and only
   irradiance spectra are accepted.
+- [`secchi_depth()`](https://johnkirwan.github.io/luxR/reference/secchi_depth.md)
+  now weights Kd by photon flux by default, because vision is
+  photon-based. `basis = "energy"` gives the previous energy weighting.
+  Numeric irradiance states its unit with `photonic`, as in
+  [`par_fraction()`](https://johnkirwan.github.io/luxR/reference/par_fraction.md).
+  Setting `photonic` together with `spectrum` is an error.
 - [`photic_depth()`](https://johnkirwan.github.io/luxR/reference/photic_depth.md),
   [`weber_contrast()`](https://johnkirwan.github.io/luxR/reference/weber_contrast.md),
   [`beam_attenuation()`](https://johnkirwan.github.io/luxR/reference/beam_attenuation.md)
