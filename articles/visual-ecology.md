@@ -48,7 +48,7 @@ x0m_W
     ##    import: 5952acfab4a04ea1b02eb085e6a768d5
     ##    import: naples-legacy-v1
     ##    import: 0.1.1
-    ##    import: a7dffefc0dafceb3a9ce8a8e0a46a8cca8efd67c
+    ##    import: ef305af35f8d0ed31f21c71a2e68b6fe7e40f5c7
     ##    import: parse canonical processed snapshot; validate schema grid and non-negative irradiance
 
 ``` r
@@ -411,7 +411,7 @@ knitr::kable(cmp, digits = c(0, 6, 6, 14),
 
 |                | Species        |  luxR ΔS |  pavo ΔS | \|difference\| |
 |:---------------|:---------------|---------:|---------:|---------------:|
-| Homo sapiens   | Homo sapiens   | 1.777255 | 1.777255 |        3.0e-14 |
+| Homo sapiens   | Homo sapiens   | 1.777255 | 1.777255 |        1.0e-14 |
 | Apis mellifera | Apis mellifera | 0.942980 | 0.942980 |        1.7e-13 |
 | Danio rerio    | Danio rerio    | 2.417910 | 2.417910 |        0.0e+00 |
 
