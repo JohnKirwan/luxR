@@ -45,9 +45,9 @@
 # operation, e.g. "photic_depth(): `Kd` must ...".
 .input_fail <- function(operation) {
   function(message, field, value, index, kind) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0(operation, ": ", message), field = field, value = value,
-      index = index, subclass = paste0("lux_spectrum_", kind, "_error")
+      index = index, kind = kind
     )
   }
 }
@@ -97,9 +97,9 @@
 # `fail` callback raising lux_spectrum validation errors.
 .lux_spectrum_fail <- function(context = list()) {
   function(message, field, value, index, kind) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       message, field = field, value = value, index = index,
-      subclass = paste0("lux_spectrum_", kind, "_error"), context = context
+      kind = kind, context = context
     )
   }
 }
@@ -109,11 +109,11 @@
   if (length(a) == length(b) || length(a) == 1L || length(b) == 1L) {
     return(invisible())
   }
-  .stop_lux_spectrum_validation(
+  .luxr_abort(
     paste0(operation, ": `", fields[1L], "` (length ", length(a), ") and `",
            fields[2L], "` (length ", length(b), ") must have equal lengths, ",
            "or one must have length 1."),
     field = fields, value = c(length(a), length(b)),
-    subclass = "lux_spectrum_dimension_error"
+    kind = "dimension"
   )
 }

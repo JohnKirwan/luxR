@@ -56,7 +56,7 @@ test_that("par_irradiance: umol lux_spectrum returns same value as direct sum", 
 
 test_that("par_irradiance errors when no wavelengths in PAR range", {
   expect_error(par_irradiance(c(1, 2), c(800, 900)),
-               class = "lux_spectrum_grid_error")
+               class = "luxR_grid_error")
 })
 
 test_that("par_irradiance infers binwidth from lambda spacing", {
@@ -109,13 +109,13 @@ test_that("par_irradiance: is independent of grid resolution for a flat spectrum
 test_that("par_irradiance: a grid that does not span PAR is an error", {
   lam <- seq(450, 700, by = 10)
   expect_error(par_irradiance(rep(1, length(lam)), lam),
-               class = "lux_spectrum_grid_error")
+               class = "luxR_grid_error")
 })
 
 test_that("par_irradiance and par_fraction reject mismatched lengths", {
   lam <- seq(300, 800, by = 10)
-  expect_error(par_irradiance(1, lam), class = "lux_spectrum_dimension_error")
-  expect_error(par_fraction(1, lam), class = "lux_spectrum_dimension_error")
+  expect_error(par_irradiance(1, lam), class = "luxR_dimension_error")
+  expect_error(par_fraction(1, lam), class = "luxR_dimension_error")
 })
 
 test_that("par_fraction: energy basis of a flat spectrum is the PAR bin share", {
@@ -149,18 +149,18 @@ test_that("par_fraction: the unit of a lux_spectrum does not change the answer",
 test_that("par_fraction rejects radiance, negative and all-zero spectra", {
   lam <- seq(400, 700, by = 10)
   r <- lux_spectrum(rep(1, 31), lam, "radiance", "W/m2/sr/nm")
-  expect_error(par_fraction(r), class = "lux_spectrum_dimension_error")
-  expect_error(par_fraction(rep(0, 31), lam), class = "lux_spectrum_value_error")
+  expect_error(par_fraction(r), class = "luxR_dimension_error")
+  expect_error(par_fraction(rep(0, 31), lam), class = "luxR_value_error")
   expect_error(par_fraction(c(-1, rep(1, 30)), lam),
-               class = "lux_spectrum_value_error")
+               class = "luxR_value_error")
 })
 
 test_that("par_fraction keeps binwidth third and rejects a non-logical photonic", {
   lam <- seq(300, 800, by = 10)
   E   <- rep(1, length(lam))
   expect_equal(par_fraction(E, lam, 10), par_fraction(E, lam))
-  expect_error(par_fraction(E, lam, photonic = 1), class = "lux_spectrum_type_error")
-  expect_error(par_fraction(E, lam, photonic = NA), class = "lux_spectrum_type_error")
+  expect_error(par_fraction(E, lam, photonic = 1), class = "luxR_type_error")
+  expect_error(par_fraction(E, lam, photonic = NA), class = "luxR_type_error")
 })
 
 test_that("par_fraction is 0 for a spectrum entirely outside PAR", {
@@ -172,11 +172,11 @@ test_that("PAR and band functions reject non-finite irradiance, even outside the
   lam <- seq(300, 800, by = 10)
   E   <- rep(1, length(lam))
   E[1:3] <- NA
-  expect_error(par_irradiance(E, lam), class = "lux_spectrum_value_error")
-  expect_error(par_fraction(E, lam), class = "lux_spectrum_value_error")
+  expect_error(par_irradiance(E, lam), class = "luxR_value_error")
+  expect_error(par_fraction(E, lam), class = "luxR_value_error")
   expect_error(band_irradiance(E, rep(0.05, length(lam)), lam, depths = 0,
                                lambda_min = 400, lambda_max = 700),
-               class = "lux_spectrum_value_error")
+               class = "luxR_value_error")
   E[1:3] <- Inf
-  expect_error(par_irradiance(E, lam), class = "lux_spectrum_value_error")
+  expect_error(par_irradiance(E, lam), class = "luxR_value_error")
 })

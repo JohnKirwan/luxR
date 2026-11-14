@@ -109,10 +109,10 @@ band_irradiance.lux_spectrum <- function(E_lambda, Kd_lambda, depths,
   op <- "band_irradiance()"
   for (arg in c("lambda", "binwidth")) {
     if (!is.null(get(arg))) {
-      .stop_lux_spectrum_validation(
+      .luxr_abort(
         paste0(op, ": `", arg, "` is taken from the lux_spectrum; do not ",
                "supply it."),
-        field = arg, value = get(arg), subclass = "lux_spectrum_value_error",
+        field = arg, value = get(arg), kind = "value",
         context = E_lambda$meta
       )
     }
@@ -160,11 +160,11 @@ band_irradiance.lux_spectrum <- function(E_lambda, Kd_lambda, depths,
 .check_spectral_values <- function(x, lambda, field, operation) {
   .check_input(x, field, operation)
   if (length(x) != length(lambda)) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0(operation, ": `", field, "` has length ", length(x),
              " but `lambda` has length ", length(lambda), "."),
       field = field, value = length(x),
-      subclass = "lux_spectrum_dimension_error"
+      kind = "dimension"
     )
   }
 }

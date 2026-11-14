@@ -46,19 +46,19 @@ secchi_depth <- function(Kd, lambda = NULL, irradiance = NULL,
   binwidth <- NULL
   if (!is.null(spectrum)) {
     if (!is.null(lambda) || !is.null(irradiance)) {
-      .stop_lux_spectrum_validation(
+      .luxr_abort(
         paste0(op, ": supply either `spectrum` or `lambda` and `irradiance`, ",
                "not both."),
         field = c("spectrum", "lambda", "irradiance"),
-        subclass = "lux_spectrum_value_error"
+        kind = "value"
       )
     }
     if (!inherits(spectrum, "lux_spectrum")) {
-      .stop_lux_spectrum_validation(
+      .luxr_abort(
         paste0(op, ": `spectrum` must be a lux_spectrum; got ",
                paste(class(spectrum), collapse = "/"), "."),
         field = "spectrum", value = class(spectrum),
-        subclass = "lux_spectrum_type_error"
+        kind = "type"
       )
     }
     x <- .as_energy_irradiance(spectrum, op)
@@ -66,18 +66,18 @@ secchi_depth <- function(Kd, lambda = NULL, irradiance = NULL,
     irradiance <- x$E
     binwidth <- x$binwidth
     if (!isFALSE(photonic)) {
-      .stop_lux_spectrum_validation(
+      .luxr_abort(
         paste0(op, ": `photonic` applies to numeric `irradiance`; a ",
                "lux_spectrum records its own unit."),
         field = "photonic", value = photonic,
-        subclass = "lux_spectrum_value_error"
+        kind = "value"
       )
     }
   }
   if (is.null(lambda) != is.null(irradiance)) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0(op, ": `lambda` and `irradiance` must be supplied together."),
-      field = c("lambda", "irradiance"), subclass = "lux_spectrum_value_error"
+      field = c("lambda", "irradiance"), kind = "value"
     )
   }
   if (is.null(lambda)) return(1.7 / Kd)
@@ -87,10 +87,10 @@ secchi_depth <- function(Kd, lambda = NULL, irradiance = NULL,
   weight <- irradiance * .band_widths(lambda, binwidth, 400, 700, op,
                                       cover = FALSE)
   if (sum(weight) == 0) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0(op, ": irradiance is zero over 400-700 nm, so the weighted Kd ",
              "is undefined."),
-      field = "irradiance", value = 0, subclass = "lux_spectrum_value_error"
+      field = "irradiance", value = 0, kind = "value"
     )
   }
   1.7 / (sum(Kd * weight) / sum(weight))

@@ -127,7 +127,7 @@ test_that("depth output metadata fails on invalid source context", {
       jerlov_metadata = jerlov_test_metadata("IA")
     ),
     "reference_depth_m.*finite",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
   expect_error(
     luxR:::.format_depth_output_metadata(data.frame(target_depth_m = 10)),
@@ -215,7 +215,7 @@ test_that("Depth Propagation uses bundled solar reference depth", {
     expect_error(
       dp_spectra(),
       "shallower than source 'underwater_10m'",
-      class = "lux_spectrum_depth_error"
+      class = "luxR_value_error"
     )
   })
 })
@@ -272,9 +272,9 @@ test_that("Colour and Detection reject targets shallower than an underwater refe
     expect_equal(det_light()$irradiance, source_1m$irradiance[keep_1m])
 
     session$setInputs(jnd_depth = 5)
-    expect_error(jnd_light(), class = "lux_spectrum_depth_error")
+    expect_error(jnd_light(), class = "luxR_value_error")
     session$setInputs(det_depth = 0)
-    expect_error(det_light(), class = "lux_spectrum_depth_error")
+    expect_error(det_light(), class = "luxR_value_error")
   })
 })
 

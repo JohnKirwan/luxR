@@ -125,11 +125,11 @@ scotopic_lux <- function(irradiance, ...) UseMethod("scotopic_lux")
 #' @rdname scotopic_lux
 #' @export
 scotopic_lux.default <- function(irradiance, ...) {
-  .stop_lux_spectrum_validation(
+  .luxr_abort(
     paste0("`irradiance` must be a numeric vector or lux_spectrum; got ",
            paste(class(irradiance), collapse = "/"), "."),
     field = "irradiance", value = irradiance,
-    subclass = "lux_spectrum_type_error"
+    kind = "type"
   )
 }
 
@@ -294,10 +294,10 @@ broadband2spectrum <- function(value,
   )
 
   if (v_shape == 0) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0(op, ": the reference spectrum integrates to zero in unit '",
              unit, "', so it cannot be scaled to ", format(value), "."),
-      field = "spectrum", value = 0, subclass = "lux_spectrum_value_error"
+      field = "spectrum", value = 0, kind = "value"
     )
   }
   k   <- value / v_shape

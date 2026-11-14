@@ -73,7 +73,7 @@ test_that("resample_spectrum.lux_spectrum: rejects non-finite extrapolation", {
   expect_error(
     resample_spectrum(x10, lam_wide, rule = 1),
     "finite values",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
   expect_no_error(resample_spectrum(x10, lam_wide, rule = 2))
 })
@@ -82,7 +82,7 @@ test_that("resample_spectrum.lux_spectrum: rejects irregular target grids", {
   expect_error(
     resample_spectrum(x10, c(400, 410, 425, 440), rule = 2),
     "regularly spaced",
-    class = "lux_spectrum_grid_error"
+    class = "luxR_grid_error"
   )
 })
 
@@ -121,7 +121,7 @@ test_that("resample_spectrum.lux_spectrum: cubic out of range is an error", {
   expect_error(
     resample_spectrum(pos, seq(min(lam10) - 20, max(lam10), by = 5),
                       method = "cubic"),
-    class = "lux_spectrum_validation_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -129,7 +129,7 @@ test_that("resample_spectrum: rejects a rule other than 1 or 2", {
   for (m in c("linear", "cubic")) {
     expect_error(resample_spectrum(c(1, 2, 3, 4), lambda = 2, from = 1:4,
                                    method = m, rule = 3),
-                 class = "lux_spectrum_value_error")
+                 class = "luxR_value_error")
     expect_no_error(resample_spectrum(c(1, 2, 3, 4), lambda = 2, from = 1:4,
                                       method = m, rule = 1L))
   }
@@ -142,21 +142,21 @@ test_that("resample_spectrum: rejects non-finite or malformed inputs with typed 
     # NA at the end of the source would narrow the real range silently
     expect_error(resample_spectrum(c(NA, y[-1]), c(400, 425), from = from,
                                    method = m, rule = 2),
-                 class = "lux_spectrum_value_error")
+                 class = "luxR_value_error")
     expect_error(resample_spectrum(y, c(350, NA, 450), from = from, method = m),
-                 class = "lux_spectrum_value_error")
+                 class = "luxR_value_error")
     expect_error(resample_spectrum(y, 450, from = from[-1], method = m),
-                 class = "lux_spectrum_dimension_error")
+                 class = "luxR_dimension_error")
     expect_error(resample_spectrum(5, 400, from = 400, method = m),
-                 class = "lux_spectrum_value_error")
+                 class = "luxR_value_error")
     expect_error(resample_spectrum(y, 450, from = from, method = m, rule = "1"),
-                 class = "lux_spectrum_value_error")
+                 class = "luxR_value_error")
   }
 })
 
 test_that("resample_spectrum needs a regular target grid of two or more points", {
   x <- from_naples("0m")
-  expect_error(resample_spectrum(x, 550), class = "lux_spectrum_value_error")
+  expect_error(resample_spectrum(x, 550), class = "luxR_value_error")
   expect_error(resample_spectrum(x, c(400, 410, 430)),
-               class = "lux_spectrum_grid_error")
+               class = "luxR_grid_error")
 })

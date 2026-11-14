@@ -39,12 +39,12 @@ test_that("govardovskii_template rejects invalid wavelength inputs", {
   expect_error(
     govardovskii_template(c(500, 490), 500),
     "strictly increasing",
-    class = "lux_invalid_sensitivity_grid_error"
+    class = "luxR_grid_error"
   )
   expect_error(
     govardovskii_template(c(490, 500), Inf),
     "lambda_max",
-    class = "lux_invalid_sensitivity_peak_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -217,12 +217,12 @@ test_that("quantum_catch rejects ambiguous units and malformed sensitivity", {
   expect_error(
     quantum_catch(c(1, 1), lam, S),
     "input_unit",
-    class = "lux_invalid_quantum_unit_error"
+    class = "luxR_unit_error"
   )
   expect_error(
     quantum_catch(c(1, 1), lam, S, input_unit = "photons"),
     "input_unit",
-    class = "lux_invalid_quantum_unit_error"
+    class = "luxR_unit_error"
   )
   expect_error(
     quantum_catch(
@@ -230,7 +230,7 @@ test_that("quantum_catch rejects ambiguous units and malformed sensitivity", {
       input_unit = "photon/m2/s/nm"
     ),
     "\\[0, 1\\]",
-    class = "lux_invalid_quantum_sensitivity_error"
+    class = "luxR_value_error"
   )
   expect_error(
     quantum_catch(
@@ -238,7 +238,7 @@ test_that("quantum_catch rejects ambiguous units and malformed sensitivity", {
       input_unit = "photon/m2/s/nm"
     ),
     "strictly increasing",
-    class = "lux_invalid_quantum_sensitivity_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -384,13 +384,13 @@ test_that("A2 template is limited to the fitted 440-620 nm range", {
   lam <- seq(400, 700, by = 1)
   for (lmax in c(439, 621)) {
     expect_error(govardovskii_template(lam, lmax, "A2"),
-                 "440 and 620", class = "lux_invalid_sensitivity_peak_error")
+                 "440 and 620", class = "luxR_value_error")
   }
   expect_no_error(govardovskii_template(lam, 344, "A1"))
   expect_error(fit_sensitivity(lam, govardovskii_template(lam, 500, "A2")$S,
                                chromophore = "A2",
                                lambda_max_range = c(400, 600)),
-               class = "lux_invalid_sensitivity_peak_error")
+               class = "luxR_value_error")
   fit <- fit_sensitivity(lam, govardovskii_template(lam, 523, "A2")$S,
                          chromophore = "A2")
   expect_equal(fit$lambda_max, 523, tolerance = 0.1 / 523)
@@ -408,9 +408,9 @@ test_that("govardovskii_template never exceeds one on a fine grid", {
 test_that("govardovskii_template rejects lambda_max outside 300-700 nm", {
   lam <- seq(300, 750, by = 1)
   expect_error(govardovskii_template(lam, 260),
-               class = "lux_invalid_sensitivity_peak_error")
+               class = "luxR_value_error")
   expect_error(govardovskii_template(lam, 701),
-               class = "lux_invalid_sensitivity_peak_error")
+               class = "luxR_value_error")
 })
 
 test_that("fit_sensitivity recovers a peak that lies off the measured grid", {
@@ -436,11 +436,11 @@ test_that("fit_sensitivity raises typed errors before fitting", {
   lam <- seq(400, 700, by = 5)
   S   <- govardovskii_template(lam, 530)$S
   expect_error(fit_sensitivity(lam, S, lambda_max_range = c(250, 700)),
-               class = "lux_invalid_sensitivity_peak_error")
+               class = "luxR_value_error")
   bad <- lam
   bad[3] <- NA
   expect_error(expect_no_warning(fit_sensitivity(bad, S)),
-               class = "lux_invalid_sensitivity_grid_error")
+               class = "luxR_grid_error")
 })
 
 test_that("receptor_absorptance does not rescale an off-peak template", {
@@ -453,24 +453,24 @@ test_that("receptor_absorptance rejects unnormalised or invalid S", {
   tmpl <- govardovskii_template(300:700, 500)
   expect_error(receptor_absorptance(transform(tmpl, S = S * 2),
                                     optical_density = 0.5),
-               class = "lux_invalid_sensitivity_error")
+               "peak-normalised", class = "luxR_value_error")
   expect_error(receptor_absorptance(c(0.5, -0.1), optical_density = 0.5),
-               class = "lux_species_input_error")
+               class = "luxR_value_error")
   expect_error(receptor_absorptance(c(0.5, NA), optical_density = 0.5),
-               class = "lux_species_input_error")
+               class = "luxR_value_error")
   expect_error(receptor_absorptance(c(0.5, 1), optical_density = -1),
-               class = "lux_species_input_error")
-  expect_error(receptor_absorptance(c(0.5, 1)), class = "lux_species_input_error")
+               class = "luxR_value_error")
+  expect_error(receptor_absorptance(c(0.5, 1)), class = "luxR_value_error")
 })
 
 test_that("fit_sensitivity rejects inverted spectra and bad arguments", {
   tmpl <- govardovskii_template(300:700, 500)
   expect_error(fit_sensitivity(tmpl$lambda, -tmpl$S),
-               class = "lux_invalid_sensitivity_error")
-  expect_error(fit_sensitivity(1:3, 1:2), class = "lux_species_input_error")
+               "largest `sensitivity`", class = "luxR_value_error")
+  expect_error(fit_sensitivity(1:3, 1:2), class = "luxR_dimension_error")
   expect_error(fit_sensitivity(tmpl$lambda, tmpl$S,
                                lambda_max_range = c(600, 400)),
-               class = "lux_species_input_error")
+               class = "luxR_value_error")
 })
 
 test_that("fit_sensitivity drops NA as unmeasured wavelengths (documented policy)", {
@@ -480,5 +480,5 @@ test_that("fit_sensitivity drops NA as unmeasured wavelengths (documented policy
   fit <- fit_sensitivity(tmpl$lambda, s)
   expect_equal(fit$lambda_max, 520, tolerance = 1e-3)
   expect_error(fit_sensitivity(tmpl$lambda, rep(NA_real_, nrow(tmpl))),
-               class = "lux_invalid_sensitivity_error")
+               class = "luxR_value_error")
 })

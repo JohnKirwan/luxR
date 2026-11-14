@@ -18,35 +18,35 @@ irradiance2lux_FUN <- function(W_spec_irradiance, lambda_measured,
                                 LEF_lambda = NULL,
                                 verbose    = FALSE) {
   if (length(W_spec_irradiance) != length(lambda_measured)) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`W_spec_irradiance` and `lambda_measured` must have equal ",
              "length; got ", length(W_spec_irradiance), " and ",
              length(lambda_measured), "."),
       field = c("W_spec_irradiance", "lambda_measured"),
       value = c(length(W_spec_irradiance), length(lambda_measured)),
-      subclass = "lux_spectrum_value_error"
+      kind = "value"
     )
   }
   if (!is.numeric(integration_weights) || is.complex(integration_weights) ||
       is.object(integration_weights) || !is.null(dim(integration_weights)) ||
       length(integration_weights) != length(lambda_measured)) {
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`integration_weights` must be a numeric vector with one value ",
              "per wavelength."),
       field = "integration_weights", value = integration_weights,
-      subclass = "lux_spectrum_type_error"
+      kind = "type"
     )
   }
   invalid_weight <- which(!is.finite(integration_weights) |
                             integration_weights <= 0)
   if (length(invalid_weight) > 0L) {
     i <- invalid_weight[1L]
-    .stop_lux_spectrum_validation(
+    .luxr_abort(
       paste0("`integration_weights` must be finite and positive; index ", i,
              " is ", format(integration_weights[i]), "."),
       field = "integration_weights", value = integration_weights[i],
       index = i,
-      subclass = "lux_spectrum_value_error"
+      kind = "value"
     )
   }
   if (is.null(LEF_W)) {

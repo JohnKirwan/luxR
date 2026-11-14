@@ -19,7 +19,7 @@ test_that("attenuate_depth rejects negative Kd", {
   expect_error(
     attenuate_depth(100, -0.1, 5),
     "`Kd` must contain only non-negative values",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -27,12 +27,12 @@ test_that("attenuate_depth rejects non-finite inputs", {
   expect_error(
     attenuate_depth(100, NA_real_, 5),
     "`Kd` must contain only finite values",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
   expect_error(
     attenuate_depth(100, 0.1, Inf),
     "`depth` must contain only finite values",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -191,17 +191,17 @@ test_that("surface transmission validates physical model inputs", {
   expect_error(
     light_at_depth("clear_noon", "IA", 0, surface_angle = NA_real_),
     "surface_angle.*finite",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
   expect_error(
     light_at_depth("clear_noon", "IA", 0, surface_angle = 91),
     "between 0 and 90",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
   expect_error(
     light_at_depth("clear_noon", "IA", 0, refractive_index = 1),
     "greater than 1",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -243,7 +243,7 @@ test_that("light_at_depth rejects targets shallower than an underwater source", 
     error = identity
   )
 
-  expect_s3_class(err, "lux_spectrum_depth_error")
+  expect_s3_class(err, "luxR_value_error")
   expect_match(conditionMessage(err), "underwater_10m")
   expect_match(conditionMessage(err), "referenced at 10 m")
   expect_identical(err$field, "target_depth_m")
@@ -257,12 +257,12 @@ test_that("light_at_depth rejects non-scalar or negative depth", {
   expect_error(
     light_at_depth("clear_noon", "IA", depth = c(0, 5)),
     "one numeric value",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
   expect_error(
     light_at_depth("clear_noon", "IA", depth = -1),
     "non-negative",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -308,17 +308,17 @@ test_that("propagate_depth validates attenuation and absolute depths", {
   expect_error(
     propagate_depth(100, -0.1, from = 0, to = 5),
     "`Kd` must contain only non-negative values",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
   expect_error(
     propagate_depth(100, 0.1, from = NA_real_, to = 5),
     "`from` must contain only finite values",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
   expect_error(
     propagate_depth(100, 0.1, from = -1, to = 5),
     "non-negative absolute depths",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -362,17 +362,17 @@ test_that("attenuate_spectrum rejects invalid attenuation boundaries", {
   expect_error(
     attenuate_spectrum(c(1, 2), c(0.1, -0.2), depths = 10),
     "`Kd_lambda` must contain only non-negative values",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
   expect_error(
     attenuate_spectrum(c(1, 2), c(0.1, NA_real_), depths = 10),
     "`Kd_lambda` must contain only finite values",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
   expect_error(
     attenuate_spectrum(c(1, 2), c(0.1, 0.2), depths = Inf),
     "`depths` must contain only finite values",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -389,7 +389,7 @@ test_that("attenuate_spectrum rejects non-irradiance lux_spectrum inputs", {
     error <- expect_error(
       attenuate_spectrum(input, rep(0.1, 3), depths = 10),
       "must contain spectral irradiance",
-      class = "lux_spectrum_quantity_error"
+      class = "luxR_unit_error"
     )
     expect_identical(error$context$model,
                      "spectral Beer-Lambert diffuse attenuation")
@@ -422,17 +422,17 @@ test_that("propagate_spectrum rejects invalid attenuation boundaries", {
   expect_error(
     propagate_spectrum(c(1, 2), c(0.1, -0.2), from = 0, to = 10),
     "`Kd_lambda` must contain only non-negative values",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
   expect_error(
     propagate_spectrum(c(1, 2), c(0.1, Inf), from = 0, to = 10),
     "`Kd_lambda` must contain only finite values",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
   expect_error(
     propagate_spectrum(c(1, 2), c(0.1, 0.2), from = 0, to = NA_real_),
     "`to` must contain only finite values",
-    class = "lux_spectrum_value_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -464,7 +464,7 @@ test_that("propagate_spectrum rejects non-irradiance lux_spectrum inputs", {
   expect_error(
     propagate_spectrum(input, rep(0.1, 3), from = 0, to = 10),
     "must contain spectral irradiance",
-    class = "lux_spectrum_quantity_error"
+    class = "luxR_unit_error"
   )
 })
 
@@ -473,7 +473,7 @@ test_that("inverse propagation fails on non-finite numerical output", {
     propagate_spectrum(1, Kd_lambda = 1000, from = 1, to = 0,
                        format = "matrix"),
     "produced a non-finite result",
-    class = "lux_spectrum_numerical_error"
+    class = "luxR_numerical_error"
   )
   expect_identical(error$context$from_depth_m, 1)
   expect_identical(error$context$target_depth_m, 0)
@@ -494,30 +494,30 @@ test_that("fit_Kd.lux_spectrum: rejects non-irradiance, numeric E2 and grid mism
   s1  <- lux_spectrum(rep(2, length(lam)), lam, "irradiance", "W/m2/nm")
   rad <- lux_spectrum(rep(1, length(lam)), lam, "radiance", "W/m2/sr/nm")
   off <- lux_spectrum(rep(1, length(lam)), lam + 5, "irradiance", "W/m2/nm")
-  expect_error(fit_Kd(s1, 0, rad, 10), class = "lux_spectrum_dimension_error")
+  expect_error(fit_Kd(s1, 0, rad, 10), class = "luxR_dimension_error")
   expect_error(fit_Kd(s1, 0, rep(1, length(lam)), 10),
-               class = "lux_spectrum_type_error")
-  expect_error(fit_Kd(s1, 0, off, 10), class = "lux_spectrum_grid_error")
+               class = "luxR_type_error")
+  expect_error(fit_Kd(s1, 0, off, 10), class = "luxR_grid_error")
   short <- lux_spectrum(rep(1, 5), lam[1:5], "irradiance", "W/m2/nm")
-  expect_error(fit_Kd(s1, 0, short, 10), class = "lux_spectrum_grid_error")
+  expect_error(fit_Kd(s1, 0, short, 10), class = "luxR_grid_error")
 })
 
 test_that("photic_depth validates Kd and fraction", {
   expect_equal(photic_depth(0.1), -log(0.01) / 0.1)
-  expect_error(photic_depth(0.1, fraction = 1), class = "lux_spectrum_value_error")
-  expect_error(photic_depth(0.1, fraction = 0), class = "lux_spectrum_value_error")
-  expect_error(photic_depth(-0.1), class = "lux_spectrum_value_error")
-  expect_error(photic_depth(NA_real_), class = "lux_spectrum_value_error")
+  expect_error(photic_depth(0.1, fraction = 1), class = "luxR_value_error")
+  expect_error(photic_depth(0.1, fraction = 0), class = "luxR_value_error")
+  expect_error(photic_depth(-0.1), class = "luxR_value_error")
+  expect_error(photic_depth(NA_real_), class = "luxR_value_error")
 })
 
 test_that("fit_Kd numeric validates input with typed errors", {
   expect_equal(fit_Kd(1, 0, exp(-1), 2), 0.5)
-  expect_error(fit_Kd(1, 5, 0.5, 2), class = "lux_spectrum_value_error")
-  expect_error(fit_Kd(0, 0, 0.5, 2), class = "lux_spectrum_value_error")
-  expect_error(fit_Kd(1, 0, NA_real_, 2), class = "lux_spectrum_value_error")
-  expect_error(fit_Kd(1:3, 0, 1:2, 2), class = "lux_spectrum_dimension_error")
+  expect_error(fit_Kd(1, 5, 0.5, 2), class = "luxR_value_error")
+  expect_error(fit_Kd(0, 0, 0.5, 2), class = "luxR_value_error")
+  expect_error(fit_Kd(1, 0, NA_real_, 2), class = "luxR_value_error")
+  expect_error(fit_Kd(1:3, 0, 1:2, 2), class = "luxR_dimension_error")
   expect_error(fit_Kd(1:3, 0:1, 1:3 / 2, 2:3),
-               class = "lux_spectrum_dimension_error")
+               class = "luxR_dimension_error")
   expect_error(fit_Kd(1, 0, from_naples("0m"), 2),
-               class = "lux_spectrum_type_error")
+               class = "luxR_type_error")
 })

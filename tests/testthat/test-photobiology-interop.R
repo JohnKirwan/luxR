@@ -269,7 +269,7 @@ test_that("reflectance above 1 is refused rather than clamped", {
                                     Rfr = c(1.4, rep(0.4, 10)),
                                     Rfr.type = "total", strict.range = FALSE)
   expect_error(as_lux_spectrum(r), "\\[0, 1\\]",
-               class = "lux_spectrum_value_error")
+               class = "luxR_value_error")
 })
 
 test_that("reflectance round-trips through photobiology intact", {

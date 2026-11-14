@@ -67,10 +67,10 @@ govardovskii_template <- function(lambda, lambda_max,
       is.object(lambda_max) || !is.null(dim(lambda_max)) ||
       length(lambda_max) != 1L || !is.finite(lambda_max) ||
       lambda_max < range[1] || lambda_max > range[2]) {
-    .stop_species_model(
+    .luxr_abort(
       sprintf("'lambda_max' must be one finite number between %d and %d nm for an %s template.",
               range[1], range[2], chromophore),
-      "lux_invalid_sensitivity_peak_error",
+      "value",
       field = "lambda_max", value = lambda_max
     )
   }
@@ -90,9 +90,9 @@ govardovskii_template <- function(lambda, lambda_max,
       !is.null(dim(lambda)) || length(lambda) == 0L ||
       any(!is.finite(lambda)) || any(lambda <= 0) ||
       any(diff(lambda) <= 0)) {
-    .stop_species_model(
+    .luxr_abort(
       "'lambda' must be a non-empty, finite, strictly increasing vector of positive wavelengths.",
-      "lux_invalid_sensitivity_grid_error",
+      "grid",
       field = "lambda", value = lambda
     )
   }
@@ -188,13 +188,13 @@ receptor_absorptance <- function(S, optical_density = NULL,
                                  alpha = NULL, path_length = NULL) {
 
   fail <- function(message, field, value = NULL, index = NULL,
-                   class = "lux_species_input_error") {
-    .stop_species_model(paste0("receptor_absorptance(): ", message), class,
-                        field = field, value = value, index = index)
+                   kind = "value") {
+    .luxr_abort(paste0("receptor_absorptance(): ", message), kind,
+                field = field, value = value, index = index)
   }
   check <- function(x, field, ...) {
     .check_numeric(x, field, function(message, field, value, index, kind) {
-      fail(message, field, value, index)
+      fail(message, field, value, index, kind)
     }, ...)
   }
 
@@ -224,7 +224,7 @@ receptor_absorptance <- function(S, optical_density = NULL,
   s_vals <- if (is_df) S$S else S
   if (is.null(s_vals))
     fail("`S` must be a numeric vector or a data frame with an `S` column.",
-         "S", class(S), class = "lux_invalid_sensitivity_error")
+         "S", class(S), kind = "type")
   check(s_vals, "S", lower = 0)
   over <- which(s_vals > 1 + sqrt(.Machine$double.eps))
   if (length(over) > 0L)
@@ -232,7 +232,7 @@ receptor_absorptance <- function(S, optical_density = NULL,
                 "[0, 1]; index ", over[1L], " is ", format(s_vals[over[1L]]),
                 ". Normalise it first (e.g. govardovskii_template())."),
          "S", s_vals[over[1L]], over[1L],
-         class = "lux_invalid_sensitivity_error")
+         kind = "value")
 
   A <- 1 - exp(-kappa * s_vals)
   if (is_df) data.frame(lambda = S$lambda, S = A) else A
@@ -288,25 +288,25 @@ fit_sensitivity <- function(lambda, sensitivity,
   chromophore <- match.arg(chromophore)
   valid <- .template_range[[chromophore]]
   if (is.null(lambda_max_range)) lambda_max_range <- valid
-  fail <- function(message, field, value = NULL,
-                   class = "lux_species_input_error") {
-    .stop_species_model(paste0("fit_sensitivity(): ", message), class,
-                        field = field, value = value)
+  fail <- function(message, field, value = NULL, kind = "value") {
+    .luxr_abort(paste0("fit_sensitivity(): ", message), kind,
+                field = field, value = value)
   }
   if (!is.numeric(sensitivity) || length(lambda) != length(sensitivity))
     fail(paste0("`sensitivity` must be numeric with one value per ",
                 "wavelength; got ", length(sensitivity), " values for ",
                 length(lambda), " wavelengths."),
-         "sensitivity", length(sensitivity))
+         "sensitivity", length(sensitivity),
+         kind = if (is.numeric(sensitivity)) "dimension" else "type")
   if (!is.numeric(lambda_max_range) || length(lambda_max_range) != 2L ||
       anyNA(lambda_max_range) || lambda_max_range[1] >= lambda_max_range[2])
     fail("`lambda_max_range` must be two increasing wavelengths.",
          "lambda_max_range", lambda_max_range)
   if (lambda_max_range[1] < valid[1] || lambda_max_range[2] > valid[2]) {
-    .stop_species_model(
+    .luxr_abort(
       sprintf("'lambda_max_range' must lie within %d-%d nm, where the %s template is defined.",
               valid[1], valid[2], chromophore),
-      "lux_invalid_sensitivity_peak_error",
+      "value",
       field = "lambda_max_range", value = lambda_max_range
     )
   }
@@ -317,13 +317,13 @@ fit_sensitivity <- function(lambda, sensitivity,
   if (any(is.infinite(sensitivity)))
     fail("`sensitivity` must not contain infinite values.", "sensitivity",
          sensitivity[is.infinite(sensitivity)][1L],
-         class = "lux_invalid_sensitivity_error")
+         kind = "value")
   s_max <- if (all(is.na(sensitivity))) NA_real_ else
     max(sensitivity, na.rm = TRUE)
   if (is.na(s_max) || s_max <= 0)
     fail(paste0("the largest `sensitivity` value must be positive; is the ",
                 "spectrum inverted or empty?"),
-         "sensitivity", s_max, class = "lux_invalid_sensitivity_error")
+         "sensitivity", s_max, kind = "value")
   sensitivity <- sensitivity / s_max
 
   keep <- !is.na(sensitivity)
@@ -448,18 +448,18 @@ quantum_catch <- function(irradiance, lambda, S,
   )
   if (!is.character(input_unit) || length(input_unit) != 1L ||
       is.na(input_unit) || !input_unit %in% supported_units) {
-    .stop_species_model(
+    .luxr_abort(
       paste0("'input_unit' must be exactly one of: ",
              paste(supported_units, collapse = ", "), "."),
-      "lux_invalid_quantum_unit_error",
+      "unit",
       field = "input_unit", value = input_unit,
       supported_units = supported_units
     )
   }
   if (!is.logical(total) || length(total) != 1L || is.na(total)) {
-    .stop_species_model(
+    .luxr_abort(
       "'total' must be one non-missing logical value.",
-      "lux_invalid_quantum_input_error",
+      "type",
       field = "total", value = total
     )
   }
@@ -482,25 +482,25 @@ quantum_catch <- function(irradiance, lambda, S,
 
 .validate_quantum_sensitivity <- function(S) {
   if (!is.data.frame(S)) {
-    .stop_species_model(
+    .luxr_abort(
       "'S' must be a data frame with numeric 'lambda' and 'S' columns.",
-      "lux_invalid_quantum_sensitivity_error",
+      "value",
       field = "S", value = S
     )
   }
   missing_columns <- setdiff(c("lambda", "S"), names(S))
   if (length(missing_columns) > 0L) {
-    .stop_species_model(
+    .luxr_abort(
       paste0("'S' is missing required column(s): ",
              paste(missing_columns, collapse = ", "), "."),
-      "lux_invalid_quantum_sensitivity_error",
+      "value",
       field = "S", value = names(S), missing_columns = missing_columns
     )
   }
   if (nrow(S) < 2L) {
-    .stop_species_model(
+    .luxr_abort(
       "'S' must contain at least two rows for interpolation.",
-      "lux_invalid_quantum_sensitivity_error",
+      "value",
       field = "S", value = S
     )
   }
@@ -508,26 +508,26 @@ quantum_catch <- function(irradiance, lambda, S,
     values <- S[[field]]
     if (!is.numeric(values) || is.complex(values) || is.object(values) ||
         !is.null(dim(values)) || any(!is.finite(values))) {
-      .stop_species_model(
+      .luxr_abort(
         paste0("'S$", field, "' must be a finite numeric vector."),
-        "lux_invalid_quantum_sensitivity_error",
+        "value",
         field = paste0("S$", field), value = values
       )
     }
   }
   if (any(diff(S$lambda) <= 0)) {
-    .stop_species_model(
+    .luxr_abort(
       "'S$lambda' must be strictly increasing and unique.",
-      "lux_invalid_quantum_sensitivity_error",
+      "value",
       field = "S$lambda", value = S$lambda
     )
   }
   invalid_S <- which(S$S < 0 | S$S > 1)
   if (length(invalid_S) > 0L) {
     i <- invalid_S[1L]
-    .stop_species_model(
+    .luxr_abort(
       paste0("'S$S' must lie in [0, 1]; index ", i, " is ", S$S[i], "."),
-      "lux_invalid_quantum_sensitivity_error",
+      "value",
       field = "S$S", value = S$S[i], index = i
     )
   }

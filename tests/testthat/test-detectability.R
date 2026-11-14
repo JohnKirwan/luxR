@@ -41,7 +41,7 @@ test_that("species achromatic contrast requires a validated default channel", {
       species = "Homo sapiens", channel = "achromatic"
     ),
     "No adaptation-specific photopic or scotopic default",
-    class = "lux_channel_unavailable_error"
+    class = "luxR_value_error"
   )
 })
 

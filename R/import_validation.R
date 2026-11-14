@@ -132,7 +132,8 @@
   tryCatch(
     lux_spectrum(E = E, lambda = lambda, quantity = quantity, unit = unit,
                  meta = meta),
-    lux_spectrum_validation_error = function(e) {
+    luxR_error = function(e) {
+      if (inherits(e, "luxR_internal_error")) stop(e)
       .stop_spectrum_import(
         paste0("Imported spectrum violates the declared physical contract: ",
                conditionMessage(e)),
