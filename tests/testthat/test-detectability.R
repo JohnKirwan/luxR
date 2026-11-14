@@ -201,15 +201,16 @@ test_that("detection calculations reject non-finite and non-physical inputs", {
                                channel = "achromatic")
   )
   for (call in invalid_calls) {
-    expect_error(call(), class = "lux_detection_error")
+    expect_error(call(), class = "luxR_value_error")
   }
   err <- tryCatch(
     contrast_at_distance(1, -1, Kd = 0.1),
     error = identity
   )
-  expect_s3_class(err, "lux_detection_error")
-  expect_true(all(c("model_version", "code_commit", "random_seed",
+  expect_s3_class(err, "luxR_value_error")
+  expect_true(all(c("model_version", "code_commit",
                     "operation", "field", "value") %in% names(err)))
+  expect_false("random_seed" %in% names(err))
 })
 
 test_that("detection calculations enforce spectral schemas and regular grids", {
@@ -220,7 +221,7 @@ test_that("detection calculations enforce spectral schemas and regular grids", {
   expect_error(
     inherent_contrast(object, background, illuminant, lam,
                       channel = "achromatic", binwidth = 10),
-    "regularly spaced", class = "lux_detection_error"
+    "regularly spaced", class = "luxR_grid_error"
   )
 
   lam <- c(400, 410, 420)
@@ -230,7 +231,7 @@ test_that("detection calculations enforce spectral schemas and regular grids", {
   expect_error(
     inherent_contrast(wrong_object, background, illuminant, lam,
                       channel = "achromatic"),
-    "reflectance lux_spectrum", class = "lux_detection_error"
+    "reflectance lux_spectrum", class = "luxR_unit_error"
   )
 
   wrong_illuminant <- lux_spectrum(
@@ -239,7 +240,7 @@ test_that("detection calculations enforce spectral schemas and regular grids", {
   expect_error(
     inherent_contrast(object, background, wrong_illuminant, lam,
                       channel = "achromatic"),
-    "irradiance lux_spectrum", class = "lux_detection_error"
+    "irradiance lux_spectrum", class = "luxR_unit_error"
   )
 })
 
@@ -272,20 +273,20 @@ test_that("spectral-path model requires wavelength-resolved optical inputs", {
     detection_range(black, grey, sp$irradiance, lam, Kd = 0.06,
                     model = "spectral_path", channel = "achromatic",
                     veiling = grey * irradiance2radiance(sp$irradiance)),
-    "beam_c.*required", class = "lux_detection_error"
+    "beam_c.*required", class = "luxR_value_error"
   )
   expect_error(
     detection_range(black, grey, sp$irradiance, lam, Kd = 0.06,
                     beam_c = 0.2, model = "spectral_path",
                     channel = "achromatic",
                     veiling = grey * irradiance2radiance(sp$irradiance)),
-    "same length", class = "lux_detection_error"
+    "same length", class = "luxR_dimension_error"
   )
   expect_error(
     detection_range(black, grey, sp$irradiance, lam, Kd = 0.06,
                     beam_c = rep(0.2, length(lam)),
                     model = "spectral_path", channel = "achromatic"),
-    "veiling", class = "lux_detection_error"
+    "veiling", class = "luxR_value_error"
   )
   expect_error(
     detection_range(
@@ -295,7 +296,7 @@ test_that("spectral-path model requires wavelength-resolved optical inputs", {
       veiling = grey * irradiance2radiance(sp$irradiance),
       geometry = "custom"
     ),
-    "solid_angle", class = "lux_detection_error"
+    "solid_angle", class = "luxR_type_error"
   )
 })
 

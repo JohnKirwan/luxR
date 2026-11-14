@@ -162,6 +162,7 @@ visual_range <- function(Kd, contrast_threshold = 0.02, kd_to_c = 1.5,
     if (!(length(beam_c) %in% c(1L, length(Kd))))
       .stop_detection(
         "`beam_c` must be scalar or the same length as `Kd`.",
+        kind = "dimension",
         field = "beam_c", value = beam_c, operation = "visual_range"
       )
   }
@@ -174,7 +175,7 @@ visual_range <- function(Kd, contrast_threshold = 0.02, kd_to_c = 1.5,
   if (any(!is.finite(out)) || any(out < 0))
     .stop_detection(
       "The visual-range heuristic produced a non-finite or negative result.",
-      "lux_detection_calculation_error", operation = "visual_range",
+      "numerical", operation = "visual_range",
       Kd = Kd, contrast_threshold = contrast_threshold,
       kd_to_c = kd_to_c, beam_c = beam_c, calculated_range = out
     )

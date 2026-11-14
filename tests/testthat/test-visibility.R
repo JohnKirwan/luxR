@@ -81,7 +81,7 @@ test_that("visual_range rejects invalid attenuation and thresholds", {
     function() visual_range(0.1, beam_c = Inf)
   )
   for (call in invalid_calls) {
-    expect_error(call(), class = "lux_detection_error")
+    expect_error(call(), class = "luxR_value_error")
   }
 })
 

@@ -20,15 +20,15 @@ test_that("irradiance2radiance custom divides by solid_angle", {
 })
 
 test_that("irradiance2radiance validates values and geometry parameters", {
-  expect_error(irradiance2radiance(c(1, Inf)), class = "lux_detection_error")
-  expect_error(irradiance2radiance(-1), class = "lux_detection_error")
+  expect_error(irradiance2radiance(c(1, Inf)), class = "luxR_value_error")
+  expect_error(irradiance2radiance(-1), class = "luxR_value_error")
   expect_error(
     irradiance2radiance(1, geometry = "custom", solid_angle = 4 * pi + 0.1),
-    class = "lux_detection_error"
+    class = "luxR_value_error"
   )
   expect_error(
     irradiance2radiance(1, geometry = "lambertian", solid_angle = 1),
-    class = "lux_detection_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -52,15 +52,15 @@ test_that("radiance2irradiance custom multiplies by solid_angle", {
 })
 
 test_that("radiance2irradiance validates values and geometry parameters", {
-  expect_error(radiance2irradiance(NA_real_), class = "lux_detection_error")
-  expect_error(radiance2irradiance(-1), class = "lux_detection_error")
+  expect_error(radiance2irradiance(NA_real_), class = "luxR_value_error")
+  expect_error(radiance2irradiance(-1), class = "luxR_value_error")
   expect_error(
     radiance2irradiance(1, geometry = "custom", solid_angle = 0),
-    class = "lux_detection_error"
+    class = "luxR_value_error"
   )
   expect_error(
     radiance2irradiance(1, geometry = "scalar", solid_angle = 1),
-    class = "lux_detection_error"
+    class = "luxR_value_error"
   )
 })
 

@@ -26,8 +26,8 @@ polarized) this is the degree of \emph{linear} polarization.
 All inputs must be finite numeric vectors. A Stokes vector is
   physical only when \eqn{I > 0} and
   \eqn{\sqrt{Q^2 + U^2 + V^2} \le I}. Values exceeding this bound by more
-  than 64 machine epsilons are rejected with a
-  \code{luxR_polarization_physicality_error}. Values within that round-off
+  than 64 machine epsilons are rejected with a \code{luxR_value_error}
+  (see \link{luxR-conditions}). Values within that round-off
   tolerance are returned as exactly one.
 }
 \examples{

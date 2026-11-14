@@ -13,7 +13,7 @@ test_that("degree_of_polarization rejects non-positive I", {
   expect_error(
     degree_of_polarization(0, 1, 0),
     "must be greater than 0",
-    class = "luxR_polarization_input_error"
+    class = "luxR_value_error"
   )
 })
 
@@ -21,26 +21,27 @@ test_that("degree_of_polarization rejects non-physical Stokes states", {
   err <- expect_error(
     degree_of_polarization(I = 1, Q = 0.8, U = 0.8),
     "physically invalid",
-    class = "luxR_polarization_physicality_error"
+    class = "luxR_value_error"
   )
   expect_equal(err$index, 1)
   expect_equal(err$operation, "degree_of_polarization")
   expect_true(all(c("model_version", "package_version", "code_commit",
-                    "random_seed", "configuration") %in% names(err)))
+                    "configuration") %in% names(err)))
+  expect_false("random_seed" %in% names(err))
 })
 
 test_that("Stokes validation is finite, typed, and length-safe", {
   expect_error(degree_of_polarization("1", 0, 0),
-               class = "luxR_polarization_input_error")
+               class = "luxR_type_error")
   expect_error(degree_of_polarization(1, NA_real_, 0),
-               class = "luxR_polarization_input_error")
+               class = "luxR_value_error")
   expect_error(degree_of_polarization(1, Inf, 0),
-               class = "luxR_polarization_input_error")
+               class = "luxR_value_error")
   expect_error(degree_of_polarization(numeric(), 0, 0),
-               class = "luxR_polarization_input_error")
+               class = "luxR_value_error")
   expect_error(
     degree_of_polarization(rep(1, 3), c(0.1, 0.2), 0),
-    class = "luxR_polarization_length_error"
+    class = "luxR_dimension_error"
   )
   expect_equal(degree_of_polarization(c(1, 2), 0.5, 0), c(0.5, 0.25))
 })
@@ -58,9 +59,9 @@ test_that("angle_of_polarization returns half-atan2 in (-90, 90]", {
 test_that("angle_of_polarization validates inputs and broadcasts scalars", {
   expect_equal(angle_of_polarization(c(1, 0), 1), c(22.5, 45))
   expect_error(angle_of_polarization(c(1, 0, -1), c(0, 1)),
-               class = "luxR_polarization_length_error")
+               class = "luxR_dimension_error")
   expect_error(angle_of_polarization(NA_real_, 1),
-               class = "luxR_polarization_input_error")
+               class = "luxR_value_error")
 })
 
 # ---- refracted_solar_angle ---------------------------------------------
@@ -72,11 +73,11 @@ test_that("refracted_solar_angle: 0 -> 0 and 90 -> Snell's window", {
 
 test_that("refracted_solar_angle rejects out-of-range zenith", {
   expect_error(refracted_solar_angle(120),
-               class = "luxR_polarization_input_error")
+               class = "luxR_value_error")
   expect_error(refracted_solar_angle(30, n = 1),
-               class = "luxR_polarization_input_error")
+               class = "luxR_value_error")
   expect_error(refracted_solar_angle(NA_real_),
-               class = "luxR_polarization_input_error")
+               class = "luxR_value_error")
 })
 
 # ---- scattering_angle --------------------------------------------------
@@ -92,11 +93,11 @@ test_that("scattering_angle: known geometries", {
 
 test_that("scattering_angle validates geometry and vector lengths", {
   expect_error(scattering_angle(-1, 0, 30, 0),
-               class = "luxR_polarization_input_error")
+               class = "luxR_value_error")
   expect_error(scattering_angle(30, 0, 181, 0),
-               class = "luxR_polarization_input_error")
+               class = "luxR_value_error")
   expect_error(scattering_angle(1:3, 1:2, 30, 0),
-               class = "luxR_polarization_length_error")
+               class = "luxR_dimension_error")
 })
 
 # ---- underwater_polarization -------------------------------------------
@@ -156,11 +157,11 @@ test_that("underwater model fails fast on invalid inputs and parameters", {
     function() underwater_polarization(90, sun_zenith = 0, n = 1)
   )
   for (call in invalid_calls) {
-    expect_error(call(), class = "luxR_polarization_input_error")
+    expect_error(call(), class = "luxR_value_error")
   }
   expect_error(
     underwater_polarization(1:3, view_azimuth = 1:2, sun_zenith = 0),
-    class = "luxR_polarization_length_error"
+    class = "luxR_dimension_error"
   )
 })
 
@@ -200,11 +201,11 @@ test_that("angle-of-polarization difference is axial (period 180)", {
 
 test_that("polarization_contrast validates states and lengths", {
   expect_error(polarization_contrast(1.1, 0, 0, 0),
-               class = "luxR_polarization_input_error")
+               class = "luxR_value_error")
   expect_error(polarization_contrast(0.5, NA_real_, 0, 0),
-               class = "luxR_polarization_input_error")
+               class = "luxR_value_error")
   expect_error(polarization_contrast(1:3 / 4, 1:2, 0, 0),
-               class = "luxR_polarization_length_error")
+               class = "luxR_dimension_error")
   res <- polarization_contrast(c(0.2, 0.4), 0, 0.1, 90)
   expect_equal(nrow(res), 2)
 })
