@@ -1,6 +1,19 @@
 # luxR 0.1.1
 
 ## Breaking changes
+- Removed exports that duplicated other functions, to keep the API focused
+  before the first CRAN release:
+  - `n2W_spec_irradiance()` and `W2mol_spec_irradiance()`. Their
+    `lux_spectrum` methods only wrapped `convert_unit()`; use
+    `convert_unit(x, "W/m2/nm")` or `convert_unit(x, "umol/m2/s/nm")` (and the
+    `/sr` units for radiance). For plain vectors, use `photon2W()` /
+    `W2photon()` for photon counts, or
+    `convert_unit(lux_spectrum(E, lambda, "irradiance", unit), to)$E` for
+    molar units.
+  - `ft2m()` and `m2ft()`; multiply or divide by 0.3048.
+- `irradiance2lux(photonic = TRUE)` now requires `molar_unit` to be one
+  non-missing string and raises a `luxR_type_error` otherwise. An `NA` value
+  was previously treated as raw photon counts without notice.
 - `as_colourvision()` now converts irradiance and radiance to energy units
   (`W/m2/nm`, `W/m2/sr/nm`) before reshaping; reflectance is unchanged.
   colourvision integrates energy, and the default `species_sensitivity_matrix()`

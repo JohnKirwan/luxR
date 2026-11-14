@@ -22,24 +22,6 @@ test_that("photon2W and W2photon are vectorised", {
   expect_equal(W2photon(W, lam), n, tolerance = 1e-10)
 })
 
-# ---- ft2m / m2ft --------------------------------------------------------
-
-test_that("ft2m and m2ft are exact inverses", {
-  expect_equal(m2ft(ft2m(100)), 100, tolerance = 1e-10)
-  expect_equal(ft2m(m2ft(30)),  30,  tolerance = 1e-10)
-})
-
-test_that("ft2m(1) equals 0.3048", {
-  expect_equal(ft2m(1), 0.3048)
-})
-
-test_that("ft2m and m2ft are vectorised and pass through NA", {
-  x <- c(10, NA, 30)
-  expect_true(is.na(ft2m(x)[2]))
-  expect_true(is.na(m2ft(x)[2]))
-  expect_length(ft2m(x), 3)
-})
-
 # ---- scotopic_lux -------------------------------------------------------
 
 test_that("scotopic_lux is silent by default", {

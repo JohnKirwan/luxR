@@ -47,8 +47,7 @@ spectra are rejected.}
 
 \item{photonic}{Logical; if \code{TRUE}, input is in photon or molar units
 — specify which via \code{molar_unit}. Note: \code{photonic = TRUE} means
-raw photon counts only in \code{\link{par_irradiance}}, and molar units
-only in \code{\link{n2W_spec_irradiance}}.}
+raw photon counts only in \code{\link{par_irradiance}}.}
 
 \item{molar_unit}{If photonic, unit string such as \code{"umol"}. Defaults to
 \code{"photons"}.}

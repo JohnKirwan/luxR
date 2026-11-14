@@ -47,32 +47,6 @@ wavelength_in_medium <- function(lambda, n) {
 }
 
 
-#' Convert feet to metres.
-#'
-#' Vectorised; passes through \code{NA}.
-#'
-#' @param z Depth or distance in feet.
-#' @return Numeric vector in metres.
-#' @seealso \code{\link{m2ft}}
-#' @examples
-#' propagate_depth(8260, Kd = 0.062, from = ft2m(72), to = 0)
-#' @export
-ft2m <- function(z) z * 0.3048
-
-
-#' Convert metres to feet.
-#'
-#' Vectorised; passes through \code{NA}.
-#'
-#' @param z Depth or distance in metres.
-#' @return Numeric vector in feet.
-#' @seealso \code{\link{ft2m}}
-#' @examples
-#' m2ft(30)
-#' @export
-m2ft <- function(z) z / 0.3048
-
-
 #' Compute scotopic illuminance (V'(lambda) weighting).
 #'
 #' Drop-in replacement for \code{\link{irradiance2lux}} using the CIE 1951

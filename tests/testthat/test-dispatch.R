@@ -139,47 +139,15 @@ test_that("band_irradiance: lux_spectrum passes lambda_min/lambda_max through", 
   expect_equal(result$E, expected$E, tolerance = 1e-10)
 })
 
-# ---- n2W_spec_irradiance -----------------------------------------------
+# ---- convert_unit: energy <-> photon ------------------------------------
 
-test_that("n2W_spec_irradiance: lux_spectrum (umol) returns W/m2/nm lux_spectrum", {
-  x_mol  <- lux_spectrum(Naples$depth_0m, Naples$wv,
-                         "irradiance", "umol/m2/s/nm")
-  result <- n2W_spec_irradiance(x_mol)
-  expect_s3_class(result, "lux_spectrum")
-  expect_equal(result$unit, "W/m2/nm")
-})
-
-test_that("n2W_spec_irradiance: lux_spectrum E matches numeric path", {
-  x_mol    <- lux_spectrum(Naples$depth_0m, Naples$wv,
-                           "irradiance", "umol/m2/s/nm")
-  expected <- n2W_spec_irradiance(Naples$depth_0m, Naples$wv,
-                                   photonic = TRUE, molar_unit = "umol")
-  result   <- n2W_spec_irradiance(x_mol)
-  expect_equal(result$E, expected, tolerance = 1e-10)
-})
-
-test_that("n2W_spec_irradiance: errors when unit is already energy-based", {
-  expect_error(n2W_spec_irradiance(x), "[Pp]hotonic")
-})
-
-# ---- W2mol_spec_irradiance ---------------------------------------------
-
-test_that("W2mol_spec_irradiance: lux_spectrum (W/m2/nm) returns umol lux_spectrum", {
-  result <- W2mol_spec_irradiance(x, molar_unit = "umol")
+test_that("convert_unit: W/m2/nm -> umol matches the analytical factor", {
+  result <- convert_unit(x, "umol/m2/s/nm")
   expect_s3_class(result, "lux_spectrum")
   expect_equal(result$unit, "umol/m2/s/nm")
-})
-
-test_that("W2mol_spec_irradiance: lux_spectrum E matches numeric path", {
-  expected <- W2mol_spec_irradiance(E, lam, molar_unit = "umol")
-  result   <- W2mol_spec_irradiance(x, molar_unit = "umol")
-  expect_equal(result$E, expected, tolerance = 1e-10)
-})
-
-test_that("W2mol_spec_irradiance: errors when unit is already photonic", {
-  x_mol <- lux_spectrum(Naples$depth_0m, Naples$wv,
-                        "irradiance", "umol/m2/s/nm")
-  expect_error(W2mol_spec_irradiance(x_mol), "[Ee]nergy|[Pp]hotonic")
+  expect_equal(result$E,
+               E * lam / (1.98644585714893e-16 * 6.02214076e23 * 1e-6),
+               tolerance = 1e-12)
 })
 
 # ---- reflectance_to_radiance -------------------------------------------
