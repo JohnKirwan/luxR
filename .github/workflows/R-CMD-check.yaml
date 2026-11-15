@@ -72,6 +72,9 @@ jobs:
           dependencies: '"hard"'
           extra-packages: any::rcmdcheck, any::testthat, any::knitr, any::rmarkdown
           needs: check
+          # The shared package cache comes from jobs that install every
+          # Suggests package, so restoring it would defeat this job.
+          cache: false
       - name: Confirm optional packages are absent
         run: |
           optional <- c("pavo", "colourvision", "photobiology", "lightr", "shiny")
