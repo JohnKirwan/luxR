@@ -147,6 +147,11 @@
   or `binwidth` is supplied (both come from the object); `binwidth` used to
   fail with "matched by multiple actual arguments".
 
+## Package identity
+- Title is now "Underwater Light and Aquatic Visual Ecology", stating the
+  package's single focus: underwater light fields and what aquatic animals can
+  see in them.
+
 ## Species data
 - `species_sensitivities` gains a `habitat` column (`"aquatic"` or
   `"terrestrial"`, one value per species), placed after `species`. Code that

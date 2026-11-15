@@ -1,6 +1,6 @@
 bibentry(
   bibtype  = "Manual",
-  title    = "luxR: Underwater Light Analysis and Visual Ecology",
+  title    = "luxR: Underwater Light and Aquatic Visual Ecology",
   author   = person(given = c("John", "D"), family = "Kirwan"),
   year     = substr(meta$Date, 1, 4),
   note     = paste0("R package version ", meta$Version),

@@ -1,6 +1,6 @@
 # luxR <img src="man/figures/logo.png" align="right" height="180" alt="luxR package logo" />
 
-**Underwater Light Analysis and Visual Ecology**
+**Underwater Light and Aquatic Visual Ecology**
 
 luxR provides tools for quantifying and modelling underwater light
 environments. It propagates spectral irradiance through the water column

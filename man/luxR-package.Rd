@@ -4,7 +4,7 @@
 \name{luxR-package}
 \alias{luxR-package}
 \alias{luxR}
-\title{luxR: Underwater Light Analysis and Visual Ecology}
+\title{luxR: Underwater Light and Aquatic Visual Ecology}
 \description{
 Tools for quantifying and modelling underwater light environments.
 Propagates spectral irradiance through the water column via Beer-Lambert
