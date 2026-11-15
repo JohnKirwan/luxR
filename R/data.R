@@ -98,9 +98,15 @@
 #' representative species from vertebrate and invertebrate taxa.
 #' Used by \code{\link{species_LEF}} and \code{\link{species_brightness}}.
 #'
-#' @format A data frame with 24 rows and 6 columns:
+#' @format A data frame with 24 rows and 7 columns:
 #' \describe{
 #'   \item{species}{Scientific name.}
+#'   \item{habitat}{\code{"aquatic"} or \code{"terrestrial"}, one value per
+#'     species. Terrestrial species (\emph{Homo sapiens}, \emph{Apis
+#'     mellifera}, \emph{Drosophila melanogaster}) are kept as reference
+#'     species: the bee and fly validate luxR against 'pavo' and
+#'     'colourvision', and humans model divers and observers. The Shiny app
+#'     offers aquatic species plus \emph{Homo sapiens}.}
 #'   \item{receptor}{Receptor class (e.g. \code{"L-cone"}, \code{"rod"}).}
 #'   \item{lambda_max}{Peak absorbance wavelength in nm.}
 #'   \item{chromophore}{\code{"A1"} (11-cis retinal) or \code{"A2"} (11-cis 3,4-didehydroretinal).}

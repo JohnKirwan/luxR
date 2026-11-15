@@ -417,8 +417,15 @@ test_that("Detection tab routes only validated species channels", {
   shiny::testServer(app_dir, {
     expect_identical(detection_channel("Homo sapiens"), "chromatic")
     expect_identical(detection_channel("Danio rerio"), "both")
-    expect_identical(detection_channel("Apis mellifera"), "both")
-    expect_identical(detection_channel("Drosophila melanogaster"), "achromatic")
+    terrestrial <- setdiff(
+      species_sensitivities$species[species_sensitivities$habitat == "terrestrial"],
+      "Homo sapiens"
+    )
+    expect_setequal(terrestrial, c("Apis mellifera", "Drosophila melanogaster"))
+    offered <- c(SPECIES_LIST, CHROMATIC_SPECIES_LIST, DETECTION_SPECIES_LIST)
+    expect_false(any(terrestrial %in% offered))
+    expect_true("Homo sapiens" %in% DETECTION_SPECIES_LIST)
+    expect_true(all(c("Oncorhynchus mykiss", "Latimeria chalumnae") %in% SPECIES_LIST))
     expect_error(
       detection_channel("Callorhinchus milii"),
       "no validated detection channel"
@@ -460,7 +467,7 @@ test_that("Species Perception applies optical-density self-screening", {
     expect_match(result$source_checksum_md5, "^[0-9a-f]{32}$")
     expect_identical(result$source_model_version, "solar-legacy-v1")
     expect_match(result$sensitivity_source_checksum_md5, "^[0-9a-f]{32}$")
-    expect_identical(result$sensitivity_model_version, "species-v2")
+    expect_identical(result$sensitivity_model_version, "species-v3")
     expect_match(result$sensitivity_citation_keys, "bowmakerDartnall1980")
     rendered <- paste(unlist(output$sp_qcatch), collapse = " ")
     expect_match(rendered, "photons m\u207b\u00b2 s\u207b\u00b9")

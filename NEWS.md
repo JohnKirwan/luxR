@@ -147,8 +147,16 @@
   or `binwidth` is supplied (both come from the object); `binwidth` used to
   fail with "matched by multiple actual arguments".
 
+## Species data
+- `species_sensitivities` gains a `habitat` column (`"aquatic"` or
+  `"terrestrial"`, one value per species), placed after `species`. Code that
+  selects columns by position must be updated.
+
 ## Shiny app
 - The app header shows the luxR version it is running.
+- The app offers only aquatic species plus *Homo sapiens* (divers and human
+  observers). *Apis mellifera* and *Drosophila melanogaster* remain in the
+  package data as terrestrial reference species.
 - The hosted app is at <https://johnkirwan-luxr.share.connect.posit.cloud>.
 
 ## Performance
