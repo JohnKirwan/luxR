@@ -104,6 +104,11 @@ Rebuild all three `.rda` files from the package root with:
 Rscript data-raw/build_species_data.R
 ```
 
+Each species has one `habitat` (`aquatic` or `terrestrial`) in
+`species_sensitivities.csv`. It is a species-level attribute, so it is not
+repeated in `species_channels.csv`, whose species must already appear in the
+sensitivity table. The Shiny app offers aquatic species plus *Homo sapiens*.
+
 The `channel_role` vocabulary is `chromatic`, `achromatic`, `irradiance`,
 `polarization`, and `fluorescence`. A receptor's role does not by itself make a
 species eligible for a model. Eligibility requires a complete, cited membership
