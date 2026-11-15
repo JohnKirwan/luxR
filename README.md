@@ -1,6 +1,6 @@
 # luxR <img src="man/figures/logo.png" align="right" height="180" alt="luxR package logo" />
 
-**Underwater Light Analysis and Visual Ecology**
+**Underwater Light and Aquatic Visual Ecology**
 
 luxR provides tools for quantifying and modelling underwater light
 environments. It propagates spectral irradiance through the water column
@@ -14,7 +14,7 @@ units, and estimates photoreceptor excitation and visual contrast.
 ## Installation
 
 ```r
-# Release build from r-universe:
+# Development version from r-universe (built from the GitHub master branch):
 install.packages(
   "luxR",
   repos = c(
@@ -103,7 +103,7 @@ can strongly amplify measurement noise.
 
 ## Interactive explorer
 
-> **[Launch the live luxR Shiny app](https://connect.posit.cloud/johnkirwan/content/019f94b5-66c5-51d6-136c-d3f2c2cf2ef6)**
+> **[Launch the live luxR Shiny app](https://johnkirwan-luxr.share.connect.posit.cloud)**
 
 ```r
 run_app()   # requires the 'shiny' package

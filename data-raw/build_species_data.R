@@ -18,6 +18,7 @@ if (length(output_argument) > 1L || !nzchar(output_dir)) {
 }
 dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 
+habitat_vocabulary <- c("aquatic", "terrestrial")
 role_vocabulary <- c(
   "chromatic", "achromatic", "irradiance", "polarization", "fluorescence"
 )
@@ -64,7 +65,8 @@ if (nrow(species_sensitivities) == 0L) {
   fail("`species_sensitivities.csv` must contain at least one row.", sensitivities_path)
 }
 expected_sensitivity_columns <- c(
-  "species", "receptor", "lambda_max", "chromophore", "channel_role", "source"
+  "species", "habitat", "receptor", "lambda_max", "chromophore", "channel_role",
+  "source"
 )
 if (!identical(names(species_sensitivities), expected_sensitivity_columns)) {
   fail(
@@ -75,8 +77,22 @@ if (!identical(names(species_sensitivities), expected_sensitivity_columns)) {
     sensitivities_path
   )
 }
-for (field in c("species", "receptor", "chromophore", "channel_role", "source")) {
+for (field in c("species", "habitat", "receptor", "chromophore", "channel_role",
+                "source")) {
   validate_text(species_sensitivities[[field]], field, sensitivities_path)
+}
+if (any(!species_sensitivities$habitat %in% habitat_vocabulary)) {
+  fail("`habitat` contains values outside the aquatic/terrestrial vocabulary.",
+       sensitivities_path)
+}
+habitats_per_species <- tapply(species_sensitivities$habitat,
+                               species_sensitivities$species,
+                               function(x) length(unique(x)))
+if (any(habitats_per_species != 1L)) {
+  fail(paste0("Each species must have exactly one `habitat`; inconsistent: ",
+              paste(names(habitats_per_species)[habitats_per_species != 1L],
+                    collapse = ", "), "."),
+       sensitivities_path)
 }
 if (!is.numeric(species_sensitivities$lambda_max) ||
     anyNA(species_sensitivities$lambda_max) ||
@@ -240,6 +256,7 @@ species_sensitivities <- attach_provenance(
   species_sensitivities, manifest_row("species_sensitivities", manifest),
   configuration = list(role_vocabulary = role_vocabulary,
                        chromophore_vocabulary = c("A1", "A2"),
+                       habitat_vocabulary = habitat_vocabulary,
                        citation_key_map = citation_key_map,
                        citation_status_map = citation_status_map,
                        species_source_map_md5 = source_map_md5)

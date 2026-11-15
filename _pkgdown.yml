@@ -9,10 +9,10 @@ navbar:
   components:
     app:
       text: "Live app"
-      href: https://connect.posit.cloud/johnkirwan/content/019f94b5-66c5-51d6-136c-d3f2c2cf2ef6
+      href: https://johnkirwan-luxr.share.connect.posit.cloud
 
 home:
-  title: "luxR — Underwater Light Analysis"
+  title: "luxR — Underwater Light and Aquatic Visual Ecology"
   description: >
     Convert between photometric and radiometric units, propagate spectral
     irradiance through the water column, and model photoreceptor quantum catch

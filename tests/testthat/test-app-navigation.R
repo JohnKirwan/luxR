@@ -47,6 +47,7 @@ test_that("rendered app navigation follows the canonical registry", {
   html <- as.character(ui)
   expect_match(html, 'src="logo.png"', fixed = TRUE)
   expect_match(html, 'alt="luxR package logo"', fixed = TRUE)
+  expect_match(html, paste0("v", utils::packageVersion("luxR")), fixed = TRUE)
   values <- regmatches(
     html,
     gregexpr('data-value="[^"]+', html, perl = TRUE)

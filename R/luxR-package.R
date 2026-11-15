@@ -1,4 +1,4 @@
-#' luxR: Underwater Light Analysis and Visual Ecology
+#' luxR: Underwater Light and Aquatic Visual Ecology
 #'
 #' Tools for quantifying and modelling underwater light environments.
 #' Propagates spectral irradiance through the water column via Beer-Lambert

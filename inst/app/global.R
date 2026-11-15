@@ -1,6 +1,8 @@
 library(luxR)
 library(shiny)
 
+APP_VERSION <- as.character(utils::packageVersion("luxR"))
+
 APP_TABS <- luxR:::.app_tabs()
 APP_TAB_TITLES <- stats::setNames(APP_TABS$title, APP_TABS$id)
 
@@ -21,15 +23,21 @@ SURFACE_SOURCE <- "direct"
 SURFACE_ANGLE_DEG <- 30
 SURFACE_REFRACTIVE_INDEX <- 1.333
 
-SPECIES_LIST <- sort(unique(species_sensitivities$species))
-CHROMATIC_SPECIES_LIST <- sort(unique(species_channels$species[
+# The app models underwater scenes, so it offers aquatic species plus Homo
+# sapiens (divers and human observers). Terrestrial reference species stay in
+# the package data, where they validate luxR against pavo and colourvision.
+SPECIES_LIST <- sort(unique(species_sensitivities$species[
+  species_sensitivities$habitat == "aquatic" |
+    species_sensitivities$species == "Homo sapiens"
+]))
+CHROMATIC_SPECIES_LIST <- intersect(SPECIES_LIST, species_channels$species[
   species_channels$channel_role == "chromatic" &
     species_channels$is_default
-]))
-ACHROMATIC_SPECIES_LIST <- sort(unique(species_channels$species[
+])
+ACHROMATIC_SPECIES_LIST <- intersect(SPECIES_LIST, species_channels$species[
   species_channels$channel_role == "achromatic" &
     species_channels$is_default
-]))
+])
 DETECTION_SPECIES_LIST <- sort(union(
   CHROMATIC_SPECIES_LIST,
   ACHROMATIC_SPECIES_LIST

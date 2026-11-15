@@ -3,7 +3,8 @@ library(luxR)
 test_that("species data schemas and controlled roles are valid", {
   expect_named(
     species_sensitivities,
-    c("species", "receptor", "lambda_max", "chromophore", "channel_role", "source")
+    c("species", "habitat", "receptor", "lambda_max", "chromophore",
+      "channel_role", "source")
   )
   expect_named(
     species_channels,

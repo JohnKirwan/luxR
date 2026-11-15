@@ -16,7 +16,8 @@
     )
   }
   sensitivity_columns <- c(
-    "species", "receptor", "lambda_max", "chromophore", "channel_role", "source"
+    "species", "habitat", "receptor", "lambda_max", "chromophore",
+    "channel_role", "source"
   )
   if (!identical(names(sensitivities), sensitivity_columns)) {
     .luxr_abort(
@@ -30,7 +31,8 @@
       actual_columns = names(sensitivities)
     )
   }
-  text_columns <- c("species", "receptor", "chromophore", "channel_role", "source")
+  text_columns <- c("species", "habitat", "receptor", "chromophore",
+                    "channel_role", "source")
   bad_text <- vapply(text_columns, function(field) {
     value <- sensitivities[[field]]
     !is.character(value) || anyNA(value) || any(!nzchar(trimws(value)))
@@ -63,6 +65,17 @@
       "data",
       dataset = "species_sensitivities",
       field = "chromophore"
+    )
+  }
+  if (any(!sensitivities$habitat %in% c("aquatic", "terrestrial")) ||
+      any(tapply(sensitivities$habitat, sensitivities$species,
+                 function(x) length(unique(x))) != 1L)) {
+    .luxr_abort(
+      paste("`species_sensitivities$habitat` must be \"aquatic\" or",
+            "\"terrestrial\", with one value per species."),
+      "data",
+      dataset = "species_sensitivities",
+      field = "habitat"
     )
   }
   if (any(!sensitivities$channel_role %in% .CHANNEL_ROLE_VOCABULARY)) {

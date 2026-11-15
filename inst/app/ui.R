@@ -10,7 +10,12 @@ navbarPage(
         "vertical-align: middle;"
       )
     ),
-    tags$span("luxR — Underwater Light Explorer")
+    tags$span("luxR — Underwater Light Explorer"),
+    tags$small(
+      paste0("v", APP_VERSION),
+      class = "luxr-version",
+      style = "margin-left: 8px; opacity: 0.7;"
+    )
   ),
   windowTitle = "luxR — Underwater Light Explorer",
   theme = NULL,

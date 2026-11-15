@@ -3,20 +3,21 @@
 #
 # WebAssembly binaries come from r-universe.
 #
-# shinylive needs a WebAssembly build of luxR, which is not on CRAN's WASM mirror
-# (repo.r-wasm.org). luxR is published on https://johnkirwan.r-universe.dev, which
-# builds and serves a WASM binary for every registered package. Installing luxR
-# from that repo records the r-universe repository in luxR's installed DESCRIPTION,
-# and `shinylive::export()` then downloads luxR's WASM binary from r-universe
-# automatically (shinylive >= 0.8.0). No per-release image build is required.
+# luxR is installed from https://johnkirwan.r-universe.dev, which builds and
+# serves a WASM binary of the GitHub master branch. Installing from that repo
+# records it in luxR's installed DESCRIPTION, and `shinylive::export()` then
+# downloads luxR's WASM binary from r-universe automatically (shinylive >= 0.8.0).
 #
-# Runs on a published release; to refresh the hosted app, publish (or re-publish)
-# a GitHub Release. NOTE: make sure r-universe has finished (re)building the
-# current luxR before publishing, so the exported app picks up a matching WASM
-# binary.
+# Runs on a published release, or manually via "Run workflow" with a release TAG
+# selected as the ref. The app code comes from the tag but the luxR binary comes
+# from r-universe (master HEAD), so the run fails unless the tag, the checked-out
+# DESCRIPTION and the r-universe build all carry the same version. Publish the
+# release only after r-universe has built that version, and keep master at the
+# release commit until this workflow has deployed.
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 name: shinylive.yaml
 
@@ -51,6 +52,21 @@ jobs:
               "https://cloud.r-project.org"
             )
           )
+        shell: Rscript {0}
+
+      - name: Check the r-universe luxR build matches the release tag
+        run: |
+          tag <- sub("^v", "", Sys.getenv("GITHUB_REF_NAME"))
+          source_version <- unname(read.dcf("DESCRIPTION", fields = "Version")[1, 1])
+          built_version <- as.character(utils::packageVersion("luxR"))
+          if (!identical(tag, source_version) || !identical(tag, built_version)) {
+            stop(sprintf(paste(
+              "Version mismatch: ref '%s', checked-out DESCRIPTION %s,",
+              "r-universe build %s. Run this workflow from a release tag, after",
+              "r-universe has built that version and before master moves on."
+            ), Sys.getenv("GITHUB_REF_NAME"), source_version, built_version))
+          }
+          message("luxR ", built_version, " matches release ", Sys.getenv("GITHUB_REF_NAME"))
         shell: Rscript {0}
 
       - name: Export the app as a static shinylive site

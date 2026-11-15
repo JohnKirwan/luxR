@@ -1,13 +1,13 @@
 Package: luxR
 Type: Package
-Title: Underwater Light Analysis and Visual Ecology
-Version: 0.1.1
-Date: 2026-11-14
+Title: Underwater Light and Aquatic Visual Ecology
+Version: 0.2.0
+Date: 2026-11-15
 Authors@R: person(given = c("John", "D"),
                    family = "Kirwan",
                    role  = c("aut", "cre"),
                    email = "jkirwan+luxR@pm.me")
-Description: Tools for quantifying and modelling underwater light environments.
+Description: Models underwater light fields and what aquatic animals can see in them.
     Propagates spectral irradiance through the water column via Beer-Lambert
     attenuation, computes photosynthetically active radiation (PAR), and
     converts between energy and photon-flux units. Provides the
