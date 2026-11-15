@@ -4,16 +4,19 @@
 bundled inside the package (`inst/app/`). Connect Cloud needs this file plus a
 `manifest.json` generated locally.
 
+Public URL: <https://johnkirwan-luxr.share.connect.posit.cloud>
+
 ## One-time / on-update: generate the manifest
 
 `manifest.json` must be regenerated whenever the app's dependency set changes.
 Run this from an R session **with luxR installed the way Connect Cloud should
-obtain it** — see the non-CRAN note below.
+obtain it** — see the source note below.
 
 ```r
 # 1. Install luxR so its source is recorded in the manifest.
-#    Recommended (guaranteed on Connect Cloud's free plan): from GitHub
-remotes::install_github("JohnKirwan/luxR")
+#    Recommended (guaranteed on Connect Cloud's free plan): from GitHub,
+#    pinned to the release tag so the app runs exactly the released code
+remotes::install_github("JohnKirwan/luxR@v0.2.0")
 #    Alternative to try: from r-universe (also serves the WASM binary)
 # install.packages("luxR", repos = "https://johnkirwan.r-universe.dev")
 
@@ -37,10 +40,11 @@ must be public for the free plan).
 To update later: push changes to GitHub, then use the **republish** icon on the
 content's page.
 
-## Non-CRAN dependency note
+## Release procedure and source note
 
-luxR is not on CRAN, so how Connect Cloud obtains it depends on what the manifest
-records:
+The hosted app is released together with each CRAN and GitHub release: pin the
+manifest to the release tag (above), merge, then republish. How Connect Cloud
+obtains luxR depends on what the manifest records:
 
 - **GitHub source (recommended, documented):** installing luxR with
   `remotes::install_github("JohnKirwan/luxR")` before `writeManifest()` records a

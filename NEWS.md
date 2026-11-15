@@ -1,4 +1,4 @@
-# luxR 0.1.1
+# luxR 0.2.0
 
 ## Breaking changes
 - Removed exports that duplicated other functions, to keep the API focused
@@ -147,6 +147,10 @@
   or `binwidth` is supplied (both come from the object); `binwidth` used to
   fail with "matched by multiple actual arguments".
 
+## Shiny app
+- The app header shows the luxR version it is running.
+- The hosted app is at <https://johnkirwan-luxr.share.connect.posit.cloud>.
+
 ## Performance
 - `detection_range(model = "spectral_path")` and `detectability()` build the
   receptor templates once per call instead of once per distance evaluated,
@@ -241,6 +245,8 @@ These fixes change returned numbers or turn silent results into errors.
 - `citation("luxR")` now takes its version and year from DESCRIPTION. It
   previously failed when the package was not installed and gave the current
   year rather than the release year.
+
+# luxR 0.1.1
 
 ## Package identity
 - Added the hexagonal luxR logo with a transparent background. The logo is

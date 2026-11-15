@@ -1,6 +1,8 @@
 library(luxR)
 library(shiny)
 
+APP_VERSION <- as.character(utils::packageVersion("luxR"))
+
 APP_TABS <- luxR:::.app_tabs()
 APP_TAB_TITLES <- stats::setNames(APP_TABS$title, APP_TABS$id)
 

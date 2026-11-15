@@ -1,8 +1,8 @@
 Package: luxR
 Type: Package
 Title: Underwater Light Analysis and Visual Ecology
-Version: 0.1.1
-Date: 2026-11-14
+Version: 0.2.0
+Date: 2026-11-15
 Authors@R: person(given = c("John", "D"),
                    family = "Kirwan",
                    role  = c("aut", "cre"),
