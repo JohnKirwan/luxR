@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>luxR — Underwater Light Analysis • luxR</title>
+<title>luxR — Underwater Light and Aquatic Visual Ecology • luxR</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="luxR — Underwater Light Analysis">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="luxR — Underwater Light and Aquatic Visual Ecology">
 <meta name="description" content="Convert between photometric and radiometric units, propagate spectral irradiance through the water column, and model photoreceptor quantum catch and colour discrimination.
 ">
 <meta property="og:description" content="Convert between photometric and radiometric units, propagate spectral irradiance through the water column, and model photoreceptor quantum catch and colour discrimination.
@@ -24,7 +24,7 @@
 
     <a class="navbar-brand me-2" href="index.html">luxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,7 @@
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
-<li class="nav-item"><a class="external-link nav-link" href="https://connect.posit.cloud/johnkirwan/content/019f94b5-66c5-51d6-136c-d3f2c2cf2ef6">Live app</a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://johnkirwan-luxr.share.connect.posit.cloud">Live app</a></li>
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
 </form></li>
@@ -55,14 +55,14 @@
 <img src="logo.png" class="logo" alt=""><h1 id="luxr-">luxR <a class="anchor" aria-label="anchor" href="#luxr-"></a>
 </h1>
 </div>
-<p><strong>Underwater Light Analysis and Visual Ecology</strong></p>
+<p><strong>Underwater Light and Aquatic Visual Ecology</strong></p>
 <p>luxR provides tools for quantifying and modelling underwater light environments. It propagates spectral irradiance through the water column via Beer-Lambert attenuation, converts between energy and photon-flux units, and estimates photoreceptor excitation and visual contrast.</p>
 <p><a href="https://github.com/JohnKirwan/luxR/actions" class="external-link"><img src="https://github.com/JohnKirwan/luxR/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R CMD check"></a> <a href="https://johnkirwan.r-universe.dev/luxR" class="external-link"><img src="https://johnkirwan.r-universe.dev/luxR/badges/version" alt="r-universe version"></a> <a href="https://johnkirwan.r-universe.dev/luxR" class="external-link"><img src="https://johnkirwan.r-universe.dev/luxR/badges/checks" alt="r-universe checks"></a></p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Release build from r-universe:</span></span>
+<code class="sourceCode R"><span><span class="co"># Development version from r-universe (built from the GitHub master branch):</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span></span>
 <span>  <span class="st">"luxR"</span>,</span>
 <span>  repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -183,7 +183,7 @@
 <h2 id="interactive-explorer">Interactive explorer<a class="anchor" aria-label="anchor" href="#interactive-explorer"></a>
 </h2>
 <blockquote>
-<p><strong><a href="https://connect.posit.cloud/johnkirwan/content/019f94b5-66c5-51d6-136c-d3f2c2cf2ef6" class="external-link">Launch the live luxR Shiny app</a></strong></p>
+<p><strong><a href="https://johnkirwan-luxr.share.connect.posit.cloud" class="external-link">Launch the live luxR Shiny app</a></strong></p>
 </blockquote>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/run_app.html">run_app</a></span><span class="op">(</span><span class="op">)</span>   <span class="co"># requires the 'shiny' package</span></span></code></pre></div>

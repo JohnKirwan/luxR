@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">luxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,7 @@
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
-      </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://connect.posit.cloud/johnkirwan/content/019f94b5-66c5-51d6-136c-d3f2c2cf2ef6">Live app</a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://johnkirwan-luxr.share.connect.posit.cloud">Live app</a></li>
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/JohnKirwan/luxR/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -34,9 +34,9 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.1" id="luxr-011">luxR 0.1.1<a class="anchor" aria-label="anchor" href="#luxr-011"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.0" id="luxr-020">luxR 0.2.0<a class="anchor" aria-label="anchor" href="#luxr-020"></a></h2>
 <div class="section level3">
-<h3 id="breaking-changes-0-1-1">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-1-1"></a></h3>
+<h3 id="breaking-changes-0-2-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-0"></a></h3>
 <ul><li>Removed exports that duplicated other functions, to keep the API focused before the first CRAN release:
 <ul><li>
 <code>n2W_spec_irradiance()</code> and <code>W2mol_spec_irradiance()</code>. Their <code>lux_spectrum</code> methods only wrapped <code><a href="../reference/convert_unit.html">convert_unit()</a></code>; use <code>convert_unit(x, "W/m2/nm")</code> or <code>convert_unit(x, "umol/m2/s/nm")</code> (and the <code>/sr</code> units for radiance). For plain vectors, use <code><a href="../reference/photon2W.html">photon2W()</a></code> / <code><a href="../reference/W2photon.html">W2photon()</a></code> for photon counts, or <code>convert_unit(lux_spectrum(E, lambda, "irradiance", unit), to)$E</code> for molar units.</li>
@@ -103,12 +103,27 @@ Previously A2 used wrong α constants and the A1 β-band, which made A2 narrower
 <code><a href="../reference/band_irradiance.html">band_irradiance()</a></code> on a <code>lux_spectrum</code> gives a clear error when <code>lambda</code> or <code>binwidth</code> is supplied (both come from the object); <code>binwidth</code> used to fail with “matched by multiple actual arguments”.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="performance-0-1-1">Performance<a class="anchor" aria-label="anchor" href="#performance-0-1-1"></a></h3>
+<h3 id="package-identity-0-2-0">Package identity<a class="anchor" aria-label="anchor" href="#package-identity-0-2-0"></a></h3>
+<ul><li>Title is now “Underwater Light and Aquatic Visual Ecology”, stating the package’s single focus: underwater light fields and what aquatic animals can see in them.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="species-data-0-2-0">Species data<a class="anchor" aria-label="anchor" href="#species-data-0-2-0"></a></h3>
+<ul><li>
+<code>species_sensitivities</code> gains a <code>habitat</code> column (<code>"aquatic"</code> or <code>"terrestrial"</code>, one value per species), placed after <code>species</code>. Code that selects columns by position must be updated.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="shiny-app-0-2-0">Shiny app<a class="anchor" aria-label="anchor" href="#shiny-app-0-2-0"></a></h3>
+<ul><li>The app header shows the luxR version it is running.</li>
+<li>The app offers only aquatic species plus <em>Homo sapiens</em> (divers and human observers). <em>Apis mellifera</em> and <em>Drosophila melanogaster</em> remain in the package data as terrestrial reference species.</li>
+<li>The hosted app is at <a href="https://johnkirwan-luxr.share.connect.posit.cloud" class="external-link uri">https://johnkirwan-luxr.share.connect.posit.cloud</a>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="performance-0-2-0">Performance<a class="anchor" aria-label="anchor" href="#performance-0-2-0"></a></h3>
 <ul><li>
 <code>detection_range(model = "spectral_path")</code> and <code><a href="../reference/detectability.html">detectability()</a></code> build the receptor templates once per call instead of once per distance evaluated, and with <code>channel = "both"</code> each threshold search computes only its own channel. A 1001-point search for both channels takes about 5 s instead of about 32 s; results are unchanged.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="unit-handling-0-1-1">Unit handling<a class="anchor" aria-label="anchor" href="#unit-handling-0-1-1"></a></h3>
+<h3 id="unit-handling-0-2-0">Unit handling<a class="anchor" aria-label="anchor" href="#unit-handling-0-2-0"></a></h3>
 <ul><li><p><code><a href="../reference/par_irradiance.html">par_irradiance()</a></code> now rejects radiance and reflectance <code>lux_spectrum</code> objects with a <code>luxR_unit_error</code>. Photon-radiance spectra were previously integrated as if they were W m^-2 nm^-1.</p></li>
 <li><p><code><a href="../reference/band_irradiance.html">band_irradiance()</a></code> converts a photon-unit <code>lux_spectrum</code> to W m^-2 nm^-1 before integrating, as documented. <code>photonic = TRUE</code> no longer applies the photon conversion twice, and <code>photonic = FALSE</code> now returns W m^-2 instead of a photon-unit integral. Non-irradiance spectra are rejected.</p></li>
 <li><p>Unit conversion is driven by one internal unit table and one pair of physical constants.</p></li>
@@ -121,7 +136,7 @@ Previously A2 used wrong α constants and the A1 β-band, which made A2 narrower
 <li><p><code>resample_spectrum(method = "cubic")</code> no longer extrapolates outside the source range: it returns <code>NA</code> under <code>rule = 1</code> and the boundary value under <code>rule = 2</code>, as documented. A <code>rule</code> other than 1 or 2 is rejected for both methods, as are non-finite values in the spectrum or either wavelength grid, which were previously dropped.</p></li>
 </ul></div>
 <div class="section level3">
-<h3 id="bug-fixes-0-1-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-1"></a></h3>
+<h3 id="bug-fixes-0-2-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-0"></a></h3>
 <ul><li>The pavo and colourvision examples in the visual-ecology vignette no longer extend the 350-700 nm Jerlov light field down to 300 nm by repeating its 350 nm value. Half of the honeybee UV receptor’s sensitivity fell in that invented band. The pavo example now models the reef triggerfish <em>Rhinecanthus aculeatus</em>, whose pavo sensitivities are zero below 350 nm, and passes pavo the illuminant in photon units (it previously passed W m^-2 nm^-1). The colourvision example now models human vision over 350-700 nm.</li>
 <li>
 <code><a href="../reference/read_ocean_optics.html">read_ocean_optics()</a></code> and <code><a href="../reference/from_ocean_optics.html">from_ocean_optics()</a></code> now read SpectraSuite processed exports: the <code>Spectrometers:</code> line, an integration time with a <code>(serial)</code> suffix (which must name that spectrometer) and the <code>Number of Pixels in Processed Spectrum:</code> count, which was previously not checked. OceanView’s <code>Integration Time (sec):</code> is parsed and converted to microseconds; it was previously dropped. A new <code>check_pixels</code> argument (default <code>TRUE</code>) lets spliced or multi-spectrometer exports, whose header gives one detector’s pixel count, be read on explicit request; the choice is recorded in the import provenance.</li>
@@ -133,6 +148,9 @@ Previously A2 used wrong α constants and the A1 β-band, which made A2 narrower
 <li>
 <code>citation("luxR")</code> now takes its version and year from DESCRIPTION. It previously failed when the package was not installed and gave the current year rather than the release year.</li>
 </ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.1" id="luxr-011">luxR 0.1.1<a class="anchor" aria-label="anchor" href="#luxr-011"></a></h2>
 <div class="section level3">
 <h3 id="package-identity-0-1-1">Package identity<a class="anchor" aria-label="anchor" href="#package-identity-0-1-1"></a></h3>
 <ul><li>Added the hexagonal luxR logo with a transparent background. The logo is displayed in the GitHub and r-universe README and in the bundled Shiny app.</li>

@@ -14,11 +14,19 @@ species_sensitivities
 
 ## Format
 
-A data frame with 24 rows and 6 columns:
+A data frame with 24 rows and 7 columns:
 
 - species:
 
   Scientific name.
+
+- habitat:
+
+  `"aquatic"` or `"terrestrial"`, one value per species. Terrestrial
+  species (*Homo sapiens*, *Apis mellifera*, *Drosophila melanogaster*)
+  are kept as reference species: the bee and fly validate luxR against
+  'pavo' and 'colourvision', and humans model divers and observers. The
+  Shiny app offers aquatic species plus *Homo sapiens*.
 
 - receptor:
 
@@ -98,11 +106,11 @@ Thyroxin-Challenged Post-Juvenile Rainbow Trout (Oncorhynchus Mykiss).”
 ``` r
 data(species_sensitivities)
 subset(species_sensitivities, species == "Danio rerio")
-#>       species receptor lambda_max chromophore channel_role
-#> 6 Danio rerio  UV-cone        361          A1    chromatic
-#> 7 Danio rerio   S-cone        414          A1    chromatic
-#> 8 Danio rerio   M-cone        483          A1    chromatic
-#> 9 Danio rerio   L-cone        567          A1    chromatic
+#>       species habitat receptor lambda_max chromophore channel_role
+#> 6 Danio rerio aquatic  UV-cone        361          A1    chromatic
+#> 7 Danio rerio aquatic   S-cone        414          A1    chromatic
+#> 8 Danio rerio aquatic   M-cone        483          A1    chromatic
+#> 9 Danio rerio aquatic   L-cone        567          A1    chromatic
 #>                     source
 #> 6 Govardovskii et al. 2000
 #> 7 Govardovskii et al. 2000

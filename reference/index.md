@@ -6,7 +6,7 @@ Package overview and the interactive Shiny explorer.
 
 - [`luxR-package`](https://johnkirwan.github.io/luxR/reference/luxR-package.md)
   [`luxR`](https://johnkirwan.github.io/luxR/reference/luxR-package.md)
-  : luxR: Underwater Light Analysis and Visual Ecology
+  : luxR: Underwater Light and Aquatic Visual Ecology
 - [`luxR-conditions`](https://johnkirwan.github.io/luxR/reference/luxR-conditions.md)
   [`luxR_error`](https://johnkirwan.github.io/luxR/reference/luxR-conditions.md)
   [`luxR_import_error`](https://johnkirwan.github.io/luxR/reference/luxR-conditions.md)

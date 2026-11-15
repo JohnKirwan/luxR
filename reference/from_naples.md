@@ -54,7 +54,7 @@ print(x)
 #>    import: data-raw/naples_legacy_snapshot.csv
 #>    import: 5952acfab4a04ea1b02eb085e6a768d5
 #>    import: naples-legacy-v1
-#>    import: 0.1.1
+#>    import: 0.2.0
 #>    import: NA
 #>    import: parse canonical processed snapshot; validate schema grid and non-negative irradiance
 ```

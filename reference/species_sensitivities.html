@@ -11,7 +11,7 @@ Used by species_LEF and species_brightness."><meta property="og:image" content="
 
     <a class="navbar-brand me-2" href="../index.html">luxR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,7 +22,7 @@ Used by species_LEF and species_brightness."><meta property="og:image" content="
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
-      </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://connect.posit.cloud/johnkirwan/content/019f94b5-66c5-51d6-136c-d3f2c2cf2ef6">Live app</a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://johnkirwan-luxr.share.connect.posit.cloud">Live app</a></li>
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/JohnKirwan/luxR/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -51,8 +51,16 @@ Used by <code><a href="species_LEF.html">species_LEF</a></code> and <code><a hre
 
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
-    <p>A data frame with 24 rows and 6 columns:</p><dl><dt>species</dt>
+    <p>A data frame with 24 rows and 7 columns:</p><dl><dt>species</dt>
 <dd><p>Scientific name.</p></dd>
+
+  <dt>habitat</dt>
+<dd><p><code>"aquatic"</code> or <code>"terrestrial"</code>, one value per
+    species. Terrestrial species (<em>Homo sapiens</em>, <em>Apis
+    mellifera</em>, <em>Drosophila melanogaster</em>) are kept as reference
+    species: the bee and fly validate luxR against 'pavo' and
+    'colourvision', and humans model divers and observers. The Shiny app
+    offers aquatic species plus <em>Homo sapiens</em>.</p></dd>
 
   <dt>receptor</dt>
 <dd><p>Receptor class (e.g. <code>"L-cone"</code>, <code>"rod"</code>).</p></dd>
@@ -123,11 +131,11 @@ ISSN 0022-0949.
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">species_sensitivities</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">species_sensitivities</span>, <span class="va">species</span> <span class="op">==</span> <span class="st">"Danio rerio"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       species receptor lambda_max chromophore channel_role</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 Danio rerio  UV-cone        361          A1    chromatic</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7 Danio rerio   S-cone        414          A1    chromatic</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8 Danio rerio   M-cone        483          A1    chromatic</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9 Danio rerio   L-cone        567          A1    chromatic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       species habitat receptor lambda_max chromophore channel_role</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 Danio rerio aquatic  UV-cone        361          A1    chromatic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7 Danio rerio aquatic   S-cone        414          A1    chromatic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8 Danio rerio aquatic   M-cone        483          A1    chromatic</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9 Danio rerio aquatic   L-cone        567          A1    chromatic</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                     source</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6 Govardovskii et al. 2000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7 Govardovskii et al. 2000</span>

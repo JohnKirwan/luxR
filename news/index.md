@@ -1,6 +1,6 @@
 # Changelog
 
-## luxR 0.1.1
+## luxR 0.2.0
 
 ### Breaking changes
 
@@ -197,6 +197,27 @@
   supplied (both come from the object); `binwidth` used to fail with
   “matched by multiple actual arguments”.
 
+### Package identity
+
+- Title is now “Underwater Light and Aquatic Visual Ecology”, stating
+  the package’s single focus: underwater light fields and what aquatic
+  animals can see in them.
+
+### Species data
+
+- `species_sensitivities` gains a `habitat` column (`"aquatic"` or
+  `"terrestrial"`, one value per species), placed after `species`. Code
+  that selects columns by position must be updated.
+
+### Shiny app
+
+- The app header shows the luxR version it is running.
+- The app offers only aquatic species plus *Homo sapiens* (divers and
+  human observers). *Apis mellifera* and *Drosophila melanogaster*
+  remain in the package data as terrestrial reference species.
+- The hosted app is at
+  <https://johnkirwan-luxr.share.connect.posit.cloud>.
+
 ### Performance
 
 - `detection_range(model = "spectral_path")` and
@@ -330,6 +351,8 @@
 - `citation("luxR")` now takes its version and year from DESCRIPTION. It
   previously failed when the package was not installed and gave the
   current year rather than the release year.
+
+## luxR 0.1.1
 
 ### Package identity
 
