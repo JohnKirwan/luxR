@@ -147,6 +147,11 @@
   or `binwidth` is supplied (both come from the object); `binwidth` used to
   fail with "matched by multiple actual arguments".
 
+## Requirements
+- luxR now requires R >= 4.2.0 (previously stated as 3.5.0, which was never
+  tested). CI checks R 4.2 to 4.5, the current release and R-devel, plus a run
+  without any suggested packages installed.
+
 ## Package identity
 - Title is now "Underwater Light and Aquatic Visual Ecology", stating the
   package's single focus: underwater light fields and what aquatic animals can
