@@ -576,18 +576,18 @@
       "description": {
         "Package": "luxR",
         "Type": "Package",
-        "Title": "Underwater Light Analysis and Visual Ecology",
-        "Version": "0.1.0",
-        "Date": "2026-05-28",
-        "Authors@R": "person(\"John\", \"Kirwan\",\n                   role  = c(\"aut\", \"cre\"),\n                   email = \"jkirwan+luxR@pm.me\")",
-        "Description": "Tools for quantifying and modelling underwater light environments.\n    Propagates spectral irradiance through the water column via Beer-Lambert\n    attenuation, computes photosynthetically active radiation (PAR), and\n    converts between energy and photon-flux units. Provides the\n    'lux_spectrum' S3 class for unit-safe spectral arithmetic and format\n    readers for TriOS RAMSES and Ocean Optics instruments. The optional\n    'lightr' package parses further instrument formats into strict native\n    records; explicit measurement, scale, calibration, and resampling policies\n    govern conversion via read_spectrum(). Spectra convert to and from the\n    generic spectral classes of the optional 'photobiology' package, which\n    also serves as the reference implementation luxR's integration and\n    photometry are validated against. Includes visual\n    ecology utilities: Govardovskii (2000) visual-pigment templates,\n    photoreceptor quantum catch, Vorobyev-Osorio colour discrimination (JND),\n    Secchi depth, and explicitly unvalidated contrast-threshold distance\n    scenarios.",
+        "Title": "Underwater Light and Aquatic Visual Ecology",
+        "Version": "0.2.0",
+        "Date": "2026-11-15",
+        "Authors@R": "person(given = c(\"John\", \"D\"),\n                   family = \"Kirwan\",\n                   role  = c(\"aut\", \"cre\"),\n                   email = \"jkirwan+luxR@pm.me\")",
+        "Description": "Models underwater light fields and what aquatic animals can see in them.\n    Propagates spectral irradiance through the water column via Beer-Lambert\n    attenuation, computes photosynthetically active radiation (PAR), and\n    converts between energy and photon-flux units. Provides the\n    'lux_spectrum' S3 class for unit-safe spectral arithmetic and format\n    readers for TriOS RAMSES and Ocean Optics instruments. The optional\n    'lightr' package parses further instrument formats into strict native\n    records; explicit measurement, scale, calibration, and resampling policies\n    govern conversion via read_spectrum(). Spectra convert to and from the\n    generic spectral classes of the optional 'photobiology' package, which\n    also serves as the reference implementation against which spectral\n    integration and photometry are validated. Includes visual ecology\n    utilities: visual-pigment templates of Govardovskii et al. (2000)\n    <doi:10.1017/S0952523800174036>, photoreceptor quantum catch, colour\n    discrimination in just-noticeable differences under the receptor-noise\n    model of Vorobyev and Osorio (1998) <doi:10.1098/rspb.1998.0302>, Secchi\n    depth, and contrast-threshold distance scenarios, which are explicitly\n    not validated.",
         "License": "GPL (>= 3)",
         "URL": "https://johnkirwan.github.io/luxR/,\nhttps://github.com/JohnKirwan/luxR",
         "BugReports": "https://github.com/JohnKirwan/luxR/issues",
         "Encoding": "UTF-8",
         "LazyData": "true",
         "RoxygenNote": "8.0.0",
-        "Depends": "R (>= 3.5.0)",
+        "Depends": "R (>= 4.2.0)",
         "Imports": "graphics, stats, utils, Rdpack",
         "RdMacros": "Rdpack",
         "Suggests": "testthat (>= 3.0.0), shiny (>= 1.7.0), lightr (>= 2.0.0),\npavo (>= 2.9.0), photobiology (>= 0.11.0), colourvision (>=\n2.0.0), knitr, rmarkdown, pkgdown",
@@ -598,17 +598,17 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "luxR",
         "RemoteUsername": "JohnKirwan",
-        "RemoteRef": "HEAD",
-        "RemoteSha": "73274ba6e3f31e8aba11250fde0e218727cacb2b",
+        "RemoteRef": "01c0270d89ee5a6827b6aaa7ec3d7e8e24824a13",
+        "RemoteSha": "01c0270d89ee5a6827b6aaa7ec3d7e8e24824a13",
         "GithubRepo": "luxR",
         "GithubUsername": "JohnKirwan",
-        "GithubRef": "HEAD",
-        "GithubSHA1": "73274ba6e3f31e8aba11250fde0e218727cacb2b",
+        "GithubRef": "01c0270d89ee5a6827b6aaa7ec3d7e8e24824a13",
+        "GithubSHA1": "01c0270d89ee5a6827b6aaa7ec3d7e8e24824a13",
         "NeedsCompilation": "no",
-        "Packaged": "2026-07-24 15:16:36 UTC; jdk",
-        "Author": "John Kirwan [aut, cre]",
-        "Maintainer": "John Kirwan <jkirwan+luxR@pm.me>",
-        "Built": "R 4.6.0; ; 2026-07-24 15:16:37 UTC; unix"
+        "Packaged": "2026-11-15 17:08:41 UTC; jdk",
+        "Author": "John D Kirwan [aut, cre]",
+        "Maintainer": "John D Kirwan <jkirwan+luxR@pm.me>",
+        "Built": "R 4.6.0; ; 2026-11-15 17:08:45 UTC; unix"
       }
     },
     "magrittr": {
@@ -984,7 +984,7 @@
       "checksum": "4ddd984b14fed4d87bd1403fd3baa3a6"
     },
     "README.md": {
-      "checksum": "340da75b6b6c64d8541c6742f8cc464f"
+      "checksum": "eb1a614d9671612d5f8d6351488037cf"
     }
   },
   "users": null
