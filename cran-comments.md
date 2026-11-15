@@ -1,9 +1,10 @@
 ## Test environments
 
 * local: Linux (WSL2), R 4.6
-* GitHub Actions: ubuntu-latest (release, devel), windows-latest (release),
-  macos-latest (release), plus a full `--as-cran` incoming check
-* win-builder: R-devel (2026-11-13 r90888 ucrt), Windows Server 2022 x64
+* GitHub Actions: ubuntu-latest (release, devel, oldrel-1 to oldrel-4),
+  windows-latest (release), macos-latest (release), a run without Suggests,
+  plus a full `--as-cran` incoming check
+* win-builder: R-devel (2026-11-14 r90890 ucrt), Windows Server 2022 x64
 
 ## R CMD check results
 
